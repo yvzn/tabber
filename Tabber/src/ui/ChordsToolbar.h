@@ -19,19 +19,16 @@ class ChordsToolbar: public ChordsTabControlPanel
 
 		void create(HWND );
 
-		void addButton(const char* , int );
+		HWND addButton(const char* , int , DWORD =0);
 
 	protected:
 
 		LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 
-	protected:
-
-		static const int CHORD_BUTTON_HEIGHT;
-		static const int CHORD_BUTTON_WIDTH;
-		static const int CHORD_BUTTON_PADDING;
-
-		int _xNextButtonPosition;
+		inline int getButtonHeight  ( ) { return 25; }
+		inline int getButtonWidth   ( ) { return 50; }
+		virtual int getButtonHorizontalPadding ( ) { return 2; }
+		virtual int getButtonVerticalPadding   ( ) { return 2; }
 
 };
 

@@ -401,13 +401,17 @@ LRESULT EditArea::onKeyDown(int virtuakKeyCode)
 			//handled here because VK_DELETE does not generate those handy WM_CHAR events
 			if(_mainWindow->getApplication()->getSettings()->getTypingMode() == SPECIAL)
 			{
-				if( !_toolkit->doesSelectionEndLine() )
+				DWORD selection = _toolkit->getSelection();
+				if( _toolkit->isInsideStaff(selection) )
 				{
-					StaffAction* action = new ForwardRemover();
-					apply(action);
-					delete action;
+					if( !_toolkit->doesSelectionEndLine(selection) )
+					{
+						StaffAction* action = new ForwardRemover();
+						apply(action);
+						delete action;
+					}
+					return FALSE;
 				}
-				return FALSE;
 			}
 			break;
 		}

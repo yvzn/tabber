@@ -159,7 +159,7 @@ class TuningDispatcher: public MultipleNoteDispatcher
 
 		inline const char* getHeaderString () { return ""; }
 		       const char* getNote    (int n);
-		inline void initStringWidth (EditionToolkit* ) { _width = _chord->getWidth(); }
+		inline void initStringWidth (EditionToolkit* ) { _width = _chord->getWidth()+1; }
 
 	protected:
 

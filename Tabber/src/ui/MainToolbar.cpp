@@ -20,8 +20,14 @@ void MainToolbar::create(HWND hParentWindow)
 		TOOLBARCLASSNAME,
 		NULL,
 		WS_CHILD | WS_VISIBLE,
-		0, 0, 0, 0,
-		hParentWindow, (HMENU)IDC_MAIN_TOOLBAR, GetModuleHandle(NULL), NULL );
+		CW_USEDEFAULT,
+  		CW_USEDEFAULT,
+    	CW_USEDEFAULT,
+     	CW_USEDEFAULT,
+		hParentWindow,
+		(HMENU)IDC_MAIN_TOOLBAR,
+		GetModuleHandle(NULL),
+		NULL );
 
 	if(_hWindow == NULL)
 	{

@@ -4,6 +4,7 @@
 ChordsTabControlPanel::ChordsTabControlPanel(ChordsTabControl* parent)
 {
 	_parent = parent;
+	_xNextButtonPosition = 0;
 	OBJECT_CREATED;
 }
 
@@ -71,3 +72,34 @@ LRESULT CALLBACK ChordsTabControlPanel::forwardMessage (
     }
 }
 
+
+HWND ChordsTabControlPanel::addButton(const char* buttonLabel, int buttonId, DWORD buttonStyle)
+{
+	assert(_hWindow != NULL);
+
+	HWND hButton = CreateWindowEx(
+		0,
+		"BUTTON",
+		buttonLabel,
+		WS_CHILD | WS_VISIBLE | buttonStyle,
+		_xNextButtonPosition,
+		getButtonVerticalPadding(),
+		getButtonWidth(),
+		getButtonHeight(),
+		_hWindow,
+		(HMENU)buttonId,
+   		GetModuleHandle(NULL),
+  		NULL );
+
+	if(hButton == NULL)
+	{
+		throw new RuntimeException("ChordsTabControlPanel::addButton", "Could not create chord button");
+	}
+
+
+	ApplyUsersDefaultFont(hButton);
+
+	_xNextButtonPosition += getButtonWidth() + getButtonHorizontalPadding();
+
+	return hButton;
+}

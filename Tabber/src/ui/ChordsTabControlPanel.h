@@ -21,12 +21,19 @@ class ChordsTabControlPanel
 		void hide( );
 		void show( );
 
+		HWND addButton(const char* , int , DWORD =0);
+
 		inline HWND& getWindowHandle() { return _hWindow; }
 
 	protected:
 
 		static  LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
 		virtual LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM ) =0;
+
+		virtual int getButtonHeight  ( ) =0;
+		virtual int getButtonWidth   ( ) =0;
+		virtual int getButtonHorizontalPadding ( ) =0;
+		virtual int getButtonVerticalPadding   ( ) =0;
 
 	protected:
 
@@ -35,6 +42,7 @@ class ChordsTabControlPanel
 		WNDPROC  _superClassWindowProc;
 		HWND     _hWindow;
 
+		int _xNextButtonPosition;
 };
 
 #endif // CHORDSTABCONTROLPANEL_H

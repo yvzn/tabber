@@ -1,4 +1,6 @@
 #include "StaffToolbar.h"
+#include "../ui/ChordsTabControl.h"
+#include "../ui/MainWindow.h"
 
 
 StaffToolbar::StaffToolbar(ChordsTabControl* parent)
@@ -25,6 +27,11 @@ void StaffToolbar::create(HWND hParentWindow)
 		throw new RuntimeException("ChordsToolbar::create", ex);
 	}
 
+	//buttons
+	addButton("Add Staff",  ID_INSERT_STAFF,  BS_PUSHBUTTON);
+	addButton("Add Bar",    ID_INSERT_BAR,    BS_PUSHBUTTON);
+	addButton("Add Tuning", ID_INSERT_TUNING, BS_PUSHBUTTON);
+
 	//subclassing (define my own window proc for this control)
 	_superClassWindowProc = (WNDPROC)SetWindowLong(_hWindow, GWL_WNDPROC, (long)ChordsTabControlPanel::forwardMessage);
 
@@ -42,9 +49,34 @@ LRESULT CALLBACK StaffToolbar::handleMessage (
     WPARAM wParam,
     LPARAM lParam )
 {
-
-	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
+	if(message == WM_COMMAND)
+	{
+		SendMessage(
+			_parent->getMainWindow()->getWindowHandle(),
+			WM_COMMAND,
+			wParam,
+			lParam );
+		_parent->getMainWindow()->getEditArea()->setFocus();
+	}
+	else
+	{
+		return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
+	}
 }
 
+
+/**
+ * Enables/Disables all the buttons that correspond to the specified command
+ */
+void StaffToolbar::setCommandEnabled(int commandId, bool isCommandEnabled)
+{
+    assert(_hWindow != NULL);
+
+    HWND hButton = GetDlgItem(_hWindow, commandId);
+	if(hButton != NULL)
+	{
+		EnableWindow(hButton, isCommandEnabled);
+	}
+}
 
 

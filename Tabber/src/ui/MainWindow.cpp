@@ -118,8 +118,9 @@ void MainWindow::setCommandEnabled(int commandId, bool isCommandEnabled)
     int enableFlag = MF_BYCOMMAND | (isCommandEnabled ? MF_ENABLED : MF_GRAYED) ;
 	EnableMenuItem(mainMenu, commandId, enableFlag);
     
-    // apply to toolbar
+    // apply to toolbars
     _toolbar->setCommandEnabled(commandId, isCommandEnabled);
+	_staff->setCommandEnabled(commandId, isCommandEnabled);
 }
 
 

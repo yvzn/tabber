@@ -2,10 +2,6 @@
 #include "../ui/ChordsTabControl.h"
 #include "../ui/MainWindow.h"
 
-const int ChordsToolbar::CHORD_BUTTON_HEIGHT = 25;
-const int ChordsToolbar::CHORD_BUTTON_WIDTH = 50;
-const int ChordsToolbar::CHORD_BUTTON_PADDING = 2;
-
 
 ChordsToolbar::ChordsToolbar(ChordsTabControl* parent)
 	: ChordsTabControlPanel(parent)
@@ -30,33 +26,14 @@ void ChordsToolbar::create(HWND hParentWindow)
 	{
 		throw new RuntimeException("ChordsToolbar::create", ex);
 	}
-
-	_xNextButtonPosition = 0;
 }
 
 
-void ChordsToolbar::addButton(const char* buttonLabel, int buttonId)
+HWND ChordsToolbar::addButton(const char* buttonLabel, int buttonId, DWORD buttonStyle)
 {
 	assert(_hWindow != NULL);
 
-	HWND hButton = CreateWindowEx(
-		0,
-		"BUTTON",
-		buttonLabel,
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		_xNextButtonPosition,
-		CHORD_BUTTON_PADDING,
-		CHORD_BUTTON_WIDTH,
-		CHORD_BUTTON_HEIGHT,
-		_hWindow,
-		(HMENU)buttonId,
-   		GetModuleHandle(NULL),
-  		NULL );
-  		
-	if(hButton == NULL)
-	{
-		throw new RuntimeException("ChordsToolbar::addButton", "Could not create chord button");
-	}
+	HWND hButton = ChordsTabControlPanel::addButton(buttonLabel, buttonId, buttonStyle | BS_PUSHBUTTON);
 
 	//subclassing (define my own window proc for this control)
 	_superClassWindowProc = (WNDPROC)SetWindowLong(hButton, GWL_WNDPROC, (long)ChordsTabControlPanel::forwardMessage);
@@ -64,9 +41,7 @@ void ChordsToolbar::addButton(const char* buttonLabel, int buttonId)
     //store *this pointer in window handle so that I can access class members later
     SetProp(hButton, "CorrespondingObject", (void*)this);
 
-	ApplyUsersDefaultFont(hButton);
-	
-	_xNextButtonPosition += CHORD_BUTTON_WIDTH + CHORD_BUTTON_PADDING;
+	return hButton;
 }
 
 
