@@ -1,8 +1,8 @@
-#include "DocumentManager.h"
+#include "DocumentInterface.h"
 #include "../ui/MainWindow.h"
 
 
-DocumentManager::DocumentManager(MainWindow* parentWindow)
+DocumentInterface::DocumentInterface(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
 
@@ -19,13 +19,13 @@ DocumentManager::DocumentManager(MainWindow* parentWindow)
 }
 
 
-DocumentManager::~DocumentManager()
+DocumentInterface::~DocumentInterface()
 {
 	OBJECT_DELETED;
 }
 
 
-void DocumentManager::setDocumentModified(bool newValue)
+void DocumentInterface::setDocumentModified(bool newValue)
 {
 	if(_isDocumentModified != newValue)
 	{
@@ -35,7 +35,7 @@ void DocumentManager::setDocumentModified(bool newValue)
 }
 
 
-void DocumentManager::blankDocumentFlags()
+void DocumentInterface::blankDocumentFlags()
 {
 	lstrcpy(_filePathAndName, "Untitled");
 	_fileName = _filePathAndName;
@@ -44,7 +44,7 @@ void DocumentManager::blankDocumentFlags()
 }
 
 
-void DocumentManager::updateMainWindowTitle()
+void DocumentInterface::updateMainWindowTitle()
 {
 	char buffer[MAX_PATH];
 
@@ -57,7 +57,7 @@ void DocumentManager::updateMainWindowTitle()
 }
 
 
-void DocumentManager::onNewDocument()
+void DocumentInterface::onNewDocument()
 {
 	if(continueIfDocumentModified())
 	{
@@ -68,7 +68,7 @@ void DocumentManager::onNewDocument()
 }
 
 
-bool DocumentManager::continueIfDocumentModified()
+bool DocumentInterface::continueIfDocumentModified()
 {
 	if(_isDocumentModified)
 	{
@@ -106,7 +106,7 @@ bool DocumentManager::continueIfDocumentModified()
 /**
  * @returns true if document was indeed saved -- false if user canceled saving
  */
-bool DocumentManager::onDocumentSave()
+bool DocumentInterface::onDocumentSave()
 {
 	assert(
  		(_isFileLoaded && lstrlen(_filePathAndName) > 0)
@@ -138,7 +138,7 @@ bool DocumentManager::onDocumentSave()
 /**
  * @returns true if document was indeed saved -- false if user canceled saving
  */
-bool DocumentManager::onDocumentSaveAs()
+bool DocumentInterface::onDocumentSaveAs()
 {
     _fileDialogOptions.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
     _fileDialogOptions.hwndOwner = _mainWindow->getWindowHandle();
@@ -167,11 +167,11 @@ bool DocumentManager::onDocumentSaveAs()
 }
 
 
-void DocumentManager::onDocumentOpen()
+void DocumentInterface::onDocumentOpen()
 {
 	if(continueIfDocumentModified())
 	{
-	    _fileDialogOptions.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST;
+	    _fileDialogOptions.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
 	    _fileDialogOptions.hwndOwner = _mainWindow->getWindowHandle();
 		if(GetOpenFileName(&_fileDialogOptions))
 		{
@@ -197,7 +197,7 @@ void DocumentManager::onDocumentOpen()
 /**
  * Updates _fileName pointer (a substring of _filePathAndName)
  */
-void DocumentManager::updateFileName()
+void DocumentInterface::updateFileName()
 {
 	assert(lstrlen(_filePathAndName) > 0);
 	

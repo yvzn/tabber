@@ -1,5 +1,5 @@
-#ifndef DOCUMENTMANAGER_H
-#define DOCUMENTMANAGER_H
+#ifndef DOCUMENTINTERFACE_H
+#define DOCUMENTINTERFACE_H
 
 #include "../util/utilities.h"
 
@@ -9,13 +9,13 @@
 /**
  * Storage class for document state
  */
-class DocumentManager
+class DocumentInterface
 {
 
 	public:
 
-		DocumentManager(MainWindow*);
-		~DocumentManager();
+		DocumentInterface(MainWindow*);
+		~DocumentInterface();
 
 		void setDocumentModified(bool);
 		bool continueIfDocumentModified();		
@@ -44,5 +44,5 @@ class DocumentManager
 		
 };
 
-#endif // DOCUMENTMANAGER_H
+#endif // DOCUMENTINTERFACE_H
 

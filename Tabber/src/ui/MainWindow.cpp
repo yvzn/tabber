@@ -13,7 +13,8 @@ MainWindow::MainWindow(Application* application)
 	_status          = new StatusBar();
 	_chordsToolbar   = new ChordsToolbar(this);
 	_editArea        = new EditArea(this);
-	_documentManager = new DocumentManager(this);
+	_documentInterface = new DocumentInterface(this);
+	_settingsInterface = new SettingsInterface(this);
 	
 	OBJECT_CREATED;
 }
@@ -21,7 +22,8 @@ MainWindow::MainWindow(Application* application)
 
 MainWindow::~MainWindow()
 {
-	delete _documentManager;
+	delete _settingsInterface;
+	delete _documentInterface;
 	delete _editArea;
 	delete _chordsToolbar;
 	delete _toolbar;
@@ -35,9 +37,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::create(HINSTANCE hApplicationInstance)
 {
-	ApplicationSettings* settings = _application->getSettings();
-	
-	const RECT windowRect = settings->getMainWindowRect();
+	const RECT windowRect = _application->getSettings()->getMainWindowRect();
 	int x, y, width, height;
 	if(windowRect.top < 0)
 	{
@@ -50,19 +50,10 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
 		y = windowRect.top; height = windowRect.bottom - windowRect.top;
 	}
 
-	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
-	if(settings->getMainWindowMaximizedState())
-	{
-		windowStyle |= WS_MAXIMIZE;
-	}
-	
 	WNDCLASSEX wndClass;
 	ZeroMemory(&wndClass, sizeof(wndClass));
     wndClass.cbSize        = sizeof(WNDCLASSEX);
-    //wndClass.style         = 0;
     wndClass.lpfnWndProc   = MainWindow::forwardMessage;
-    //wndClass.cbClsExtra    = 0;
-    //wndClass.cbWndExtra    = 0;
     wndClass.hInstance     = hApplicationInstance;
     wndClass.hIcon         = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_LARGE));
     wndClass.hIconSm       = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_SMALL));
@@ -80,12 +71,12 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
         0,
         WINDOW_CLASS_NAME,
         "Untitled - Tabber",
-        windowStyle, 
+        WS_OVERLAPPEDWINDOW, 
         x, y, width, height,
         HWND_DESKTOP,
         NULL,
         hApplicationInstance,
-        (void*)this //store *this pointer in window handle so that I can access class variables and methods
+        (void*)this //pass *this pointer to WM_NCCREATE (see onCommand)
         );
 
     if(_hWindow == NULL)
@@ -93,7 +84,6 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     	throw new RuntimeException("MainWindow::create", "Could not create main window");
     }
     
-    //SetWindowLong(_hWindow, GWL_USERDATA, (long)this);
 }
 
 
@@ -101,7 +91,9 @@ void MainWindow::show(int showState)
 {
 	assert(_hWindow != NULL);
 
-    ShowWindow(_hWindow, showState);
+    ShowWindow(
+    	_hWindow,
+ 		_application->getSettings()->getMainWindowMaximizedState() ? SW_MAXIMIZE : showState );
     UpdateWindow(_hWindow);
 }
 
@@ -128,6 +120,12 @@ void MainWindow::setWindowTitle(const char* newTitle)
 EditArea* MainWindow::getEditArea()
 {
 	return _editArea;
+}
+
+
+DocumentInterface* MainWindow::getDocumentInterface()
+{
+	return _documentInterface;
 }
 
 
@@ -243,7 +241,7 @@ void MainWindow::onClose()
 {
 	assert(_hWindow != NULL);
 	
-	if(_documentManager->continueIfDocumentModified())
+	if(_documentInterface->continueIfDocumentModified())
 	{
 		//save settings
 		RECT windowRect;
@@ -304,25 +302,25 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		
 		case ID_FILE_NEW:
 		{
-			_documentManager->onNewDocument();
+			_documentInterface->onNewDocument();
 			break;
 		}
 
 		case ID_FILE_SAVE:
 		{
-			_documentManager->onDocumentSave();
+			_documentInterface->onDocumentSave();
 			break;
 		}
 		
 		case ID_FILE_SAVEAS:
 		{
-			_documentManager->onDocumentSaveAs();
+			_documentInterface->onDocumentSaveAs();
 			break;
 		}
 		
 		case ID_FILE_OPEN:
 		{
-			_documentManager->onDocumentOpen();
+			_documentInterface->onDocumentOpen();
 			break;
 		}
 		
@@ -350,6 +348,18 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		
+		case ID_OPTIONS_FONT:
+		{
+		    _settingsInterface->onChooseFont();
+		    break;
+		}
+      
+		case ID_HELP_ABOUT:
+		{
+		    AboutDialog::show(_hWindow);
+		    break;
+		}
+      
 		default:
 		{
 			if(LOWORD(wParam) > IDC_FIRST_CHORD)

@@ -20,10 +20,16 @@ void ApplicationSettings::load()
 {
 	_mainWindowRect.top       = GetPrivateProfileInt("window", "top",    -1, _settingsFileFullName);
 	_mainWindowRect.right     = GetPrivateProfileInt("window", "right",  -1, _settingsFileFullName);
-	_mainWindowRect.bottom    = GetPrivateProfileInt("window", "bottom",   -1, _settingsFileFullName);
-	_mainWindowRect.left      = GetPrivateProfileInt("window", "left", -1, _settingsFileFullName);
+	_mainWindowRect.bottom    = GetPrivateProfileInt("window", "bottom", -1, _settingsFileFullName);
+	_mainWindowRect.left      = GetPrivateProfileInt("window", "left",   -1, _settingsFileFullName);
 	
-	_mainWindowMaximizedState = GetPrivateProfileInt("window", "maximized", -1, _settingsFileFullName) > 0;
+	_mainWindowMaximizedState = GetPrivateProfileInt("window", "maximized", 0, _settingsFileFullName) > 0;
+
+	ZeroMemory(&_editAreaFont, sizeof(_editAreaFont));
+	_editAreaFont.lfHeight = GetPrivateProfileInt("window", "font-size", 0, _settingsFileFullName);
+	_editAreaFont.lfWeight = GetPrivateProfileInt("window", "font-weight", 0, _settingsFileFullName);
+	_editAreaFont.lfItalic = GetPrivateProfileInt("window", "font-italic", 0, _settingsFileFullName);
+	GetPrivateProfileString("window", "font-family", "Courier New", _editAreaFont.lfFaceName, LF_FACESIZE, _settingsFileFullName);
 }
 
 
@@ -38,7 +44,13 @@ void ApplicationSettings::save() const
 	
 	wsprintf(conversionBuffer, "%d", _mainWindowMaximizedState ? 1 : 0); WritePrivateProfileString("window", "maximized", conversionBuffer, _settingsFileFullName);
 	
+	wsprintf(conversionBuffer, "%d", _editAreaFont.lfHeight); WritePrivateProfileString("window", "font-size", conversionBuffer, _settingsFileFullName);
+	wsprintf(conversionBuffer, "%d", _editAreaFont.lfWeight); WritePrivateProfileString("window", "font-weight", conversionBuffer, _settingsFileFullName);
+	wsprintf(conversionBuffer, "%d", _editAreaFont.lfItalic); WritePrivateProfileString("window", "font-italic", conversionBuffer, _settingsFileFullName);
+	WritePrivateProfileString("window", "font-family", _editAreaFont.lfFaceName, _settingsFileFullName);
+
 	delete [] conversionBuffer;
+	
 }
 
 
@@ -63,4 +75,17 @@ void ApplicationSettings::setMainWindowMaximizedState(bool newMaximizedState)
 {
 	_mainWindowMaximizedState = newMaximizedState;
 }
+
+
+const LOGFONT& ApplicationSettings::getEditAreaFont() const
+{
+	return _editAreaFont;
+}
+
+
+void ApplicationSettings::setEditAreaFont(const LOGFONT& newValue)
+{
+	CopyMemory(&_editAreaFont, &newValue, sizeof(_editAreaFont));
+}
+
 

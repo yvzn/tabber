@@ -140,7 +140,7 @@ LRESULT CALLBACK ChordButtonsPanel::handleMessage (
 	}
 	else
 	{
-		return _superClassWindowProc(hWindow, message, wParam, lParam);
+		return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
 	}
     return 0;
 }

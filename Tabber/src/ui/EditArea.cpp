@@ -5,12 +5,15 @@
 EditArea::EditArea(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
+	_displayFont = NULL;
 	OBJECT_CREATED;
 }
 
 
 EditArea::~EditArea()
 {
+	if(_displayFont != NULL) DeleteObject(_displayFont);
+
 	OBJECT_DELETED;
 }
 
@@ -38,6 +41,12 @@ void EditArea::create(HWND hParentWindow)
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
 
 	SetFocus(_hWindow);
+	
+	LOGFONT font;
+ 	CopyMemory(&font, &_mainWindow->getApplication()->getSettings()->getEditAreaFont(), sizeof(font));
+    //as I store size units in points in the Settings, I need a conversion from point size to logical units here
+	font.lfHeight = -MulDiv(font.lfHeight, GetDeviceCaps(GetDC(_mainWindow->getWindowHandle()), LOGPIXELSY), 72);
+	setFont(font);
 }
 
 
@@ -95,17 +104,44 @@ LRESULT CALLBACK EditArea::handleMessage (
 {
     switch(message)
     {
-    	case WM_KEYUP:
     	case WM_CUT:
     	case WM_PASTE:
     	case WM_UNDO:
     	{
-			// _mainWindow->getDocumentManager()->setDocumentModified(true);
+			_mainWindow->getDocumentInterface()->setDocumentModified(true);
 			break;
+		}
+
+		// overwrite mode test !!!!!!!!!!
+		case WM_CHAR:
+		{
+			_mainWindow->getDocumentInterface()->setDocumentModified(true);
+
+//*
+            if ((wParam != VK_BACK) && (wParam != VK_DELETE))
+            {
+                WORD wStart,wEnd;
+                DWORD dwResult;
+
+                dwResult = SendMessage(_hWindow,EM_GETSEL,0,0L);
+                wStart   = LOWORD(dwResult);
+                wEnd     = HIWORD(dwResult);
+
+                if (wEnd == wStart)
+                {
+                   wEnd++;
+                   SendMessage(_hWindow,EM_SETSEL,wStart,wEnd);
+                }
+
+                SendMessage(_hWindow,EM_REPLACESEL,TRUE, (DWORD)((LPSTR)&wParam ));
+                return (FALSE);
+            }
+//*/
+            break;
 		}
 	}
 	
-	return _superClassWindowProc(hWindow, message, wParam, lParam);
+	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
 }
 
 
@@ -154,6 +190,8 @@ void EditArea::saveContentTo(const char* fileName)
 	}
 	
 	CloseHandle(hFile);
+
+	SetFocus(_hWindow);
 }
 
 
@@ -198,6 +236,35 @@ void EditArea::loadContentFrom(const char* fileName)
 	}
 
 	CloseHandle(hFile);
+
+	SetFocus(_hWindow);
 }
 
+/*
+void EditArea::setFont(const char* fontFamily, int fontSize)
+{
+	assert(_hWindow != NULL);
+    
+	LOGFONT font;
+	ZeroMemory(&font, sizeof(font));
+	
+	font.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
+	lstrcpy(font.lfFaceName, fontFamily);
+
+    //conversion from point size to logical units
+	font.lfHeight = -MulDiv(fontSize, GetDeviceCaps(GetDC(_hWindow), LOGPIXELSY), 72);
+
+	setFont(font);	
+}
+//*/
+
+void EditArea::setFont(const LOGFONT& newValue)
+{
+	assert(_hWindow != NULL);
+	
+	if(_displayFont != NULL) DeleteObject(_displayFont);
+
+	_displayFont = CreateFontIndirect(&newValue);
+	SendMessage(_hWindow, WM_SETFONT, (WPARAM)_displayFont, MAKELPARAM(TRUE, 0));
+}
 

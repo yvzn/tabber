@@ -1,3 +1,6 @@
+#include <windows.h>
+
+#define IDC_STATIC -1
 
 #define IDR_MAIN_MENU 1000
 
@@ -9,14 +12,19 @@
 #define IDI_ICON_LARGE 3000
 	#define IDI_ICON_SMALL 3001
 
-#define ID_FILE_NEW     10000
-	#define ID_FILE_OPEN    10001
-	#define ID_FILE_SAVE    10002
-	#define ID_FILE_SAVEAS  10003
-	#define ID_APP_EXIT     10004
-#define ID_EDIT_UNDO     10008
-	#define ID_EDIT_CUT     10005
-	#define ID_EDIT_COPY    10006
-	#define ID_EDIT_PASTE   10007
+#define ID_FILE_NEW     5000
+	#define ID_FILE_OPEN    5001
+	#define ID_FILE_SAVE    5002
+	#define ID_FILE_SAVEAS  5003
+	#define ID_APP_EXIT     5004
+#define ID_EDIT_UNDO     5008
+	#define ID_EDIT_CUT     5005
+	#define ID_EDIT_COPY    5006
+	#define ID_EDIT_PASTE   5007
+#define ID_OPTIONS_FONT  5009
+#define ID_HELP_ABOUT    5010
 
-#define IDC_FIRST_CHORD 20000
+#define IDC_FIRST_CHORD 10000
+
+#define IDD_ABOUT_DIALOG 4000
+	#define IDC_VERSION_NUMBER 2004

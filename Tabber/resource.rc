@@ -1,7 +1,7 @@
 #include "resource.h"
 
-IDI_ICON_LARGE ICON "res/tabber_large.ico"
-IDI_ICON_SMALL ICON "res/tabber_small.ico"
+IDI_ICON_LARGE ICON DISCARDABLE "res/tabber_large.ico"
+IDI_ICON_SMALL ICON DISCARDABLE "res/tabber_small.ico"
 
 IDR_MAIN_MENU MENU
 BEGIN
@@ -22,5 +22,25 @@ BEGIN
 		MENUITEM "&Copy\tCtrl+C",       ID_EDIT_COPY
 		MENUITEM "&Paste\tCtrl+V",      ID_EDIT_PASTE
 	END
+	POPUP "&Options"
+	BEGIN
+		MENUITEM "&Font...",    ID_OPTIONS_FONT
+	END
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "&About...",   ID_HELP_ABOUT
+	END  
 END
 
+IDD_ABOUT_DIALOG DIALOG DISCARDABLE 20, 20, 194, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Minimalistic (and temporary) about box"
+FONT 8, "MS Sans Serif"
+BEGIN
+	DEFPUSHBUTTON "&OK", IDOK, 138, 68, 55, 20
+	GROUPBOX "This Version", IDC_STATIC, 0, 25, 194, 40
+	CTEXT "Tabber, a tablature editor, in text mode.", IDC_STATIC, 0, 10, 194, 10
+	LTEXT "Preview Version, provided without any guarantees.", IDC_STATIC, 6, 38, 182, 10
+	LTEXT "Compiled On:", IDC_STATIC, 6, 50, 50, 10
+	LTEXT "NULL", IDC_VERSION_NUMBER, 60, 50, 132, 10
+END

@@ -43,7 +43,6 @@ void Application::create(HINSTANCE hApplicationInstance)
 
 void Application::show(int showState) const
 {
-	assert(_mainWindow != NULL);
 	_mainWindow->show(showState);
 }
 

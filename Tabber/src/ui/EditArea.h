@@ -2,6 +2,7 @@
 #define EDITAREA_H
 
 #include "../util/utilities.h"
+#include "../core/ApplicationSettings.h"
 
 /* forward */ class MainWindow;
 
@@ -23,6 +24,8 @@ class EditArea
 
 		void doCommand(UINT );
 
+		void setFont(const LOGFONT&);
+
 	protected:
 
 		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
@@ -34,7 +37,8 @@ class EditArea
 		
 		WNDPROC  _superClassWindowProc;
 		HWND     _hWindow;
-		
+		HFONT    _displayFont;
+
 };
 
 #endif // EDITAREA_H
