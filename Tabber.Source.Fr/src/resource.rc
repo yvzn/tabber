@@ -1,0 +1,220 @@
+/*
+ * Tabber - Guitar Tablature Editor, freeware and open-source
+ * Copyright (C) 2004  Yvan Razafindramanana
+ *
+ * Additionnal Contributors:
+ * <place your name here :)>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include "resource.h"
+
+
+// icons //////////////////////////////////////////////////////////////////
+
+//use the following in Dev-C++
+IDI_ICON_LARGE ICON DISCARDABLE "res/tabber_large.ico"
+IDI_ICON_SMALL ICON DISCARDABLE "res/tabber_small.ico"
+
+//use the following in Visual-C++
+//IDI_ICON_LARGE ICON DISCARDABLE "../res/tabber_large.ico"
+//IDI_ICON_SMALL ICON DISCARDABLE "../res/tabber_small.ico"
+
+
+// menus //////////////////////////////////////////////////////////////////
+IDR_MAIN_MENU MENU DISCARDABLE
+BEGIN
+	POPUP "&Fichier"
+	BEGIN
+		MENUITEM "&Nouveau\tCtrl+N",      ID_FILE_NEW
+		MENUITEM "&Ouvrir...\tCtrl+O",    ID_FILE_OPEN
+		MENUITEM "&Enregistrer\tCtrl+S",  ID_FILE_SAVE
+		MENUITEM "En&registrer sous...\tCtrl+Alt+S", ID_FILE_SAVEAS
+		MENUITEM SEPARATOR
+		MENUITEM "&Mise en page...",      ID_FILE_PAGESETUP
+		MENUITEM "&Imprimer...\tCtrl+P",  ID_FILE_PRINT
+		MENUITEM SEPARATOR
+		MENUITEM "&Quitter\tAlt+F4",      ID_APP_EXIT
+	END
+	POPUP "&Edition"
+	BEGIN
+		MENUITEM "&Annuler\tCtrl+Z",       ID_EDIT_UNDO
+		MENUITEM SEPARATOR
+		MENUITEM "&Couper\tCtrl+X",        ID_EDIT_CUT
+		MENUITEM "Co&pier\tCtrl+C",        ID_EDIT_COPY
+		MENUITEM "C&oller\tCtrl+V",        ID_EDIT_PASTE
+		MENUITEM "&Supprimer\tSuppr",      ID_EDIT_DELETE
+		MENUITEM SEPARATOR
+		MENUITEM "Rec&hercher...\tCtrl+F", ID_EDIT_FIND
+		MENUITEM "Rechercher le sui&vant\tF3", ID_EDIT_FINDNEXT
+		MENUITEM "R&emplacer...\tCtrl+R",  ID_EDIT_REPLACE
+		MENUITEM SEPARATOR
+		MENUITEM "Selectionner &tout\tCtrl+A", ID_EDIT_SELECTALL
+	END
+	POPUP "&Insérer"
+	BEGIN
+		MENUITEM "&Portée\tCtrl+Shift+S",          ID_INSERT_STAFF
+		MENUITEM "&Barre de mesure\tCtrl+Shift+B", ID_INSERT_BAR
+		MENUITEM "&Accordage\tCtrl+Shift+T",       ID_INSERT_TUNING
+	END
+	POPUP "&Options"
+	BEGIN
+		MENUITEM "Mode &insertion\tInser",   ID_OPTIONS_TYPING_INSERT
+		MENUITEM "Mode &refrappe\tInser",    ID_OPTIONS_TYPING_OVERWRITE
+		MENUITEM "Mode frappe &spéciale\tInser", ID_OPTIONS_TYPING_SPECIAL
+		MENUITEM SEPARATOR
+		MENUITEM "&Largeur des portées...",  ID_OPTIONS_STAFF_WIDTH
+		MENUITEM "&Hauteur des portées...",  ID_OPTIONS_STAFF_HEIGHT
+		MENUITEM SEPARATOR
+		POPUP "&Accordage"
+		BEGIN
+			MENUITEM "&Aucun",           ID_OPTIONS_TUNINGS_NONE
+		END
+		MENUITEM SEPARATOR
+		MENUITEM "Es&paces supplémentaires",  ID_OPTIONS_CHORD_EXTRA_SPACE
+		MENUITEM "&Nom des accords",     ID_OPTIONS_CHORD_NAME
+		MENUITEM SEPARATOR
+		MENUITEM "&Police...",         ID_OPTIONS_FONT
+		MENUITEM SEPARATOR
+		POPUP "A&vancé"
+		BEGIN
+			MENUITEM "Editer les &accords",   ID_OPTIONS_EDIT_CHORDS
+			MENUITEM "Editer les a&ccordages",  ID_OPTIONS_EDIT_TUNINGS
+		END
+	END
+	POPUP "&Aide"
+	BEGIN
+		MENUITEM "&A propos de...",   ID_HELP_ABOUT
+	END  
+END
+
+
+// dialogs ////////////////////////////////////////////////////////////////
+IDD_ABOUT_DIALOG DIALOG DISCARDABLE  40, 40, 251, 193
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "A propos de"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK", IDOK, 194, 7, 50, 14
+    ICON            IDI_ICON_LARGE, IDC_STATIC, 7, 7, 21, 20
+    LTEXT           "Tabber", IDC_STATIC, 34, 7, 43, 10
+    LTEXT           "2.0", IDC_VERSION_NUMBER, 80, 7, 109, 10
+    LTEXT           "Éditeur de tablatures de guitares, en mode texte", IDC_STATIC, 34, 19, 153, 10
+    LTEXT           "Copyright (C) 2004",IDC_STATIC, 34, 31, 153, 10
+    EDITTEXT        IDC_WEBSITE, 34, 43, 153, 11, ES_READONLY | NOT WS_BORDER
+
+    LTEXT           "GNU Public Licence:",IDC_STATIC,34, 67, 153, 10
+    EDITTEXT        IDC_LICENCE, 34, 79, 210, 107,
+                    ES_MULTILINE | ES_READONLY | WS_VSCROLL
+END
+
+
+IDD_PROMPT_DIALOG DIALOG DISCARDABLE  40, 40, 191, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Invite..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK", IDOK, 134, 7, 50, 14
+    PUSHBUTTON      "Annuler", IDCANCEL, 134, 24, 50, 14
+    LTEXT           "Nouvelle valeur:", IDC_PROMPT_STRING, 7, 7, 119, 14, SS_CENTERIMAGE
+    EDITTEXT        IDC_PROMPT_VALUE, 7, 24, 119, 14, ES_AUTOHSCROLL | ES_NUMBER
+END
+
+
+IDD_PRINT_DIALOG DIALOG DISCARDABLE  40, 40, 186, 57
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Impression en cours..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Annuler", IDCANCEL, 67, 36, 50, 14
+    CTEXT           "NULL", IDC_PRINT_DOCUMENT, 7, 7, 172, 10
+    CTEXT           "NULL", IDC_PRINT_STATUS, 7, 21, 172, 10
+END
+
+
+// user interface strings  ///////////////////////////////////////////////
+STRINGTABLE DISCARDABLE
+BEGIN
+	//localised strings must not exceed 256 characters
+	IDS_UNTITLED, "Sans titre"
+	IDS_SAVE_CHANGES, "Enregistrer les modifications de '%s' ?"
+	IDS_CONFIRMATION, "Confirmation"
+	IDS_STAFF_WIDTH_PROMPT, "Largeur des portées (notes par ligne):"
+	IDS_STAFF_HEIGHT_PROMPT, "Hauteur des portées (nb lignes):"
+	IDS_STAFF_TOOLBAR_CAPTION, "Portée"
+	IDS_NO_MORE_OCCURENCES, "Impossible de trouver '%s'"
+	IDS_X_OCCURENCES_REPLACED, "%d occurences remplacées"
+	IDS_TYPE_OVERWRITE, "Refrappe"
+	IDS_TYPE_INSERT, "Insertion"
+	IDS_TYPE_SPECIAL, "Special"
+	IDS_INSERT_STAFF, "Portée"
+	IDS_INSERT_BAR, "Barre"
+	IDS_INSERT_TUNING, "Accordage"
+	IDS_CHANGES_ON_RESTART, "Les changements prendront effet au prochain redémarrage du programme"
+
+	IDS_LICENCE, "Ce programme est un logiciel gratuit; vous pouvez le redistribuer et/ou le modifier sous les termes de la GNU General Public Licence publiée par la Free Software Foundation; soit la version 2 de la licence, soit une version ultérieure.\r\n\r\nCe programme est distribué dans l'espoir d'être utile, mais SANS AUCUNE GARANTIE; sans même la garantie explicite ou implicite de COMMERCIALISABILITE ou de SERVIR A UNE QUELCONQUE UTILISATION. Reportez-vous à la GNU General Public License pour plus de détails.\r\n\r\nVous devriez avoir reçu une copie (en anglais) de la GNU General Public License avec ce programme; dans le cas contraire, écrivez à la\r\nFree Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA"
+	IDS_WEBSITE, "http://tabber.free.fr/"
+END
+
+
+// system error strings ///////////////////////////////////////////////////
+STRINGTABLE DISCARDABLE
+BEGIN
+	IDERR_SAVE_CHORDS, "Impossible d'enregistrer les accords"
+	IDERR_OPEN_CHORDS_FILE, "Impossible de charger les accords prédéfinis"
+	IDERR_SAVE_TUNINGS, "Impossible d'enregistrer les accordages"
+	IDERR_OPEN_TUNINGS_FILE, "Impossible de charger les accordages prédéfinis"
+	IDERR_SAVE_DOCUMENT, "Impossible d'enregisrer '%s' !\n\nPeut-être que le fichier est en lecture seule ?"
+	IDERR_OPEN_DOCUMENT, "Impossible d'ouvrir '%s' !\n\nPeut-être que le fichier est utilisé par un autre programme ?"
+	IDERR_PRINT_CANCELLED, "Impression annulée par l'utilisateur"
+	IDERR_PRINT_FAILED, "Erreur d'impression"
+	
+	IDERR_REGISTER_WINDOW_CLASS, "Impossible d'enregistrer la classe fenêtre"
+	IDERR_CREATE_WINDOW, "Impossible de créer la fenêtre"
+	IDERR_CREATE_TABS, "Impossible de créer un onglet"
+END
+
+
+// keyboard shortcuts /////////////////////////////////////////////////////
+IDR_ACCELERATORS ACCELERATORS DISCARDABLE
+BEGIN
+	"N",         ID_FILE_NEW,      VIRTKEY, CONTROL
+	"O",         ID_FILE_OPEN,     VIRTKEY, CONTROL
+	"S",         ID_FILE_SAVE,     VIRTKEY, CONTROL
+	"S",         ID_FILE_SAVEAS,   VIRTKEY, CONTROL, ALT
+	"P",         ID_FILE_PRINT,    VIRTKEY, CONTROL
+
+	"Z",         ID_EDIT_UNDO,     VIRTKEY, CONTROL
+	"X",         ID_EDIT_CUT,      VIRTKEY, CONTROL
+	"C",         ID_EDIT_COPY,     VIRTKEY, CONTROL
+	"V",         ID_EDIT_PASTE,    VIRTKEY, CONTROL
+	VK_BACK,     ID_EDIT_UNDO,     VIRTKEY, ALT
+	VK_DELETE,   ID_EDIT_CUT,      VIRTKEY, SHIFT
+	VK_INSERT,   ID_EDIT_COPY,     VIRTKEY, CONTROL
+	VK_INSERT,   ID_EDIT_PASTE,    VIRTKEY, SHIFT
+	"A",         ID_EDIT_SELECTALL, VIRTKEY, CONTROL
+	"F",         ID_EDIT_FIND,     VIRTKEY, CONTROL
+	"R",         ID_EDIT_REPLACE,  VIRTKEY, CONTROL
+	VK_F3,       ID_EDIT_FINDNEXT, VIRTKEY
+
+	VK_INSERT,   ID_OPTIONS_TYPING_TOGGLE, VIRTKEY
+	
+	"S",         ID_INSERT_STAFF,  VIRTKEY, CONTROL, SHIFT
+	"B",         ID_INSERT_BAR,    VIRTKEY, CONTROL, SHIFT
+	"T",         ID_INSERT_TUNING, VIRTKEY, CONTROL, SHIFT
+END
+
+
