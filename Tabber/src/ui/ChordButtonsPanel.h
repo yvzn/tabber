@@ -28,17 +28,17 @@ class ChordButtonsPanel
 
 	protected:
 
-		static LRESULT CALLBACK WindowProc(HWND , UINT , WPARAM , LPARAM );
+		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
+		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 
 	protected:
 	
-		static const char WINDOW_CLASS_NAME[];
 		static const int CHORD_BUTTON_HEIGHT;
 		static const int CHORD_BUTTON_WIDTH;
 		static const int CHORD_BUTTON_PADDING;
 		
-		WNDCLASSEX _windowClass;
-		HWND       _hWindow;
+		WNDPROC  _superClassWindowProc;
+		HWND     _hWindow;
 	
 		int _xNextButtonPosition;
 };

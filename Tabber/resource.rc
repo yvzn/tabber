@@ -12,7 +12,15 @@ BEGIN
 		MENUITEM "&Save",       ID_FILE_SAVE
 		MENUITEM "Save &As...", ID_FILE_SAVEAS
 		MENUITEM SEPARATOR
-		MENUITEM "&Quit",    ID_APP_EXIT		
+		MENUITEM "&Quit\tAlt+F4",       ID_APP_EXIT		
+	END
+	POPUP "&Edit"
+	BEGIN
+		MENUITEM "&Undo\tCtrl+Z",       ID_EDIT_UNDO
+		MENUITEM SEPARATOR
+		MENUITEM "Cu&t\tCtrl+X",        ID_EDIT_CUT
+		MENUITEM "&Copy\tCtrl+C",       ID_EDIT_COPY
+		MENUITEM "&Paste\tCtrl+V",      ID_EDIT_PASTE
 	END
 END
 

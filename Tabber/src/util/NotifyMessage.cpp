@@ -1,12 +1,16 @@
 #include "NotifyMessage.h"
+#include "../ui/MainWindow.h"
 
 
-void NotifyMessage::error(const char* errorMsg)
+/**
+ * Public errors (ie. visible to end-user)
+ */
+void NotifyMessage::publicError(const char* errorMsg)
 {
 	MessageBox (
 		HWND_DESKTOP,
 		errorMsg,
-		"Debug : An error occured !",
+		"An error occured !",
 		MB_ICONERROR | MB_OK );
 }
 

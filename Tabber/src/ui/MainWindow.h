@@ -22,7 +22,7 @@ class MainWindow
 		virtual ~MainWindow();
 
 		void create(HINSTANCE ) ;
-		void show  (int )       const ;
+		void show  (int ) ;
 
 		Application* getApplication();
 		EditArea*    getEditArea();
@@ -36,13 +36,14 @@ class MainWindow
 		
 	protected:
 
-		static LRESULT CALLBACK WindowProc(HWND , UINT , WPARAM , LPARAM );
-	
-		void onCreate  (HWND );
-		void onClose   ( );
-		void onSize    ( );
-		void onCommand (WPARAM , LPARAM );
-		void onNotify  (WPARAM , LPARAM );
+		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
+		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
+
+		void onCreate   (HWND );
+		void onClose    ( );
+		void onSize     ( );
+		void onCommand  (WPARAM , LPARAM );
+		void onNotify   (WPARAM , LPARAM );
 
 	protected:
 
@@ -58,10 +59,6 @@ class MainWindow
 		HWND          _hWindow;
 
 };
-
-
-// required because WindowProc must be static
-extern MainWindow* gMainWindow; 
 
 
 #endif // MAIN_WINDOW_H

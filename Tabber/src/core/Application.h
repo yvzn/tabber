@@ -5,6 +5,8 @@
 #include "../core/ApplicationSettings.h"
 #include "../data/ChordDefinitions.h"
 
+/* forward */ class MainWindow;
+
 
 class Application
 {
@@ -22,6 +24,7 @@ class Application
 
 	protected:
 	
+		MainWindow*          _mainWindow; 
 		ApplicationSettings* _settings;
 		ChordDefinitions*    _chords;
 

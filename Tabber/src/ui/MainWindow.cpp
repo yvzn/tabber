@@ -60,7 +60,7 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
 	ZeroMemory(&wndClass, sizeof(wndClass));
     wndClass.cbSize        = sizeof(WNDCLASSEX);
     //wndClass.style         = 0;
-    wndClass.lpfnWndProc   = MainWindow::WindowProc;
+    wndClass.lpfnWndProc   = MainWindow::forwardMessage;
     //wndClass.cbClsExtra    = 0;
     //wndClass.cbWndExtra    = 0;
     wndClass.hInstance     = hApplicationInstance;
@@ -82,16 +82,22 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
         "Untitled - Tabber",
         windowStyle, 
         x, y, width, height,
-        HWND_DESKTOP, NULL, hApplicationInstance, NULL );
+        HWND_DESKTOP,
+        NULL,
+        hApplicationInstance,
+        (void*)this //store *this pointer in window handle so that I can access class variables and methods
+        );
 
     if(_hWindow == NULL)
     {
     	throw new RuntimeException("MainWindow::create", "Could not create main window");
     }
+    
+    //SetWindowLong(_hWindow, GWL_USERDATA, (long)this);
 }
 
 
-void MainWindow::show(int showState) const
+void MainWindow::show(int showState)
 {
 	assert(_hWindow != NULL);
 
@@ -112,9 +118,10 @@ HWND& MainWindow::getWindowHandle()
 }
 
 
-void MainWindow::setWindowTitle(const char* documentName)
+void MainWindow::setWindowTitle(const char* newTitle)
 {
-	PostMessage(_hWindow, WM_SETTEXT, 0, (LPARAM)documentName);
+	assert(_hWindow != NULL);
+	SetWindowText(_hWindow, newTitle);
 }
 
 
@@ -125,27 +132,57 @@ EditArea* MainWindow::getEditArea()
 
 
 /**
- * Win32's message handling function
+ * Win32's message handling function.
+ * This function must be static in the WinAPI. But if so, it cannot access class
+ * members. For convenience it then forwards message to class's real WindowProc.
  */
-LRESULT CALLBACK MainWindow::WindowProc(
+LRESULT CALLBACK MainWindow::forwardMessage (
     HWND hWindow,
     UINT message,
     WPARAM wParam,
     LPARAM lParam )
 {
-	assert(gMainWindow != NULL);
+    if (message == WM_NCCREATE)
+    {
+        // when creating window, store the pointer to the window
+        // from lpCreateParams which was set in CreateWindow
+        SetProp(hWindow, "CorrespondingObject", ((LPCREATESTRUCT(lParam))->lpCreateParams));
+    }
 
+    // get the previously stored pointer to the window
+    MainWindow* mainWindow = (MainWindow*)GetProp(hWindow, "CorrespondingObject");
+ 
+    if (mainWindow)
+    {
+        return mainWindow->handleMessage(hWindow, message, wParam, lParam);
+	}
+    else
+    {
+        return DefWindowProc(hWindow, message, wParam, lParam);
+    }
+}
+
+
+/**
+ * Win32's message handling function (the real one)
+ */
+LRESULT CALLBACK MainWindow::handleMessage(
+    HWND hWindow,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam )
+{
     switch(message)
     {
 		case WM_CREATE:
         {
-        	gMainWindow->onCreate(hWindow);
+        	onCreate(hWindow);
             break;
         }
         
 		case WM_CLOSE:
         {
-        	gMainWindow->onClose();
+        	onClose();
             break;
         }
         
@@ -157,19 +194,19 @@ LRESULT CALLBACK MainWindow::WindowProc(
         
         case WM_SIZE:
         {
-        	gMainWindow->onSize();
+        	onSize();
         	break;
         }
         
     	case WM_COMMAND:
     	{
-    		gMainWindow->onCommand(wParam, lParam);
+    		onCommand(wParam, lParam);
     		break;
     	}
         
         case WM_NOTIFY:
         {
-    		gMainWindow->onNotify(wParam, lParam);
+    		onNotify(wParam, lParam);
     		break;
         }
         
@@ -270,10 +307,53 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 			_documentManager->onNewDocument();
 			break;
 		}
+
+		case ID_FILE_SAVE:
+		{
+			_documentManager->onDocumentSave();
+			break;
+		}
+		
+		case ID_FILE_SAVEAS:
+		{
+			_documentManager->onDocumentSaveAs();
+			break;
+		}
+		
+		case ID_FILE_OPEN:
+		{
+			_documentManager->onDocumentOpen();
+			break;
+		}
+		
+		case ID_EDIT_CUT:
+		{
+			_editArea->doCommand(WM_CUT);
+			break;
+		}
+
+		case ID_EDIT_COPY:
+		{
+			_editArea->doCommand(WM_COPY);
+			break;
+		}
+
+		case ID_EDIT_PASTE:
+		{
+			_editArea->doCommand(WM_PASTE);
+			break;
+		}
+
+		case ID_EDIT_UNDO:
+		{
+			_editArea->doCommand(WM_UNDO);
+			break;
+		}
 		
 		default:
 		{
-			//NotifyMessage::debug("MainWindow Command => %d ", LOWORD(wParam));
+			if(LOWORD(wParam) > IDC_FIRST_CHORD)
+				NotifyMessage::debug("MainWindow Command => %d ", LOWORD(wParam));
 			break;
 		}
 	}

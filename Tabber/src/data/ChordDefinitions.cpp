@@ -83,7 +83,9 @@ void ChordDefinitions::save()
 		0,
   		NULL );
 
-#define wf(str) WriteFile(hFile, str, (DWORD)strlen(str), &bytesWritten, NULL)
+#define wf(str) \
+	if(!WriteFile(hFile, str, (DWORD)strlen(str), &bytesWritten, NULL)) \
+		throw new RuntimeException("ChordDefinitions::save", "Could not write chords into file");
 
 	if(hFile != INVALID_HANDLE_VALUE)
 	{
@@ -110,7 +112,7 @@ void ChordDefinitions::save()
 	}
 	else
 	{
-		throw new RuntimeException("ChordDefinitions::save", "Could not save chords into file");
+		throw new RuntimeException("ChordDefinitions::save", "Could not open chords definitions file");
 	}
 	
 	CloseHandle(hFile);

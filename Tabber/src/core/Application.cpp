@@ -1,23 +1,19 @@
 #include "Application.h"
-
-
-// required because MainWindow::WindowProc must be static
 #include "../ui/MainWindow.h"
-MainWindow* gMainWindow; 
 
 
 Application::Application()
 {
 	_settings    = new ApplicationSettings();
 	_chords      = new ChordDefinitions();
-	gMainWindow  = new MainWindow(this);
+	_mainWindow  = new MainWindow(this);
 	OBJECT_CREATED;
 }
 
 
 Application::~Application()
 {
-	delete gMainWindow;
+	delete _mainWindow;
 	delete _chords;
 	delete _settings;
 	OBJECT_DELETED;
@@ -29,14 +25,14 @@ void Application::create(HINSTANCE hApplicationInstance)
 	assert(
  		_settings != NULL &&
  		_chords != NULL &&
-   		gMainWindow != NULL);
+   		_mainWindow != NULL);
 
 	try
 	{
 		_settings->load();
 		_chords->load();
 		
-		gMainWindow->create(hApplicationInstance);
+		_mainWindow->create(hApplicationInstance);
 	}
 	catch(RuntimeException* ex)
 	{
@@ -47,8 +43,8 @@ void Application::create(HINSTANCE hApplicationInstance)
 
 void Application::show(int showState) const
 {
-	assert(gMainWindow != NULL);
-	gMainWindow->show(showState);
+	assert(_mainWindow != NULL);
+	_mainWindow->show(showState);
 }
 
 

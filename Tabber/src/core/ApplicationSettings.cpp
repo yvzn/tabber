@@ -29,7 +29,7 @@ void ApplicationSettings::load()
 
 void ApplicationSettings::save() const
 {
-	char conversionBuffer[20];
+	char* conversionBuffer = new char[20];
 
 	wsprintf(conversionBuffer, "%d", _mainWindowRect.top)    ; WritePrivateProfileString("window", "top",    conversionBuffer, _settingsFileFullName);
 	wsprintf(conversionBuffer, "%d", _mainWindowRect.right)  ; WritePrivateProfileString("window", "right",  conversionBuffer, _settingsFileFullName);
@@ -37,6 +37,8 @@ void ApplicationSettings::save() const
 	wsprintf(conversionBuffer, "%d", _mainWindowRect.left)   ; WritePrivateProfileString("window", "left",   conversionBuffer, _settingsFileFullName);
 	
 	wsprintf(conversionBuffer, "%d", _mainWindowMaximizedState ? 1 : 0); WritePrivateProfileString("window", "maximized", conversionBuffer, _settingsFileFullName);
+	
+	delete [] conversionBuffer;
 }
 
 

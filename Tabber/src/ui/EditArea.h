@@ -14,14 +14,26 @@ class EditArea
 		EditArea(MainWindow* );
 		~EditArea();
 
-		void create(HWND );
-		void resize(const RECT&);
-		
+		void create (HWND );
+		void resize (const RECT& );
+
+		void loadContentFrom (const char* );
+		void saveContentTo   (const char* );
+		void wipeContent     ( );
+
+		void doCommand(UINT );
+
+	protected:
+
+		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
+		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
+
 	protected:
 
 		MainWindow* _mainWindow;
 		
-		HWND _hWindow;
+		WNDPROC  _superClassWindowProc;
+		HWND     _hWindow;
 		
 };
 

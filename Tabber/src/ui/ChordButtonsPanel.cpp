@@ -1,7 +1,6 @@
 #include "ChordButtonsPanel.h"
 #include "../ui/MainWindow.h"
 
-const char ChordButtonsPanel::WINDOW_CLASS_NAME[] = "ChordButtonsPanel";
 const int ChordButtonsPanel::CHORD_BUTTON_HEIGHT = 25;
 const int ChordButtonsPanel::CHORD_BUTTON_WIDTH = 50;
 const int ChordButtonsPanel::CHORD_BUTTON_PADDING = 2;
@@ -21,30 +20,9 @@ ChordButtonsPanel::~ChordButtonsPanel()
 
 void ChordButtonsPanel::create(HWND hParentWindow)
 {
-	static bool windowClassNotRegistered = true;
-	
-	if(windowClassNotRegistered)
-	{
-		//I register a window class in order to define my own WndProc
-		ZeroMemory(&_windowClass, sizeof(_windowClass));
-	    _windowClass.cbSize        = sizeof(WNDCLASSEX);
-	    _windowClass.lpfnWndProc   = ChordButtonsPanel::WindowProc;
-	    _windowClass.hInstance     = GetModuleHandle(NULL);
-	    _windowClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	    _windowClass.hbrBackground = (HBRUSH) (COLOR_BTNFACE + 1);
-	    _windowClass.lpszClassName = WINDOW_CLASS_NAME;
-	
-	    if(!RegisterClassEx(&_windowClass))
-	    {
-	    	throw new RuntimeException("MainWindow::create", "Could not register class");
-	    }
-	    
-    	windowClassNotRegistered = false;
-    }
-
 	_hWindow = CreateWindowEx(
 		0,
-		WINDOW_CLASS_NAME,
+		"STATIC",
 		NULL,
 		WS_CHILD,
 		CW_USEDEFAULT,
@@ -54,13 +32,19 @@ void ChordButtonsPanel::create(HWND hParentWindow)
 		hParentWindow,
   		NULL,
 		GetModuleHandle(NULL),
-  		NULL );
+  		(void*)this );
 		
 	if(_hWindow == NULL)
 	{
 		throw new RuntimeException("ChordButtonsPanel::create", "Could not create buttons panel");			
 	}
-	
+
+	//subclassing (define my own window proc for this control)
+	_superClassWindowProc = (WNDPROC)SetWindowLong(_hWindow, GWL_WNDPROC, (long)ChordButtonsPanel::forwardMessage);
+    
+    //store *this pointer in window handle so that I can access class variables and methods
+    SetProp(_hWindow, "CorrespondingObject", (void*)this);
+    
 	_xNextButtonPosition = 0;
 }
 
@@ -108,6 +92,11 @@ void ChordButtonsPanel::hide()
 }
 
 
+/*
+ * Used by parent window to resize this panel.
+ * Parent window is in charge of resizing because this panel is designed to be
+ * included in a multi-part window (e.g. a tab control)
+*/
 HWND& ChordButtonsPanel::getWindowHandle()
 {
 	return _hWindow;
@@ -115,23 +104,43 @@ HWND& ChordButtonsPanel::getWindowHandle()
 
 
 /**
- * Win32's message handling function
+ * @see MainWindow::forwardMessage
  */
-LRESULT CALLBACK ChordButtonsPanel::WindowProc(
+LRESULT CALLBACK ChordButtonsPanel::forwardMessage (
     HWND hWindow,
     UINT message,
     WPARAM wParam,
     LPARAM lParam )
 {
-	//propagate chord buttons commands
+	//retrieve *this pointer and then forward message
+    ChordButtonsPanel* panel = (ChordButtonsPanel*)GetProp(hWindow, "CorrespondingObject");
+    if (panel)
+    {
+        return panel->handleMessage(hWindow, message, wParam, lParam);
+	}
+    else
+    {
+        return DefWindowProc(hWindow, message, wParam, lParam);
+    }
+}
+
+
+/**
+ * @see MainWindow::handleMessage
+ */
+LRESULT CALLBACK ChordButtonsPanel::handleMessage (
+    HWND hWindow,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam )
+{
     if(message == WM_COMMAND && LOWORD(wParam) >= IDC_FIRST_CHORD)
     {
-		assert(gMainWindow->getWindowHandle());
-   		PostMessage(gMainWindow->getWindowHandle(), WM_COMMAND, wParam, lParam);
+		NotifyMessage::debug("%d", LOWORD(wParam));
 	}
 	else
 	{
-		return DefWindowProc(hWindow, message, wParam, lParam);
+		return _superClassWindowProc(hWindow, message, wParam, lParam);
 	}
     return 0;
 }

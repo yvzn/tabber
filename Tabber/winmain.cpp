@@ -29,7 +29,7 @@ int WINAPI WinMain (
 	catch(RuntimeException* exception)
 	{
 		RuntimeException ex("::Winmain", exception);
-		NotifyMessage::error(ex.getStackTrace());
+		NotifyMessage::publicError(ex.getStackTrace());
 	}
 	
 	delete application;

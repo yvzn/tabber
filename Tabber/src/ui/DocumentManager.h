@@ -21,11 +21,15 @@ class DocumentManager
 		bool continueIfDocumentModified();		
 		
 		void onNewDocument();
+		bool onDocumentSave();
+		bool onDocumentSaveAs();
+		void onDocumentOpen();
 
 	protected:
 
 		void blankDocumentFlags();
 		void updateMainWindowTitle();
+		void updateFileName();
 	
 	protected:
 
@@ -33,8 +37,10 @@ class DocumentManager
 
 		bool _isDocumentModified;
 		bool _isFileLoaded;
-		char _filePath[MAX_PATH];
-		char _fileName[MAX_PATH];
+		char _filePathAndName[MAX_PATH];
+		char* _fileName;
+		
+		OPENFILENAME _fileDialogOptions;
 		
 };
 

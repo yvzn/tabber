@@ -9,9 +9,9 @@ class NotifyMessage
 
 	public:
 
-		static void error(const char* );
-		static void debug(const char* , ...);
+		static void publicError(const char* );
 		
+		static void debug(const char* , ...);
 		static int assertionFailed(const char* , const char* , int );
 
 };
