@@ -8,36 +8,61 @@
 
 #include "../util/NotifyMessage.h"
 #include "../util/RuntimeException.h"
+#include "../util/DebugWindow.h"
 
 
 // DEBUG ----------------------------------------------------------------------
+
+// minigw's debug tools seems to screw up in Win32 (becauses they use the console ?)
+// so I override them and define my own stuff
+// -- these features should be disabled under MSVC++
+
 
 #define __MY_DEBUG
 
 
 #ifdef __MY_DEBUG
 
-// object creation/deletion count (avoid leaks :)
-extern UINT gObjectCount;
-#define OBJECT_CREATED ++gObjectCount
-#define OBJECT_DELETED --gObjectCount
 
-// minigw's assert screws up in Win32 becauses it uses the console, so I have defined my own
+// memory watching: I override C++'s new and delete operators to log memory allocations
+#include "../util/MemoryWatcher.h"
+extern MemoryWatcher memoryWatcher;
+
+#define ALLOCATE \
+	void *ptr = (void *)malloc(size); \
+	memoryWatcher.addTrack((DWORD)ptr, size, file, line); \
+	return(ptr);
+	
+inline void * __cdecl operator new(unsigned int size, const char *file, int line) { ALLOCATE; }
+inline void * __cdecl operator new[] (unsigned int size, const char *file, int line) { ALLOCATE; }
+
+#define FREE \
+	memoryWatcher.removeTrack((DWORD)p); \
+	free(p);
+
+inline void __cdecl operator delete(void *p) { FREE; }
+inline void __cdecl operator delete[] (void *p) { FREE; }
+ 
+#define DEBUG_NEW new(__FILE__, __LINE__)
+
+
+// assertions
 void __assertion_failed (const char*, const char*, int);
 #define assert(condition) (condition) ? (void)0 : __assertion_failed(#condition, __FILE__, __LINE__)
 
-//misc. debug initialisations and messages
+
+// debug operations, before and after execution
 #define DEBUG_START \
-	UINT gObjectCount = 0;
+	MemoryWatcher memoryWatcher;
 
 #define DEBUG_STOP \
-	NotifyMessage::debug("delta(created objects, deleted objects):\n%d object(s) not released", gObjectCount);
+	memoryWatcher.report();
 
 
 #else //__MY_DEBUG
 
-#define OBJECT_CREATED 
-#define OBJECT_DELETED 
+
+#define DEBUG_NEW new
 
 #define assert(condition)
 
@@ -46,6 +71,12 @@ void __assertion_failed (const char*, const char*, int);
 
 
 #endif //__MY_DEBUG
+
+
+#define OBJECT_CREATED // good ol' personnal macros, not used here
+#define OBJECT_DELETED 
+
+#define new DEBUG_NEW
 
 
 // OTHER UTILITIES ------------------------------------------------------------

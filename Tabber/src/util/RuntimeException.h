@@ -18,7 +18,7 @@ class RuntimeException
 		
 	protected:
 
-		void setStackTrace(const char* , const char* , BOOL );
+		void setStackTrace(const char* , const char* , bool );
 	
 	protected:
 	

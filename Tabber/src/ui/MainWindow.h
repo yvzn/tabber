@@ -26,14 +26,14 @@ class MainWindow
 		void create(HINSTANCE ) ;
 		void show  (int ) ;
 
-		Application*     getApplication();
-		EditArea*        getEditArea();
-		DocumentInterface* getDocumentInterface();
+		void setWindowTitle    (const char* );
+		void setCommandEnabled (int , bool );
 
-		HWND& getWindowHandle();
+		inline Application*       getApplication       () { return _application;       }
+		inline EditArea*          getEditArea          () { return _editArea;          }
+		inline DocumentInterface* getDocumentInterface () { return _documentInterface; }
+		inline HWND&              getWindowHandle      () { return _hWindow;           }
 		
-		void setWindowTitle(const char* );
-
 	public:
 	
 		static const char APPLICATION_NAME[];

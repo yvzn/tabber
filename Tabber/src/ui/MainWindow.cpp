@@ -4,6 +4,10 @@ const char MainWindow::WINDOW_CLASS_NAME[] = "MainWindow";
 const char MainWindow::APPLICATION_NAME[] = "Tabber";
 
 
+
+// CONSTR AND DESTR ///////////////////////////////////////////////////////////
+
+
 MainWindow::MainWindow(Application* application)
 {
 	InitCommonControls();
@@ -30,6 +34,10 @@ MainWindow::~MainWindow()
 	delete _status;
 	OBJECT_DELETED;
 }
+
+
+
+// WINDOW CREATION ////////////////////////////////////////////////////////////
 
 
 /**
@@ -60,7 +68,7 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     wndClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
     wndClass.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE);
     wndClass.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN_MENU);
-    wndClass.lpszClassName = WINDOW_CLASS_NAME;
+    wndClass.lpszClassName = MainWindow::WINDOW_CLASS_NAME;
 
     if(!RegisterClassEx(&wndClass))
     {
@@ -83,7 +91,6 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     {
     	throw new RuntimeException("MainWindow::create", "Could not create main window");
     }
-    
 }
 
 
@@ -98,16 +105,8 @@ void MainWindow::show(int showState)
 }
 
 
-Application* MainWindow::getApplication()
-{
-	return _application;
-}
 
-
-HWND& MainWindow::getWindowHandle()
-{
-	return _hWindow;
-}
+// WINDOW MANAGEMENT //////////////////////////////////////////////////////////
 
 
 void MainWindow::setWindowTitle(const char* newTitle)
@@ -117,16 +116,25 @@ void MainWindow::setWindowTitle(const char* newTitle)
 }
 
 
-EditArea* MainWindow::getEditArea()
+/**
+ * Enables/Disables all the child controls that correspond to the specified command
+ */
+void MainWindow::setCommandEnabled(int commandId, bool isCommandEnabled)
 {
-	return _editArea;
+    assert(_hWindow != NULL);
+    
+    //menus
+    HMENU mainMenu = GetMenu(_hWindow);
+    int enableFlag = MF_BYCOMMAND | (isCommandEnabled ? MF_ENABLED : MF_GRAYED) ;
+	EnableMenuItem(mainMenu, commandId, enableFlag);
+    
+    //toolbar
+    _toolbar->setCommandEnabled(commandId, isCommandEnabled);
 }
 
 
-DocumentInterface* MainWindow::getDocumentInterface()
-{
-	return _documentInterface;
-}
+
+// WIN32's MESSAGES HANDLING //////////////////////////////////////////////////
 
 
 /**
@@ -196,6 +204,12 @@ LRESULT CALLBACK MainWindow::handleMessage(
         	break;
         }
         
+        case WM_SETFOCUS:
+        {
+			_editArea->setFocus();
+        	break;   
+        }    
+        
     	case WM_COMMAND:
     	{
     		onCommand(wParam, lParam);
@@ -228,7 +242,7 @@ void MainWindow::onCreate(HWND hPrecreateWindow)
 		_toolbar->create(hPrecreateWindow);
 		_status->create(hPrecreateWindow);
 		_chordsToolbar->create(hPrecreateWindow);
-		_editArea->create(hPrecreateWindow);
+		_editArea->create(hPrecreateWindow);		
 	}
 	catch(RuntimeException* ex)
 	{
@@ -363,7 +377,7 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		default:
 		{
 			if(LOWORD(wParam) > IDC_FIRST_CHORD)
-				NotifyMessage::debug("MainWindow Command => %d ", LOWORD(wParam));
+				DebugWindow::trace("MainWindow Command => %d ", LOWORD(wParam));
 			break;
 		}
 	}
@@ -389,5 +403,6 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 		}
 	}
 }
+
 
 

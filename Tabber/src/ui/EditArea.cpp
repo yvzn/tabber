@@ -2,6 +2,10 @@
 #include "../ui/MainWindow.h"
 
 
+
+// CONSTR AND DESTR ///////////////////////////////////////////////////////////
+
+
 EditArea::EditArea(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
@@ -16,6 +20,10 @@ EditArea::~EditArea()
 
 	OBJECT_DELETED;
 }
+
+
+
+// WINDOW CREATION ////////////////////////////////////////////////////////////
 
 
 void EditArea::create(HWND hParentWindow)
@@ -40,8 +48,6 @@ void EditArea::create(HWND hParentWindow)
     //store *this pointer in window handle so that I can access class variables and methods
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
 
-	SetFocus(_hWindow);
-	
 	LOGFONT font;
  	CopyMemory(&font, &_mainWindow->getApplication()->getSettings()->getEditAreaFont(), sizeof(font));
     //as I store size units in points in the Settings, I need a conversion from point size to logical units here
@@ -64,91 +70,37 @@ void EditArea::resize(const RECT& newSize)
 }
 
 
-void EditArea::doCommand(UINT command)
+
+// WINDOW MANAGEMENT //////////////////////////////////////////////////////////
+
+
+void EditArea::setFont(const LOGFONT& newValue)
 {
 	assert(_hWindow != NULL);
-	SendMessage(_hWindow, command, 0, 0);
+
+	if(_displayFont != NULL) DeleteObject(_displayFont);
+
+	_displayFont = CreateFontIndirect(&newValue);
+	SendMessage(_hWindow, WM_SETFONT, (WPARAM)_displayFont, MAKELPARAM(TRUE, 0));
 }
 
 
-/**
- * @see MainWindow::forwardMessage
- */
-LRESULT CALLBACK EditArea::forwardMessage (
-    HWND hWindow,
-    UINT message,
-    WPARAM wParam,
-    LPARAM lParam )
+void EditArea::setFocus()
 {
-	//retrieve *this pointer and then forward message
-    EditArea* editArea = (EditArea*)GetProp(hWindow, "CorrespondingObject");
-    if (editArea)
-    {
-        return editArea->handleMessage(hWindow, message, wParam, lParam);
-	}
-    else
-    {
-        return DefWindowProc(hWindow, message, wParam, lParam);
-    }
+	assert(_hWindow != NULL);
+	SetFocus(_hWindow);
 }
 
 
-/**
- * @see MainWindow::handleMessage
- */
-LRESULT CALLBACK EditArea::handleMessage (
-    HWND hWindow,
-    UINT message,
-    WPARAM wParam,
-    LPARAM lParam )
-{
-    switch(message)
-    {
-    	case WM_CUT:
-    	case WM_PASTE:
-    	case WM_UNDO:
-    	{
-			_mainWindow->getDocumentInterface()->setDocumentModified(true);
-			break;
-		}
 
-		// overwrite mode test !!!!!!!!!!
-		case WM_CHAR:
-		{
-			_mainWindow->getDocumentInterface()->setDocumentModified(true);
-
-//*
-            if ((wParam != VK_BACK) && (wParam != VK_DELETE) && (wParam != VK_RETURN))
-            {
-                WORD wStart,wEnd;
-                DWORD dwResult;
-
-                dwResult = SendMessage(_hWindow,EM_GETSEL,0,0L);
-                wStart   = LOWORD(dwResult);
-                wEnd     = HIWORD(dwResult);
-
-                if (wEnd == wStart)
-                {
-                   wEnd++;
-                   SendMessage(_hWindow,EM_SETSEL,wStart,wEnd);
-                }
-
-                SendMessage(_hWindow,EM_REPLACESEL,TRUE, (DWORD)((LPSTR)&wParam ));
-                return (FALSE);
-            }
-//*/
-            break;
-		}
-	}
-	
-	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
-}
+// CONTENT MANAGEMENT /////////////////////////////////////////////////////////
 
 
 void EditArea::wipeContent()
 {
 	assert(_hWindow != NULL);
 	SetWindowText(_hWindow, "");
+	SetFocus(_hWindow);
 }
 
 
@@ -240,31 +192,196 @@ void EditArea::loadContentFrom(const char* fileName)
 	SetFocus(_hWindow);
 }
 
+
+
+// WIN32's MESSAGES HANDLING //////////////////////////////////////////////////
+
+
+void EditArea::doCommand(UINT command)
+{
+	assert(_hWindow != NULL);
+	SendMessage(_hWindow, command, 0, 0);
+}
+
+
+/**
+ * @see MainWindow::forwardMessage
+ */
+LRESULT CALLBACK EditArea::forwardMessage (
+    HWND hWindow,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam )
+{
+	//retrieve *this pointer and then forward message
+    EditArea* editArea = (EditArea*)GetProp(hWindow, "CorrespondingObject");
+    if (editArea)
+    {
+        return editArea->handleMessage(hWindow, message, wParam, lParam);
+	}
+    else
+    {
+        return DefWindowProc(hWindow, message, wParam, lParam);
+    }
+}
+
+
+/**
+ * @see MainWindow::handleMessage
+ */
+LRESULT CALLBACK EditArea::handleMessage (
+    HWND hWindow,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam )
+{
+    switch(message)
+    {
+        case WM_COPY:
+        {
+			_mainWindow->setCommandEnabled(ID_EDIT_PASTE, true);
+			break;
+		}
+		
+    	case WM_CUT:
+		{
+			_mainWindow->setCommandEnabled(ID_EDIT_PASTE, true);
+			onDocumentModified();
+			onSelectionChange();
+		}
+		
+    	case WM_PASTE:
+    	case WM_UNDO:
+    	{
+         	onDocumentModified();
+			break;
+		}
+
+		case WM_SETFOCUS:
+  		{
+  		    // setfocus is quite a good moment to perform some general UI updates
+  		    _mainWindow->setCommandEnabled(
+        		ID_EDIT_PASTE,
+      		 	IsClipboardFormatAvailable(CF_TEXT) != 0 );
+  		    _mainWindow->setCommandEnabled(
+        		ID_EDIT_UNDO,
+          		SendMessage(hWindow, EM_CANUNDO, 0, 0) != 0 );
+
+			// I do check selection on focus to initialise a few things related on selection
+			onSelectionChange();
+      		break;
+  		}
+
+		case WM_LBUTTONUP:
+  		{
+        	onSelectionChange();
+      		break;
+  		}
+
+		case WM_KEYUP:
+      	{
+			// special keystrokes
+			onKeyUp(wParam);
+			break;
+		}
+		
+		case WM_CHAR:
+		{
+      		// characters keystrokes
+ 			onDocumentModified();
+ 			
+		    switch(wParam)
+		    {
+				case VK_DELETE: // handled by both WM_KEYUP and WM_CHAR
+        		case VK_BACK:   //     "       "       "           "
+               	case VK_RETURN:
+        		{
+					break;
+				}
+				
+				default:
+    			{
 /*
-void EditArea::setFont(const char* fontFamily, int fontSize)
-{
-	assert(_hWindow != NULL);
-    
-	LOGFONT font;
-	ZeroMemory(&font, sizeof(font));
-	
-	font.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE;
-	lstrcpy(font.lfFaceName, fontFamily);
+					//overtype
+                    WORD wStart,wEnd;
+                    DWORD dwResult;
 
-    //conversion from point size to logical units
-	font.lfHeight = -MulDiv(fontSize, GetDeviceCaps(GetDC(_hWindow), LOGPIXELSY), 72);
+                    dwResult = SendMessage(_hWindow,EM_GETSEL,0,0L);
+                    wStart   = LOWORD(dwResult);
+                    wEnd     = HIWORD(dwResult);
 
-	setFont(font);	
-}
+                    if (wEnd == wStart)
+                    {
+                       wEnd++;
+                       SendMessage(_hWindow,EM_SETSEL,wStart,wEnd);
+                    }
+
+                    SendMessage(_hWindow, EM_REPLACESEL, TRUE, (DWORD)((LPSTR)&wParam ));
+                    return (FALSE);
 //*/
+	    			break;
+    			}
+		    }
 
-void EditArea::setFont(const LOGFONT& newValue)
-{
-	assert(_hWindow != NULL);
-	
-	if(_displayFont != NULL) DeleteObject(_displayFont);
+            break;
+		}
+	}
 
-	_displayFont = CreateFontIndirect(&newValue);
-	SendMessage(_hWindow, WM_SETFONT, (WPARAM)_displayFont, MAKELPARAM(TRUE, 0));
+	// most subclassed messages still require a call to super class's window proc
+	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
 }
+
+
+void EditArea::onKeyUp(int virtuakKeyCode)
+{
+	switch(virtuakKeyCode)
+  	{
+		case VK_PRIOR:
+		case VK_NEXT:
+		case VK_END:
+		case VK_HOME:
+		case VK_LEFT:
+		case VK_UP:
+		case VK_RIGHT:
+		case VK_DOWN:
+   		{
+			onSelectionChange();
+			break;
+		}
+
+		case VK_DELETE:
+   		case VK_BACK:
+   		{
+			onDocumentModified();
+			onSelectionChange();
+			break;
+		}
+
+		case VK_SNAPSHOT: // Print Screen
+        {
+        	_mainWindow->setCommandEnabled(ID_EDIT_PASTE, false);
+			break;
+		}
+	}
+}
+
+
+void EditArea::onSelectionChange()
+{
+    assert(_hWindow != NULL);
+
+	DWORD selection = SendMessage(_hWindow,EM_GETSEL, 0, 0L);
+	bool isTextSelected = LOWORD(selection) != HIWORD(selection);
+
+    _mainWindow->setCommandEnabled(ID_EDIT_COPY, isTextSelected );
+    _mainWindow->setCommandEnabled(ID_EDIT_CUT, isTextSelected );
+}
+
+
+void EditArea::onDocumentModified()
+{
+	_mainWindow->getDocumentInterface()->setDocumentModified(true);
+}
+
+
 

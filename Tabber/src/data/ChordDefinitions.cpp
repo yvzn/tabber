@@ -40,13 +40,16 @@ void ChordDefinitions::load()
        	
 			addChordGroup(currentGroup);
 		}
+
+		delete parser;
 	}
 	else //ini file is empty
 	{
+		delete parser;
+
 		loadDefaultValues();
 		save(); //save values to create a correct ini file
 	}
-	delete parser;
 }
 
 

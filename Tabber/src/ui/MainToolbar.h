@@ -15,10 +15,13 @@ class MainToolbar
 		void create  (HWND );
 		void resize  ( );
 		RECT getSize ( );
+
+		void setCommandEnabled(int , bool );
 		
 	protected:
 	
 		HWND _hWindow;
+		int  _buttonCount;
 		
 };
 

@@ -31,6 +31,11 @@ void DocumentInterface::setDocumentModified(bool newValue)
 	{
 		_isDocumentModified = newValue;
 		updateMainWindowTitle();
+		if(newValue)
+		{
+		    //placed here for performance
+		    _mainWindow->setCommandEnabled(ID_EDIT_UNDO, true);
+		}  		
 	}
 }
 
@@ -189,7 +194,6 @@ void DocumentInterface::onDocumentOpen()
 				delete ex;
 			}
 		}
-	
 	}
 }
 

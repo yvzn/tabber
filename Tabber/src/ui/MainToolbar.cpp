@@ -36,11 +36,11 @@ void MainToolbar::create(HWND hParentWindow)
     addBitmapParams.nID = IDB_STD_SMALL_COLOR;
     SendMessage(_hWindow, TB_ADDBITMAP, 0, (LPARAM)&addBitmapParams); 
     
-    int buttonCount = 9;
+    _buttonCount = 9;
     
-   	TBBUTTON* buttons = new TBBUTTON[buttonCount];
+   	TBBUTTON* buttons = new TBBUTTON[_buttonCount];
     ZeroMemory(buttons, sizeof(buttons));
-	for(int index=0; index<buttonCount; ++index)
+	for(int index=0; index<_buttonCount; ++index)
 	{
 	    buttons[index].fsState = TBSTATE_ENABLED;
 	    buttons[index].fsStyle = TBSTYLE_BUTTON;	
@@ -71,7 +71,7 @@ void MainToolbar::create(HWND hParentWindow)
     buttons[8].iBitmap = STD_PASTE;
     buttons[8].idCommand = ID_EDIT_PASTE;
 
-    SendMessage(_hWindow, TB_ADDBUTTONS, buttonCount, (LPARAM)buttons);
+    SendMessage(_hWindow, TB_ADDBUTTONS, _buttonCount, (LPARAM)buttons);
     
     delete [] buttons;
 }
@@ -94,3 +94,16 @@ RECT MainToolbar::getSize()
 	
 	return windowRect;
 }
+
+
+/**
+ * Enables/Disables all the buttons that correspond to the specified command
+ */
+void MainToolbar::setCommandEnabled(int commandId, bool isCommandEnabled)
+{
+    assert(_hWindow != NULL);
+
+    LPARAM enableFlag = (LPARAM)MAKELONG(isCommandEnabled ? TBSTATE_ENABLED	: TBSTATE_INDETERMINATE, 0);
+    SendMessage(_hWindow, TB_SETSTATE, (WPARAM)commandId, enableFlag);   
+}
+

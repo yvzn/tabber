@@ -1,5 +1,4 @@
 #include "NotifyMessage.h"
-#include "../ui/MainWindow.h"
 
 
 /**
@@ -12,25 +11,6 @@ void NotifyMessage::publicError(const char* errorMsg)
 		errorMsg,
 		"An error occured !",
 		MB_ICONERROR | MB_OK );
-}
-
-
-void NotifyMessage::debug(const char* format, ...)
-{
-    va_list ap;
-    char* buffer = new char[1000];
-    
-    va_start(ap, format);
-    wvsprintf(buffer, format, ap );
-    va_end(ap);
-    
-	MessageBox (
-		HWND_DESKTOP,
-		buffer,
-		"Debug : Notification",
-		MB_ICONEXCLAMATION | MB_OK );    
-		
-	delete [] buffer;
 }
 
 

@@ -136,7 +136,7 @@ LRESULT CALLBACK ChordButtonsPanel::handleMessage (
 {
     if(message == WM_COMMAND && LOWORD(wParam) >= IDC_FIRST_CHORD)
     {
-		NotifyMessage::debug("%d", LOWORD(wParam));
+		DebugWindow::trace("%d", LOWORD(wParam));
 	}
 	else
 	{

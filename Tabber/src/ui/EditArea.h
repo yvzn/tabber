@@ -24,12 +24,17 @@ class EditArea
 
 		void doCommand(UINT );
 
-		void setFont(const LOGFONT&);
+		void setFont  (const LOGFONT&);
+		void setFocus ();
 
 	protected:
 
 		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
 		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
+
+		void onKeyUp(int );
+		void onSelectionChange();
+		void onDocumentModified();
 
 	protected:
 

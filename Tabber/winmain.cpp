@@ -22,8 +22,11 @@ int WINAPI WinMain (
 	
 		while(GetMessage(&msg, NULL, 0, 0) > 0)
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+   			if(!application->translateAccelerator(&msg)) // handle keyboard shortcuts
+			{
+   				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 	}
 	catch(RuntimeException* exception)
@@ -35,6 +38,6 @@ int WINAPI WinMain (
 	delete application;
 
 DEBUG_STOP;
-	
+
 	return msg.wParam;
 }

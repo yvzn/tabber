@@ -12,6 +12,7 @@ ChordGroup::ChordGroup(const char* groupName)
 
 ChordGroup::~ChordGroup()
 {
+    delete _name;
 	OBJECT_DELETED;
 }
 

@@ -28,7 +28,7 @@ BOOL CALLBACK AboutDialog::handleMessage(
 			if(hTime != NULL)
 			{
 				SetWindowText(hTime, __DATE__ " " __TIME__);
-			}			
+			}
         	return TRUE;
 		}
       
@@ -47,7 +47,7 @@ BOOL CALLBACK AboutDialog::handleMessage(
       	
       	case WM_CLOSE:
   	    {
-  	        EndDialog(hWindow, IDOK);
+  	        EndDialog(hWindow, IDCANCEL);
   	        break;
 		}
 		

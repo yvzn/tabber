@@ -40,7 +40,7 @@ void DynamicPointerArray<Type>::addElement(Type* newElement)
 		tempArray = new Type* [_arraySize];
 		CopyMemory(tempArray, _values, _elementCount * sizeof(Type*));
 
-  		GlobalFree(_values);
+  		delete [] _values;
   		_values = tempArray;		
 	}
 	_values[_elementCount] = newElement;

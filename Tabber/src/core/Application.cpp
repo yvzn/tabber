@@ -33,6 +33,8 @@ void Application::create(HINSTANCE hApplicationInstance)
 		_chords->load();
 		
 		_mainWindow->create(hApplicationInstance);
+
+		_accelerators = LoadAccelerators(hApplicationInstance, MAKEINTRESOURCE(IDR_ACCELERATORS));
 	}
 	catch(RuntimeException* ex)
 	{
@@ -47,14 +49,16 @@ void Application::show(int showState) const
 }
 
 
-ApplicationSettings* Application::getSettings()
+/**
+ * Handles (translates and dispatches) keyboard shortcuts
+ * @param message system message to translate
+ * @return true if message has been correctly identified and handled as a shortcut
+ */
+bool Application::translateAccelerator(MSG* message)
 {
-	return _settings;
-}
-
-
-ChordDefinitions* Application::getChordDefinitions()
-{
-	return _chords;
+	return TranslateAccelerator(
+ 		_mainWindow->getWindowHandle(),
+   		_accelerators,
+   		message );
 }
 

@@ -5,7 +5,7 @@ RuntimeException::RuntimeException (
 	const char* executionContext,
  	const char* errorMessage )
 {
-	setStackTrace(executionContext, errorMessage, FALSE);
+	setStackTrace(executionContext, errorMessage, false);
 	OBJECT_CREATED;
 }
 
@@ -18,7 +18,7 @@ RuntimeException::RuntimeException (
 	const char*        executionContext,
 	RuntimeException*  sourceException )
 {
-	setStackTrace(executionContext, sourceException->getStackTrace(), TRUE);
+	setStackTrace(executionContext, sourceException->getStackTrace(), true);
 	
 	//okay boy, I've registered your information, you can gow now
 	delete sourceException;
@@ -37,7 +37,7 @@ RuntimeException::~RuntimeException()
 void RuntimeException::setStackTrace(
 	const char* executionContext,
  	const char* errorMessage,
-  	BOOL   isHigherLevel )
+  	bool        isHigherLevel )
 {
 	UINT stackLength = 6 + lstrlen(executionContext) + lstrlen(errorMessage);
 	if(!isHigherLevel)	stackLength++;
