@@ -24,8 +24,8 @@ class EditArea
 
 		void doCommand(UINT );
 
-		void setFont  (const LOGFONT&);
-		void setFocus ();
+		void setFont       (const LOGFONT& );
+		void setFocus      ( )              ;
 
 	protected:
 
@@ -43,7 +43,7 @@ class EditArea
 		WNDPROC  _superClassWindowProc;
 		HWND     _hWindow;
 		HFONT    _displayFont;
-
+		
 };
 
 #endif // EDITAREA_H

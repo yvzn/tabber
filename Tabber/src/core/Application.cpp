@@ -4,9 +4,9 @@
 
 Application::Application()
 {
-	_settings    = new ApplicationSettings();
-	_chords      = new ChordDefinitions();
-	_mainWindow  = new MainWindow(this);
+	_settings     = new ApplicationSettings();
+	_chords       = new ChordDefinitions();
+	_mainWindow   = new MainWindow(this);
 	OBJECT_CREATED;
 }
 
@@ -49,6 +49,45 @@ void Application::show(int showState) const
 }
 
 
+void Application::processCommandLine(const char* commandLine)
+{
+    int length = lstrlen(commandLine);
+    if(length > 0)
+    {
+	    //try to parse commandLine as a file name and then open it
+    	char* buffer = new char[length];
+    	char* fileName;
+    
+    	lstrcpy(buffer, commandLine);
+    
+    	//Win32's long file names are surrounded by quotes (")
+    	if(buffer[0] == '\"')
+    	{
+	        fileName = &buffer[1];
+	        
+            //find the other quote and terminate string there
+            int endingQuotePos=2;
+            while(endingQuotePos<length && buffer[endingQuotePos] != '\"')
+            {
+                ++endingQuotePos;
+    		}
+            if(endingQuotePos<length)
+            {
+    			buffer[endingQuotePos] = '\0';
+    		}
+    	}
+    	else
+    	{
+    		fileName = buffer;
+    	}
+
+    	_mainWindow->getDocumentInterface()->onDocumentOpen(fileName);
+
+    	delete [] buffer;
+    }
+}
+
+
 /**
  * Handles (translates and dispatches) keyboard shortcuts
  * @param message system message to translate
@@ -61,4 +100,6 @@ bool Application::translateAccelerator(MSG* message)
    		_accelerators,
    		message );
 }
+
+
 

@@ -45,19 +45,6 @@ MainWindow::~MainWindow()
  */
 void MainWindow::create(HINSTANCE hApplicationInstance)
 {
-	const RECT windowRect = _application->getSettings()->getMainWindowRect();
-	int x, y, width, height;
-	if(windowRect.top < 0)
-	{
-		// rect is not valid, use defaults values	
-		x = y = width = height = CW_USEDEFAULT;
-	}
-	else
-	{
-		x = windowRect.left; width = windowRect.right - windowRect.left;
-		y = windowRect.top; height = windowRect.bottom - windowRect.top;
-	}
-
 	WNDCLASSEX wndClass;
 	ZeroMemory(&wndClass, sizeof(wndClass));
     wndClass.cbSize        = sizeof(WNDCLASSEX);
@@ -76,11 +63,11 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     }
 
     _hWindow = CreateWindowEx (
-        0,
+        WS_EX_ACCEPTFILES,
         WINDOW_CLASS_NAME,
         "Untitled - Tabber",
         WS_OVERLAPPEDWINDOW, 
-        x, y, width, height,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         HWND_DESKTOP,
         NULL,
         hApplicationInstance,
@@ -98,9 +85,9 @@ void MainWindow::show(int showState)
 {
 	assert(_hWindow != NULL);
 
-    ShowWindow(
-    	_hWindow,
- 		_application->getSettings()->getMainWindowMaximizedState() ? SW_MAXIMIZE : showState );
+    _settingsInterface->applySettings();
+    
+    ShowWindow(_hWindow, showState);
     UpdateWindow(_hWindow);
 }
 
@@ -133,8 +120,29 @@ void MainWindow::setCommandEnabled(int commandId, bool isCommandEnabled)
 }
 
 
+/**
+ * Updates menus and status bars so that they reflect typing mode changes
+ */
+void MainWindow::updateTypingMode(TypingMode mode)
+{
+	assert(_hWindow != NULL);
 
-// WIN32's MESSAGES HANDLING //////////////////////////////////////////////////
+	//menus
+	HMENU mainMenu = GetMenu(_hWindow);
+	CheckMenuRadioItem(
+ 		mainMenu,
+ 		ID_OPTIONS_TYPING_INSERT,
+ 		ID_OPTIONS_TYPING_SPECIAL,
+ 		GetCommandId(mode),
+ 		MF_BYCOMMAND );
+
+	//status
+	_status->updateTypingMode(mode);
+}
+
+
+
+// WIN32's MESSAGES HANDLING (DISPATCHERS) ////////////////////////////////////
 
 
 /**
@@ -222,6 +230,12 @@ LRESULT CALLBACK MainWindow::handleMessage(
     		break;
         }
         
+        case WM_DROPFILES:
+		{
+			onDropFiles((HDROP)wParam);
+			break;
+		}
+        
         default:
         {
             return DefWindowProc(hWindow, message, wParam, lParam);
@@ -231,79 +245,6 @@ LRESULT CALLBACK MainWindow::handleMessage(
 }
  
  
-/**
- * @param hPrecreateWindow on window creation, internal pointer to window handle is not yet available, so I use the one privided by WindowProc
- */
-void MainWindow::onCreate(HWND hPrecreateWindow)
-{
-	try
-	{
-		//load view
-		_toolbar->create(hPrecreateWindow);
-		_status->create(hPrecreateWindow);
-		_chordsToolbar->create(hPrecreateWindow);
-		_editArea->create(hPrecreateWindow);		
-	}
-	catch(RuntimeException* ex)
-	{
-		throw new RuntimeException("MainWindow::onCreate", ex);
-	}
-}
- 
-
-void MainWindow::onClose()
-{
-	assert(_hWindow != NULL);
-	
-	if(_documentInterface->continueIfDocumentModified())
-	{
-		//save settings
-		RECT windowRect;
-		GetWindowRect(_hWindow, &windowRect);
-	
-		ApplicationSettings* appSettings = _application->getSettings();
-		appSettings->setMainWindowRect(windowRect);
-		appSettings->setMainWindowMaximizedState(IsZoomed(_hWindow) > 0);
-		appSettings->save();
-	
-		DestroyWindow(_hWindow);
-	}
-}
-
-
-void MainWindow::onSize()
-{
-	assert(_hWindow != NULL);
-
-	//toolbar and status bar can position/resize themselves automatically
-	_toolbar->resize();
-	_status->resize();
-	
-	//retrieve auto-resize results
-	RECT toolbarRect = _toolbar->getSize();
-	RECT statusRect = _status->getSize();
-
-	RECT clientRect;
-	GetClientRect(_hWindow, &clientRect);
-
- 	//position child windows: chords toolbar
- 	RECT chordsToolbarRect;
- 	chordsToolbarRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
- 	chordsToolbarRect.top = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
- 	chordsToolbarRect.left = clientRect.left;
- 	chordsToolbarRect.right = clientRect.right;
-	_chordsToolbar->resize(chordsToolbarRect);
-	
-	//edit area
-	RECT editAreaRect;
-	editAreaRect.bottom = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
-	editAreaRect.top = toolbarRect.bottom - toolbarRect.top;
-	editAreaRect.left = clientRect.left;
- 	editAreaRect.right = clientRect.right;
-	_editArea->resize(editAreaRect);
-}
-
-
 void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 {
 	switch(LOWORD(wParam))
@@ -367,7 +308,21 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		    _settingsInterface->onChooseFont();
 		    break;
 		}
-      
+		
+		case ID_OPTIONS_TYPING_TOGGLE:
+		{
+			_settingsInterface->onToggleTypingMode();
+			break;
+		}
+
+		case ID_OPTIONS_TYPING_INSERT:
+		case ID_OPTIONS_TYPING_OVERWRITE:
+      	case ID_OPTIONS_TYPING_SPECIAL:
+		{
+			_settingsInterface->onChangeTypingMode(GetTypingMode(wParam));
+			break;
+		}
+
 		case ID_HELP_ABOUT:
 		{
 		    AboutDialog::show(_hWindow);
@@ -402,6 +357,92 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 			break;
 		}
 	}
+}
+
+
+
+// WIN32's MESSAGES HANDLING (ACTIONS) ////////////////////////////////////////
+
+
+/**
+ * @param hPrecreateWindow on window creation, internal pointer to window handle is not yet available, so I use the one privided by WindowProc
+ */
+void MainWindow::onCreate(HWND hPrecreateWindow)
+{
+	try
+	{
+		//load view
+		_toolbar->create(hPrecreateWindow);
+		_status->create(hPrecreateWindow);
+		_chordsToolbar->create(hPrecreateWindow);
+		_editArea->create(hPrecreateWindow);
+	}
+	catch(RuntimeException* ex)
+	{
+		throw new RuntimeException("MainWindow::onCreate", ex);
+	}
+}
+
+
+void MainWindow::onClose()
+{
+	assert(_hWindow != NULL);
+
+	if(_documentInterface->continueIfDocumentModified())
+	{
+		_settingsInterface->saveSettings();
+
+		DestroyWindow(_hWindow);
+	}
+}
+
+
+void MainWindow::onSize()
+{
+	assert(_hWindow != NULL);
+
+	//toolbar and status bar can position/resize themselves automatically
+	_toolbar->resize();
+	_status->resize();
+
+	//retrieve auto-resize results
+	RECT toolbarRect = _toolbar->getSize();
+	RECT statusRect = _status->getSize();
+
+	RECT clientRect;
+	GetClientRect(_hWindow, &clientRect);
+
+ 	//position child windows: chords toolbar
+ 	RECT chordsToolbarRect;
+ 	chordsToolbarRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
+ 	chordsToolbarRect.top = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+ 	chordsToolbarRect.left = clientRect.left;
+ 	chordsToolbarRect.right = clientRect.right;
+	_chordsToolbar->resize(chordsToolbarRect);
+
+	//edit area
+	RECT editAreaRect;
+	editAreaRect.bottom = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+	editAreaRect.top = toolbarRect.bottom - toolbarRect.top;
+	editAreaRect.left = clientRect.left;
+ 	editAreaRect.right = clientRect.right;
+	_editArea->resize(editAreaRect);
+}
+
+
+void MainWindow::onDropFiles(HDROP droppedFiles)
+{
+    char* fileName = new char[MAX_PATH];
+    
+ 	int droppedFilesCount = DragQueryFile(droppedFiles, 0xFFFFFFFF, fileName, MAX_PATH);
+	if(droppedFilesCount > 0)
+	{
+    	//get the first dropped file and open it
+    	DragQueryFile(droppedFiles, 0, fileName, MAX_PATH);
+    	_documentInterface->onDocumentOpen(fileName);
+	}
+    
+    delete [] fileName;
 }
 
 

@@ -16,14 +16,14 @@ class Application
 		Application();
 		virtual ~Application();
 
-		void create  (HINSTANCE )       ;
+		void create  (HINSTANCE ) ;
 		void show    (int )       const ;
-		
-		inline MainWindow*          getMainwindow       ( ) { return _mainWindow;   }
+
+		void processCommandLine (const char* );
+		bool translateAccelerator (MSG* );
+
 		inline ApplicationSettings* getSettings         ( ) { return _settings;     }
 		inline ChordDefinitions*    getChordDefinitions ( ) { return _chords;       }
-
-		bool translateAccelerator(MSG* );
 
 	protected:
 	

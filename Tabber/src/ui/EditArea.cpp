@@ -47,12 +47,6 @@ void EditArea::create(HWND hParentWindow)
     
     //store *this pointer in window handle so that I can access class variables and methods
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
-
-	LOGFONT font;
- 	CopyMemory(&font, &_mainWindow->getApplication()->getSettings()->getEditAreaFont(), sizeof(font));
-    //as I store size units in points in the Settings, I need a conversion from point size to logical units here
-	font.lfHeight = -MulDiv(font.lfHeight, GetDeviceCaps(GetDC(_mainWindow->getWindowHandle()), LOGPIXELSY), 72);
-	setFont(font);
 }
 
 
@@ -90,7 +84,6 @@ void EditArea::setFocus()
 	assert(_hWindow != NULL);
 	SetFocus(_hWindow);
 }
-
 
 
 // CONTENT MANAGEMENT /////////////////////////////////////////////////////////
@@ -382,6 +375,8 @@ void EditArea::onDocumentModified()
 {
 	_mainWindow->getDocumentInterface()->setDocumentModified(true);
 }
+
+
 
 
 

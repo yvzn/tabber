@@ -19,6 +19,7 @@ int WINAPI WinMain (
 	{
 		application->create(hThisInstance);
 		application->show(nCmdShow);
+		application->processCommandLine(lpCmdLine);
 	
 		while(GetMessage(&msg, NULL, 0, 0) > 0)
 		{

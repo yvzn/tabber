@@ -20,16 +20,18 @@ class DocumentInterface
 		void setDocumentModified(bool);
 		bool continueIfDocumentModified();		
 		
-		void onNewDocument();
-		bool onDocumentSave();
-		bool onDocumentSaveAs();
-		void onDocumentOpen();
+		void onNewDocument    ( );
+		bool onDocumentSave   ( );
+		bool onDocumentSaveAs ( );
+		void onDocumentOpen   ( );
+		void onDocumentOpen   (const char* );
 
 	protected:
 
 		void blankDocumentFlags();
 		void updateMainWindowTitle();
 		void updateFileName();
+		void loadSpecifiedDocument();
 	
 	protected:
 

@@ -33,21 +33,26 @@ class MainWindow
 		inline EditArea*          getEditArea          () { return _editArea;          }
 		inline DocumentInterface* getDocumentInterface () { return _documentInterface; }
 		inline HWND&              getWindowHandle      () { return _hWindow;           }
-		
+
+		void updateTypingMode(TypingMode );
+
 	public:
 	
 		static const char APPLICATION_NAME[];
+		// No description
 		
 	protected:
 
 		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
 		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 
+		void onCommand  (WPARAM , LPARAM );
+		void onNotify   (WPARAM , LPARAM );
+
 		void onCreate   (HWND );
 		void onClose    ( );
 		void onSize     ( );
-		void onCommand  (WPARAM , LPARAM );
-		void onNotify   (WPARAM , LPARAM );
+		void onDropFiles(HDROP );
 
 	protected:
 

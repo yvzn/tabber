@@ -18,8 +18,13 @@ class SettingsInterface
 		SettingsInterface(MainWindow* );
 		~SettingsInterface();
 
+		void applySettings();
+		void saveSettings();
+
 		void onChooseFont();
-		
+		void onChangeTypingMode(TypingMode );
+		void onToggleTypingMode( );
+
 	protected:
 	    
 	    MainWindow* _mainWindow;

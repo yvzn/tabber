@@ -3,12 +3,14 @@
 
 StatusBar::StatusBar()
 {
+    _typingModeString = new char[4];
 	OBJECT_CREATED;
 }
 
 
 StatusBar::~StatusBar()
 {
+    delete [] _typingModeString;
 	OBJECT_DELETED;
 }
 
@@ -28,8 +30,8 @@ void StatusBar::create(HWND hParentWindow)
 		throw new RuntimeException("StatusBar::create", "Could not create main status bar");	
 	}
 
-    int partWidths[] = {-1};
-    SendMessage(_hWindow, SB_SETPARTS, sizeof(partWidths)/sizeof(int), (LPARAM)partWidths);
+    int partsRightBorderPositions[] = {30, 60, -1};
+    SendMessage(_hWindow, SB_SETPARTS, sizeof(partsRightBorderPositions)/sizeof(int), (LPARAM)partsRightBorderPositions);
 }
 
 
@@ -41,13 +43,6 @@ void StatusBar::resize()
 }
 
 
-void StatusBar::setTextInPart(int indexOfPart, const char* newPartText)
-{
-	assert(_hWindow != NULL);
-    PostMessage(_hWindow, SB_SETTEXT, (WPARAM)indexOfPart, (LPARAM)newPartText);
-}
-
-
 RECT StatusBar::getSize()
 {
 	assert(_hWindow != NULL);
@@ -56,5 +51,38 @@ RECT StatusBar::getSize()
 	GetWindowRect(_hWindow, &windowRect);
 	
 	return windowRect;
+}
+
+
+void StatusBar::setTextInPart(int indexOfPart, const char* newPartText)
+{
+	assert(_hWindow != NULL);
+    PostMessage(_hWindow, SB_SETTEXT, (WPARAM)indexOfPart, (LPARAM)newPartText);
+}
+
+
+void StatusBar::updateTypingMode(TypingMode typingMode)
+{
+	switch(typingMode)
+	{
+		case TYPING_OVERWRITE:
+      	{
+			lstrcpy(_typingModeString, "OVR");
+			break;
+		}
+
+		case TYPING_SPECIAL:
+      	{
+			lstrcpy(_typingModeString, "SPL");
+			break;
+		}
+
+		default:
+      	{
+			lstrcpy(_typingModeString, "INS");
+			break;
+		}
+	}
+	setTextInPart(0, _typingModeString);
 }
 

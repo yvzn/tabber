@@ -180,23 +180,43 @@ void DocumentInterface::onDocumentOpen()
 	    _fileDialogOptions.hwndOwner = _mainWindow->getWindowHandle();
 		if(GetOpenFileName(&_fileDialogOptions))
 		{
-			try
-			{
-				_mainWindow->getEditArea()->loadContentFrom(_filePathAndName);
-		        _isFileLoaded = true;
-				_isDocumentModified = false;			
-		        updateFileName();
-				updateMainWindowTitle();			
-			}
-			catch(RuntimeException* ex)
-			{
-				NotifyMessage::publicError("Could not open file !");
-				delete ex;
-			}
+        	loadSpecifiedDocument();
 		}
 	}
 }
 
+
+void DocumentInterface::onDocumentOpen(const char* fileName)
+{
+	if(continueIfDocumentModified())
+	{
+     	lstrcpy(_filePathAndName, fileName);
+		loadSpecifiedDocument();
+	}
+}
+
+
+/**
+ * Loads the document specified in _filePathAndName member. An error message is displayed if operation fails.
+ */
+void DocumentInterface::loadSpecifiedDocument()
+{
+	assert(lstrlen(_filePathAndName) > 0);
+	
+	try
+	{
+		_mainWindow->getEditArea()->loadContentFrom(_filePathAndName);
+	    _isFileLoaded = true;
+		_isDocumentModified = false;
+	    updateFileName();
+		updateMainWindowTitle();
+	}
+	catch(RuntimeException* ex)
+	{
+		NotifyMessage::publicError("Could not open file !");
+		delete ex;
+	}
+}
 
 /**
  * Updates _fileName pointer (a substring of _filePathAndName)
