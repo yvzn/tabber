@@ -96,7 +96,7 @@ bool Application::translateAccelerator(MSG* message)
 	return TranslateAccelerator(
  		_mainWindow->getWindowHandle(),
    		_accelerators,
-   		message );
+   		message ) == TRUE;
 }
 
 

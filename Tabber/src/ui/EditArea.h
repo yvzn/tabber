@@ -3,7 +3,7 @@
 
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
-#include "../ui/EditionHeuristics.h"
+#include "../ui/EditionToolkit.h"
 
 /* forward */ class MainWindow;
 
@@ -28,10 +28,11 @@ class EditArea
 		void setFont       (const LOGFONT& );
 		void setFocus      ( )              ;
 
-		void onSelectAll   ( );
-		void onDelete      ( );
-		void onInsertStaff ( );
-		
+		void onSelectAll    ( );
+		void onDelete       ( );
+		void onInsertStaff  ( );
+		void onInsertTuning ( );
+
 		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
 	protected:
@@ -53,9 +54,10 @@ class EditArea
 		HWND     _hWindow;
 		HFONT    _displayFont;
 		
-		EditionHeuristics* _heuristics;
+		EditionToolkit* _toolkit;
 
 };
+
 
 #endif // EDITAREA_H
 

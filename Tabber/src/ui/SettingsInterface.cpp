@@ -55,7 +55,7 @@ void SettingsInterface::applySettings()
 	//guitar tunings (requires menu item creation)
 	HMENU mainMenu = _mainWindow->getMenu();
 	TuningDefinitions* tunings = _mainWindow->getApplication()->getTuningDefinitions();
-	int tuningCount = tunings->getTuningCount();
+	unsigned int tuningCount = tunings->getTuningCount();
  	for(TuningIndex index=0; index<tuningCount; ++index)
  	{
 		InsertMenu(

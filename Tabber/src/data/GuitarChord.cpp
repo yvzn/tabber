@@ -85,7 +85,7 @@ void GuitarChord::createExtendedChord(const char* chordNotes)
        		_notes[currentNoteIndex] = new char[bufferLength+1];
        		lstrcpy(_notes[currentNoteIndex], buffer);
 
-			_width >?= bufferLength; // affect if lower than
+			if(_width < bufferLength) _width = bufferLength;
 
        		bufferIndex = 0;
 			buffer[bufferIndex] = '\0';

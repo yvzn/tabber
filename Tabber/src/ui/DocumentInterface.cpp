@@ -68,6 +68,7 @@ void DocumentInterface::onNewDocument()
 	{
 		blankDocumentFlags();
 		setDocumentModified(false);
+		updateMainWindowTitle();
 		_mainWindow->getEditArea()->wipeContent();
 	}
 }
@@ -235,7 +236,7 @@ void DocumentInterface::updateFileName()
 		_fileName -= sizeof(char);
 	}
 	
-	//move forward to remove the leading backslash \\
+	//move forward to remove the leading backslash
 	if(_fileName[0] == '\\')
 	{
 		_fileName += sizeof(char);

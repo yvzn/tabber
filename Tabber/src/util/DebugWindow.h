@@ -32,6 +32,7 @@ class DebugWindow
 
 
 #define __trace DebugWindow::trace
+#define __alert DebugWindow::alert
 
 
 #endif // DEBUGWINDOW_H

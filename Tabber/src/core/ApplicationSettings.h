@@ -20,7 +20,7 @@ class ApplicationSettings
         inline bool           isMainWindowMaximized       () const { return _isMainWindowMaximized;    }
 		inline const LOGFONT& getEditAreaFont             () const { return _editAreaFont;             }
 		inline TypingMode     getTypingMode               () const { return _typingMode;               }
-		inline TuningIndex    getSelectedTuningIndex      () const { return _tuningIndex;              }
+		inline TuningIndex    getSelectedTuningIndex      () const { return _tuningIndex;              } //< @return 0 if no tuning is selected
 		inline bool           isChordModeEnabled (ChordMode mode) const { return _isChordModeEnabled[mode]; }
 		inline unsigned int   getStaffWidth               () const { return _staffWidth;               }
 		inline unsigned int   getChordDepth               () const { return _chordDepth;               }

@@ -10,7 +10,7 @@ EditArea::EditArea(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
 	_displayFont = NULL;
-	_heuristics = new EditionHeuristics(this);
+	_toolkit = new EditionToolkit(this);
 	OBJECT_CREATED;
 }
 
@@ -18,7 +18,7 @@ EditArea::EditArea(MainWindow* parentWindow)
 EditArea::~EditArea()
 {
 	if(_displayFont != NULL) DeleteObject(_displayFont);
-	delete _heuristics;
+	delete _toolkit;
 	OBJECT_DELETED;
 }
 
@@ -49,8 +49,8 @@ void EditArea::create(HWND hParentWindow)
     //store *this pointer in window handle so that I can access class members later
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
     
-    //initialise heuristics
-	_heuristics->setWindowHandle(_hWindow);
+    //initialise toolkit
+	_toolkit->setWindowHandle(_hWindow);
 }
 
 
@@ -232,6 +232,9 @@ LRESULT CALLBACK EditArea::handleMessage (
     WPARAM wParam,
     LPARAM lParam )
 {
+	bool selectionChanged = false;
+	bool documentModified = false;
+
     switch(message)
     {
         case WM_COPY:
@@ -243,15 +246,16 @@ LRESULT CALLBACK EditArea::handleMessage (
     	case WM_CUT:
 		{
 			_mainWindow->setCommandEnabled(ID_EDIT_PASTE, true);
-			onDocumentModified();
-			onSelectionChange();
+			documentModified = true;
+			selectionChanged = true;;
 			break;
 		}
 		
     	case WM_PASTE:
     	case WM_UNDO:
     	{
-         	onDocumentModified();
+         	documentModified = true;
+			selectionChanged = true;
 			break;
 		}
 
@@ -265,14 +269,14 @@ LRESULT CALLBACK EditArea::handleMessage (
         		ID_EDIT_UNDO,
           		SendMessage(hWindow, EM_CANUNDO, 0, 0) != 0 );
 
-			// I do check selection on focus to initialise a few things related on selection
-			onSelectionChange();
+			// I do check selection on focus to initialise a few related things
+			selectionChanged = true;
       		break;
   		}
 
 		case WM_LBUTTONUP:
   		{
-        	onSelectionChange();
+        	selectionChanged = true;
       		break;
   		}
 
@@ -286,8 +290,6 @@ LRESULT CALLBACK EditArea::handleMessage (
 		case WM_CHAR:
 		{
       		// characters keystrokes
-      		
- 			onDocumentModified();
  			switch(_mainWindow->getApplication()->getSettings()->getTypingMode())
  			{
 				case OVERWRITE:
@@ -302,6 +304,8 @@ LRESULT CALLBACK EditArea::handleMessage (
            		
 				default:
         		{
+		      		selectionChanged = true;
+ 					documentModified = true;
 					break;
 				}
 			}
@@ -310,7 +314,13 @@ LRESULT CALLBACK EditArea::handleMessage (
 	}
 
 	// most subclassed messages still require a call to super class's window proc
-	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
+	LRESULT result = CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
+
+	// I make those calls here because CallWindowProc may modify stuff (esp. selection)
+	if(documentModified) onDocumentModified();
+	if(selectionChanged) onSelectionChange();
+
+	return result;
 }
 
 
@@ -355,19 +365,21 @@ void EditArea::onKeyUp(int virtuakKeyCode)
 void EditArea::onSelectionChange()
 {
     assert(_hWindow != NULL);
+    DWORD selection = _toolkit->getSelection();
     
-    DWORD selection = SendMessage(_hWindow, EM_GETSEL, 0, 0L);
-    
-	bool isTextSelected = _heuristics->isTextSelected(selection);
+	if(_toolkit->isSelectionValid(selection))
+	{
+		bool isTextSelected = _toolkit->isTextSelected(selection);
 
-    _mainWindow->setCommandEnabled(ID_EDIT_COPY,   isTextSelected );
-    _mainWindow->setCommandEnabled(ID_EDIT_CUT,    isTextSelected );
-    _mainWindow->setCommandEnabled(ID_EDIT_DELETE, isTextSelected );
+	    _mainWindow->setCommandEnabled(ID_EDIT_COPY,   isTextSelected );
+	    _mainWindow->setCommandEnabled(ID_EDIT_CUT,    isTextSelected );
+	    _mainWindow->setCommandEnabled(ID_EDIT_DELETE, isTextSelected );
     
-    bool isInsideStaff = _heuristics->isInsideStaff(selection);
+	    bool isInsideStaff = _toolkit->isInsideStaff(selection);
 
-	_mainWindow->setCommandEnabled(ID_INSERT_BAR,    isInsideStaff );
-	_mainWindow->setCommandEnabled(ID_INSERT_TUNING, isInsideStaff );
+		_mainWindow->setCommandEnabled(ID_INSERT_BAR,    isInsideStaff );
+		_mainWindow->setCommandEnabled(ID_INSERT_TUNING, isInsideStaff );
+	}
 }
 
 
@@ -414,19 +426,19 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
 
 		default:
 		{
-            DWORD selection = SendMessage(_hWindow, EM_GETSEL, 0, 0);
+            DWORD selection = _toolkit->getSelection();
 
-            if (!_heuristics->isTextSelected(selection))
+            if (!_toolkit->isTextSelected(selection))
             {
 				//do not overtype at the end of a lines (otherwise it would remove \r and/or \n)
-				if(!_heuristics->doesSelectionEndLine(selection))
+				if(!_toolkit->doesSelectionEndLine(selection))
 				{
         			//expand selection by one character so that typing overwrites that extra character
 		            WORD  selStart  = LOWORD(selection);
 		            WORD  selEnd    = HIWORD(selection);
-		            
+
                		selEnd++;
-               		SendMessage(_hWindow, EM_SETSEL, selStart, selEnd);
+               		_toolkit->setSelection(selStart, selEnd);
 				}
             }
 
@@ -435,7 +447,10 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
 		}
 	}
 	
-	return CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+	LRESULT result = CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+	onSelectionChange();
+	onDocumentModified();
+	return result;
 }
 
 
@@ -444,67 +459,116 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
  */
 LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 {
-    if(_heuristics->isInsideStaff())
+    if(_toolkit->isInsideStaff())
     {
 		return FALSE;
 	}
 	else
 	{
-		return CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+		LRESULT result = CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+		onSelectionChange();
+		onDocumentModified();
+		return result;
 	}
 }
 
 
 
+// WIN32's MESSAGES HANDLING (INSERTIONS) /////////////////////////////////////
+
+
+/**
+ * Inserts an empty staff at cursor position (or nearby if not possible)
+ */
 void EditArea::onInsertStaff()
 {
 	assert(_hWindow != NULL);
 
-	_heuristics->moveToNextLine();
+	_toolkit->moveToNextLine();
 
 	ApplicationSettings* settings     = _mainWindow->getApplication()->getSettings();
 
-	//get guitar tuning
  	TuningIndex    tuningIndex  = settings->getSelectedTuningIndex();
 	bool           prefixTuning = tuningIndex > 0; // index 0 means no tuning
 	GuitarTuning*  tuning       = prefixTuning ? _mainWindow->getApplication()->getTuningDefinitions()->getTuningAt(tuningIndex-1) : NULL ;
 
-	//create / fill line buffer with '-'
-	int    lineSize     = settings->getStaffWidth();
-	char*  lineBuffer   = new char[lineSize + 1]; // +1 for the trailing '\0'
-	for(int pos=0; pos<lineSize; ++pos) lineBuffer[pos] = '-'; lineBuffer[lineSize] = '\0';
-
-	//create global buffer
 	int    staffHeight  = settings->getChordDepth();
-	char*  fullBuffer   = new char[6 /* "\r\n" x 3 */ + staffHeight * (lineSize + 2 /* "\r\n" */ ) + 1 /* "\0" */];
-	lstrcpy(fullBuffer, "\r\n\r\n");
+	int    staffWidth   = settings->getStaffWidth();
+	int    bufferSize   = 6 /* "\r\n" x 3 */ + staffHeight * (staffWidth + 2 /* "\r\n" */ );
+	char*  buffer       = new char[bufferSize + 1]; //+1 for the final '\0';
 
-	//push lines
+	//pre-fill -- with '-'s and CR+LFs
+	for(int pos=0; pos<bufferSize; ++pos) buffer[pos] = '-'; buffer[bufferSize] = '\0';
+	buffer[0] = '\r'; buffer[1] = '\n';
+	buffer[2] = '\r'; buffer[3] = '\n';
+	buffer[bufferSize-2] = '\r'; buffer[bufferSize-1] = '\n';
+
+	//pointer to the current line (starts after the leading "\r\n"s);
+	char* bufferLine = &buffer[4];
+
 	for(int string=0; string<staffHeight; ++string)
 	{
 		if(prefixTuning)
 		{
-   			for(int prefix=0; prefix<tuning->getWidth(); ++prefix) lineBuffer[prefix]=' '; // blanks the beginning
-
-			if(string<tuning->getNoteCount()) // adds tuning note, if defined
-			{
-				const char* note = tuning->getNote(tuning->getNoteCount() - string - 1); // notes order is reversed :/
-				lstrcpy(lineBuffer, note);
-				lineBuffer[lstrlen(note)] = ' '; // removes the '\0' at the end of note
-				lineBuffer[tuning->getWidth()] = '|';
-			}
+			_toolkit->copyNoteAtBufferStart(tuning, string, bufferLine);
 		}
 
-		lstrcat(fullBuffer, lineBuffer);
-		lstrcat(fullBuffer, "\r\n");
+		//move pointer and adds CR+LF
+		bufferLine += staffWidth * sizeof(char);
+		bufferLine[0] = '\r';
+		bufferLine[1] = '\n';
+		bufferLine += 2 * sizeof(char);
 	}
 
-	lstrcat(fullBuffer, "\r\n");
-	SendMessage(_hWindow, EM_REPLACESEL, (WPARAM)TRUE, (LPARAM)fullBuffer);
-
-	delete [] fullBuffer;
-	delete [] lineBuffer;
+	_toolkit->replaceSelection(buffer);
+	delete [] buffer;
 
     onSelectionChange();
 	onDocumentModified();
 }
+
+
+/**
+ * Inserts current guitar tuning at the beginning of staff line
+ */
+void EditArea::onInsertTuning()
+{
+	assert(_hWindow != NULL && _toolkit->isInsideStaff());
+
+	DWORD selection = _toolkit->getSelection();
+	_toolkit->moveToStaffStart(selection);
+
+ 	TuningIndex tuningIndex  = _mainWindow->getApplication()->getSettings()->getSelectedTuningIndex();
+
+	if(tuningIndex > 0) // index 0 means no tuning
+	{
+		GuitarTuning* tuning = _mainWindow->getApplication()->getTuningDefinitions()->getTuningAt(tuningIndex-1);
+		char*         buffer = new char[tuning->getWidth() + 1 /* '|' */ + 1 /* '\0' */];
+
+  		unsigned int lineIndex = _toolkit->getLineIndex(HIWORD(selection));
+  		unsigned int lineCount = _toolkit->getLineCount();
+
+		int tuningString = 0;
+		while(lineIndex < lineCount && _toolkit->isStaffLine(lineIndex))
+		{
+			unsigned int lineStart = _toolkit->getLineStart(lineIndex);
+			_toolkit->setSelection(lineStart, lineStart);
+
+			_toolkit->copyNoteAtBufferStart(tuning, tuningString, buffer);
+			buffer[tuning->getWidth()+1] = '\0';
+
+			_toolkit->replaceSelection(buffer);
+
+			++lineIndex;
+			++tuningString;
+		}
+
+		delete [] buffer;
+	}
+
+	onSelectionChange();
+	onDocumentModified();
+}
+
+
+
