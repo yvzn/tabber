@@ -3,6 +3,7 @@
 
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
+#include "../ui/PromptDialog.h"
 
 /* forward */ class MainWindow;
 
@@ -24,6 +25,11 @@ class SettingsInterface
 		void onChooseFont();
 		void onChangeTypingMode(TypingMode );
 		void onToggleTypingMode( );
+		void onChangeGuitarTuning(TuningIndex );
+		void onToggleChordMode(ChordMode );
+		void onChangeChordMode(ChordMode, bool);
+		void onChooseStaffWidth();
+		void onChooseChordDepth();
 
 	protected:
 	    

@@ -31,5 +31,8 @@ class DebugWindow
 };
 
 
+#define __trace DebugWindow::trace
+
+
 #endif // DEBUGWINDOW_H
 

@@ -6,7 +6,7 @@
 
 
 /**
- * A generic wrapper for ini files sequential parsing, mainly beacuse
+ * A generic tool to parse ini files sequentially, mainly beacuse
  * WinAPI parsing functions are a real pain in the ass. Not suitable for back
  * and forth parsing nor random access (in these cases, you would better use
  * GetPrivateProfile* )

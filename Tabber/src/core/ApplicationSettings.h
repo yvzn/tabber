@@ -2,7 +2,7 @@
 #define APPLICATIONSETTINGS_H
 
 #include "../util/utilities.h"
-#include "../ui/EditingModes.h"
+#include "../ui/EditionModes.h"
 
 
 class ApplicationSettings
@@ -16,26 +16,40 @@ class ApplicationSettings
 		void load ()       ;
 		void save () const ;
 
-		void setMainWindowRect           (const RECT&    );
-		void setMainWindowMaximizedState (bool           );
-		void setEditAreaFont             (const LOGFONT& );
-		void setEditAreaTypingMode       (TypingMode     );
-
 		inline const RECT&    getMainWindowRect           () const { return _mainWindowRect;           }
-        inline bool           getMainWindowMaximizedState () const { return _mainWindowMaximizedState; }
+        inline bool           isMainWindowMaximized       () const { return _isMainWindowMaximized;    }
 		inline const LOGFONT& getEditAreaFont             () const { return _editAreaFont;             }
-		inline TypingMode     getEditAreaTypingMode       () const { return _editAreaTypingMode;       }
+		inline TypingMode     getTypingMode               () const { return _typingMode;               }
+		inline TuningIndex    getSelectedTuningIndex      () const { return _tuningIndex;              }
+		inline bool           isChordModeEnabled (ChordMode mode) const { return _isChordModeEnabled[mode]; }
+		inline unsigned int   getStaffWidth               () const { return _staffWidth;               }
+		inline unsigned int   getChordDepth               () const { return _chordDepth;               }
+
+		inline void setMainWindowRect           (const RECT&    val) { CopyMemory(&_mainWindowRect, &val, sizeof(RECT));         }
+		inline void setMainWindowMaximized      (bool           val) { _isMainWindowMaximized = val;    }
+		inline void setEditAreaFont             (const LOGFONT& val) { CopyMemory(&_editAreaFont, &val, sizeof(_editAreaFont));  }
+		inline void setTypingMode               (TypingMode     val) { _typingMode = val;               }
+		inline void setSelectedTuningIndex      (TuningIndex    val) { _tuningIndex = val;              }
+		inline void setChordModeEnabled   (ChordMode mode, bool val) { _isChordModeEnabled[mode] = val; }
+		inline void setStaffWidth               (unsigned int   val) { _staffWidth = val;               }
+		inline void setChordDepth               (unsigned int   val) { _chordDepth = val;               }
 
 	protected:
 	
+		RECT        _mainWindowRect;
+		bool        _isMainWindowMaximized;
+		LOGFONT     _editAreaFont;
+		
+		TypingMode   _typingMode;
+		TuningIndex  _tuningIndex;
+		bool         _isChordModeEnabled[CHORD_MODE_COUNT];
+		unsigned int _staffWidth;
+		unsigned int _chordDepth;
+
+	private:
+
 		static const char APPLICATION_SETTINGS_FILE_NAME[];
-		
-		char _settingsFileFullName[MAX_PATH];
-		
-		RECT       _mainWindowRect;
-		bool       _mainWindowMaximizedState;
-		LOGFONT    _editAreaFont;
-		TypingMode _editAreaTypingMode;
+		             char _settingsFileFullName[MAX_PATH];
 
 };
 

@@ -4,6 +4,7 @@
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
 #include "../data/ChordDefinitions.h"
+#include "../data/TuningDefinitions.h"
 
 /* forward */ class MainWindow;
 
@@ -22,14 +23,16 @@ class Application
 		void processCommandLine (const char* );
 		bool translateAccelerator (MSG* );
 
-		inline ApplicationSettings* getSettings         ( ) { return _settings;     }
-		inline ChordDefinitions*    getChordDefinitions ( ) { return _chords;       }
+		inline ApplicationSettings* getSettings          ( ) { return _settings;     }
+		inline ChordDefinitions*    getChordDefinitions  ( ) { return _chords;       }
+		inline TuningDefinitions*   getTuningDefinitions ( ) { return _tunings;      }
 
 	protected:
 	
 		MainWindow*          _mainWindow; 
 		ApplicationSettings* _settings;
 		ChordDefinitions*    _chords;
+		TuningDefinitions*   _tunings;
 		HACCEL               _accelerators;
 
 };

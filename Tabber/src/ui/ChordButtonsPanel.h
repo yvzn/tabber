@@ -7,8 +7,7 @@
 
 
 /**
- * A basic container for buttons, with the ability to handle/propagate
- * WM_COMMANDs corresponding to chords.
+ * A basic container for buttons, with the ability to handle WM_COMMANDs corresponding to chords.
  */
 class ChordButtonsPanel
 {
@@ -42,10 +41,6 @@ class ChordButtonsPanel
 	
 		int _xNextButtonPosition;
 };
-
-
-// required because WindowProc must be static
-extern MainWindow* gMainWindow; 
 
 
 #endif // CHORDBUTTONSPANEL_H

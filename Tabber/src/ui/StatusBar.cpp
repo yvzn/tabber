@@ -3,7 +3,7 @@
 
 StatusBar::StatusBar()
 {
-    _typingModeString = new char[4];
+    _typingModeString = new char[11];
 	OBJECT_CREATED;
 }
 
@@ -30,7 +30,7 @@ void StatusBar::create(HWND hParentWindow)
 		throw new RuntimeException("StatusBar::create", "Could not create main status bar");	
 	}
 
-    int partsRightBorderPositions[] = {30, 60, -1};
+    int partsRightBorderPositions[] = {70, 100, -1};
     SendMessage(_hWindow, SB_SETPARTS, sizeof(partsRightBorderPositions)/sizeof(int), (LPARAM)partsRightBorderPositions);
 }
 
@@ -65,21 +65,21 @@ void StatusBar::updateTypingMode(TypingMode typingMode)
 {
 	switch(typingMode)
 	{
-		case TYPING_OVERWRITE:
+		case OVERWRITE:
       	{
-			lstrcpy(_typingModeString, "OVR");
+			lstrcpy(_typingModeString, "Overwrite");
 			break;
 		}
 
-		case TYPING_SPECIAL:
+		case SPECIAL:
       	{
-			lstrcpy(_typingModeString, "SPL");
+			lstrcpy(_typingModeString, "Special");
 			break;
 		}
 
 		default:
       	{
-			lstrcpy(_typingModeString, "INS");
+			lstrcpy(_typingModeString, "Insert");
 			break;
 		}
 	}

@@ -7,7 +7,8 @@ DocumentInterface::DocumentInterface(MainWindow* parentWindow)
 	_mainWindow = parentWindow;
 
 	blankDocumentFlags();
-	
+	_isDocumentModified = false;
+
 	ZeroMemory(&_fileDialogOptions, sizeof(_fileDialogOptions));
     _fileDialogOptions.lStructSize = sizeof(_fileDialogOptions);
     _fileDialogOptions.lpstrFilter = "Tablatures (*.tab;*.crd)\0*.tab;*.crd\0Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
@@ -31,11 +32,9 @@ void DocumentInterface::setDocumentModified(bool newValue)
 	{
 		_isDocumentModified = newValue;
 		updateMainWindowTitle();
-		if(newValue)
-		{
-		    //placed here for performance
-		    _mainWindow->setCommandEnabled(ID_EDIT_UNDO, true);
-		}  		
+
+	    //placed here for performance
+	    _mainWindow->setCommandEnabled(ID_EDIT_UNDO, newValue);
 	}
 }
 
@@ -45,7 +44,8 @@ void DocumentInterface::blankDocumentFlags()
 	lstrcpy(_filePathAndName, "Untitled");
 	_fileName = _filePathAndName;
 	_isFileLoaded = false;
-	_isDocumentModified = false;
+	//_isDocumentModified = false; this flag must be handled separately using
+ 	// setDocumentModified, because it involves more complex operations
 }
 
 
@@ -67,7 +67,7 @@ void DocumentInterface::onNewDocument()
 	if(continueIfDocumentModified())
 	{
 		blankDocumentFlags();
-		updateMainWindowTitle();
+		setDocumentModified(false);
 		_mainWindow->getEditArea()->wipeContent();
 	}
 }
@@ -77,15 +77,15 @@ bool DocumentInterface::continueIfDocumentModified()
 {
 	if(_isDocumentModified)
 	{
-		char message[MAX_PATH];
+		char message[20 + MAX_PATH];
 		lstrcpy(message, "Save changes to '");
 		lstrcat(message, _filePathAndName);
 		lstrcat(message, "' ?");
-		
+
     	int answer = MessageBox (
      		_mainWindow->getWindowHandle(),
        		message,
-         	MainWindow::APPLICATION_NAME,
+         	"Confirmation",
           	MB_ICONQUESTION | MB_YESNOCANCEL );
           	
       	if(answer == IDCANCEL)
@@ -160,7 +160,7 @@ bool DocumentInterface::onDocumentSaveAs()
 		}
 		catch(RuntimeException* ex)
 		{
-			NotifyMessage::publicError("Could not save file !\nMaybe file has \'read only\' attribute ?");
+			NotifyMessage::publicError("Could not save file !\nMaybe it has \'read only\' attribute set ?");
 			delete ex;
 			return false;
 		}
@@ -207,13 +207,13 @@ void DocumentInterface::loadSpecifiedDocument()
 	{
 		_mainWindow->getEditArea()->loadContentFrom(_filePathAndName);
 	    _isFileLoaded = true;
-		_isDocumentModified = false;
+		setDocumentModified(false);
 	    updateFileName();
 		updateMainWindowTitle();
 	}
 	catch(RuntimeException* ex)
 	{
-		NotifyMessage::publicError("Could not open file !");
+		NotifyMessage::publicError("Could not open file !\nMaybe it is used by another application ?");
 		delete ex;
 	}
 }

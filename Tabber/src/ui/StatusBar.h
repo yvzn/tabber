@@ -2,7 +2,7 @@
 #define STATUSBAR_H
 
 #include "../util/utilities.h"
-#include "../ui/EditingModes.h"
+#include "../ui/EditionModes.h"
 
 
 class StatusBar

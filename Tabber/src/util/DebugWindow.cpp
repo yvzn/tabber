@@ -173,7 +173,8 @@ void DebugWindow::writeln(const char* text)
     
 	//pre-pend the text at the beginning of output area
 	HWND hOutput = GetDlgItem(_hWindow, IDC_DEBUG_OUTPUT);
-	SendMessage(hOutput, EM_SETSEL, (WPARAM)-1, 0);
+	int end = SendMessage(hOutput, WM_GETTEXTLENGTH, 0, 0);
+	SendMessage(hOutput, EM_SETSEL, end, end);
 	SendMessage(hOutput, EM_REPLACESEL, (WPARAM)FALSE, (LPARAM)text);	
 	char CRLF[] = "\r\n";
 	SendMessage(hOutput, EM_REPLACESEL, (WPARAM)FALSE, (LPARAM)CRLF);	

@@ -3,25 +3,36 @@
 
 #include "../util/utilities.h"
 
-#define CHORD_DEPTH 6
-
 
 class GuitarChord
 {
 
 	public:
 
-		GuitarChord(LPCSTR , LPCSTR );
+		GuitarChord(const char* , const char* );
 		virtual ~GuitarChord();
 		
-		const char* getName  ()      const; 
-		const char* getNotes ()      const;
-		      char  getNote  (int )  const; 
+		inline const char* getName()      const { return _name;      }
+		inline int         getNoteCount() const { return _noteCount; }
 		
+		const char* getNote  (int n)  const { assert(n<_noteCount); return _notes[n];}
+		const char* getNotes ()       const;
+
+		int getWidth() const { return _width; }
+
 	protected:
 
-		char* _name;
-		char* _notes;
+		void createExtendedChord(const char* );
+
+	protected:
+
+		char*   _name;
+		char**  _notes;
+		int     _noteCount;
+		bool    _isExtended;
+		int     _width;      //< character count of the largest note in the tuning
+
+	    static char conversionBuffer[40];
 
 };
 

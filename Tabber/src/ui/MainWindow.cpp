@@ -71,7 +71,7 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
         HWND_DESKTOP,
         NULL,
         hApplicationInstance,
-        (void*)this //pass *this pointer to WM_NCCREATE (see onCommand)
+        (void*)this //pass instance pointer (*this) to WM_NCCREATE (see onCommand)
         );
 
     if(_hWindow == NULL)
@@ -104,40 +104,19 @@ void MainWindow::setWindowTitle(const char* newTitle)
 
 
 /**
- * Enables/Disables all the child controls that correspond to the specified command
+ * Enables/Disables any child control that correspond to the specified command
  */
 void MainWindow::setCommandEnabled(int commandId, bool isCommandEnabled)
 {
     assert(_hWindow != NULL);
     
-    //menus
+    // apply to menus
     HMENU mainMenu = GetMenu(_hWindow);
     int enableFlag = MF_BYCOMMAND | (isCommandEnabled ? MF_ENABLED : MF_GRAYED) ;
 	EnableMenuItem(mainMenu, commandId, enableFlag);
     
-    //toolbar
+    // apply to toolbar
     _toolbar->setCommandEnabled(commandId, isCommandEnabled);
-}
-
-
-/**
- * Updates menus and status bars so that they reflect typing mode changes
- */
-void MainWindow::updateTypingMode(TypingMode mode)
-{
-	assert(_hWindow != NULL);
-
-	//menus
-	HMENU mainMenu = GetMenu(_hWindow);
-	CheckMenuRadioItem(
- 		mainMenu,
- 		ID_OPTIONS_TYPING_INSERT,
- 		ID_OPTIONS_TYPING_SPECIAL,
- 		GetCommandId(mode),
- 		MF_BYCOMMAND );
-
-	//status
-	_status->updateTypingMode(mode);
 }
 
 
@@ -147,8 +126,10 @@ void MainWindow::updateTypingMode(TypingMode mode)
 
 /**
  * Win32's message handling function.
- * This function must be static in the WinAPI. But if so, it cannot access class
- * members. For convenience it then forwards message to class's real WindowProc.
+ * This function must be static in the WinAPI. But if so, it cannot access class's
+ * non-static members. For convenience it retrieves a class instance previsously
+ * stored in the window handle, and then forwards message to instance's WindowProc
+ * (which is non-static)
  */
 LRESULT CALLBACK MainWindow::forwardMessage (
     HWND hWindow,
@@ -158,12 +139,12 @@ LRESULT CALLBACK MainWindow::forwardMessage (
 {
     if (message == WM_NCCREATE)
     {
-        // when creating window, store the pointer to the window
-        // from lpCreateParams which was set in CreateWindow
+        // when creating window, store a pointer to current instance inside the window handle
+        // the pointer is retrieved using lpCreateParams, which was set in CreateWindow
         SetProp(hWindow, "CorrespondingObject", ((LPCREATESTRUCT(lParam))->lpCreateParams));
     }
 
-    // get the previously stored pointer to the window
+    // get the previously stored pointer to corresponding window instance
     MainWindow* mainWindow = (MainWindow*)GetProp(hWindow, "CorrespondingObject");
  
     if (mainWindow)
@@ -188,58 +169,22 @@ LRESULT CALLBACK MainWindow::handleMessage(
 {
     switch(message)
     {
-		case WM_CREATE:
-        {
-        	onCreate(hWindow);
-            break;
-        }
+		case WM_CREATE    :  onCreate(hWindow);           break;
+		case WM_CLOSE     :  onClose();                   break;
+        case WM_SIZE      :  onSize();                    break;
+    	case WM_COMMAND   :  onCommand(wParam, lParam);   break;
+        case WM_NOTIFY    :  onNotify(wParam, lParam);    break;
+        case WM_DROPFILES :  onDropFiles((HDROP)wParam);  break;
         
-		case WM_CLOSE:
-        {
-        	onClose();
-            break;
-        }
-        
-        case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            break;
-        }
-        
-        case WM_SIZE:
-        {
-        	onSize();
-        	break;
-        }
-        
-        case WM_SETFOCUS:
-        {
-			_editArea->setFocus();
-        	break;   
-        }    
-        
-    	case WM_COMMAND:
-    	{
-    		onCommand(wParam, lParam);
-    		break;
-    	}
-        
-        case WM_NOTIFY:
-        {
-    		onNotify(wParam, lParam);
-    		break;
-        }
-        
-        case WM_DROPFILES:
-		{
-			onDropFiles((HDROP)wParam);
-			break;
-		}
+        case WM_SETFOCUS  :  _editArea->setFocus();       break;
+
+        case WM_DESTROY   :  PostQuitMessage(0);          break;
         
         default:
-        {
-            return DefWindowProc(hWindow, message, wParam, lParam);
-        }
+    	{
+         	return DefWindowProc(hWindow, message, wParam, lParam);
+			break;
+		}
     }
     return 0;
 }
@@ -247,92 +192,49 @@ LRESULT CALLBACK MainWindow::handleMessage(
  
 void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 {
-	switch(LOWORD(wParam))
+    WORD commandId = LOWORD(wParam);
+    
+	switch(commandId)
 	{
-		case ID_APP_EXIT:
-		{
-			onClose();
-			break;
-		}
+		case ID_APP_EXIT: onClose(); break;
 		
-		case ID_FILE_NEW:
-		{
-			_documentInterface->onNewDocument();
-			break;
-		}
-
-		case ID_FILE_SAVE:
-		{
-			_documentInterface->onDocumentSave();
-			break;
-		}
+		case ID_FILE_NEW    : _documentInterface->onNewDocument();     break;
+		case ID_FILE_SAVE   : _documentInterface->onDocumentSave();    break;
+		case ID_FILE_SAVEAS : _documentInterface->onDocumentSaveAs();  break;
+		case ID_FILE_OPEN   : _documentInterface->onDocumentOpen();    break;
 		
-		case ID_FILE_SAVEAS:
-		{
-			_documentInterface->onDocumentSaveAs();
-			break;
-		}
+		case ID_EDIT_CUT        : _editArea->doCommand(WM_CUT);    break;
+		case ID_EDIT_COPY       : _editArea->doCommand(WM_COPY);   break;
+		case ID_EDIT_PASTE      : _editArea->doCommand(WM_PASTE);  break;
+		case ID_EDIT_UNDO       : _editArea->doCommand(WM_UNDO);   break;
+		case ID_EDIT_SELECT_ALL : _editArea->onSelectAll();        break;
+		case ID_EDIT_DELETE     : _editArea->onDelete();           break;
 		
-		case ID_FILE_OPEN:
-		{
-			_documentInterface->onDocumentOpen();
-			break;
-		}
-		
-		case ID_EDIT_CUT:
-		{
-			_editArea->doCommand(WM_CUT);
-			break;
-		}
+		case ID_INSERT_STAFF : _editArea->onInsertStaff(); break;
 
-		case ID_EDIT_COPY:
-		{
-			_editArea->doCommand(WM_COPY);
-			break;
-		}
+		case ID_OPTIONS_FONT              : _settingsInterface->onChooseFont();        break;
+		case ID_OPTIONS_STAFF_WIDTH       : _settingsInterface->onChooseStaffWidth(); break;
+		case ID_OPTIONS_STAFF_HEIGHT      : _settingsInterface->onChooseChordDepth(); break;
+		case ID_OPTIONS_TYPING_TOGGLE     : _settingsInterface->onToggleTypingMode();  break;
+		case ID_OPTIONS_TYPING_INSERT     :
+		case ID_OPTIONS_TYPING_OVERWRITE  :
+      	case ID_OPTIONS_TYPING_SPECIAL    : _settingsInterface->onChangeTypingMode(GetTypingMode(commandId)); break;
+      	case ID_OPTIONS_CHORD_EXTRA_SPACE :
+		case ID_OPTIONS_CHORD_NAME        :
+		case ID_OPTIONS_CHORD_ARPEGGIO    : _settingsInterface->onToggleChordMode(GetChordMode(commandId)); break;
 
-		case ID_EDIT_PASTE:
-		{
-			_editArea->doCommand(WM_PASTE);
-			break;
-		}
-
-		case ID_EDIT_UNDO:
-		{
-			_editArea->doCommand(WM_UNDO);
-			break;
-		}
-		
-		case ID_OPTIONS_FONT:
-		{
-		    _settingsInterface->onChooseFont();
-		    break;
-		}
-		
-		case ID_OPTIONS_TYPING_TOGGLE:
-		{
-			_settingsInterface->onToggleTypingMode();
-			break;
-		}
-
-		case ID_OPTIONS_TYPING_INSERT:
-		case ID_OPTIONS_TYPING_OVERWRITE:
-      	case ID_OPTIONS_TYPING_SPECIAL:
-		{
-			_settingsInterface->onChangeTypingMode(GetTypingMode(wParam));
-			break;
-		}
-
-		case ID_HELP_ABOUT:
-		{
-		    AboutDialog::show(_hWindow);
-		    break;
-		}
+		case ID_HELP_ABOUT : AboutDialog::show(_hWindow);break;
       
 		default:
 		{
-			if(LOWORD(wParam) > IDC_FIRST_CHORD)
-				DebugWindow::trace("MainWindow Command => %d ", LOWORD(wParam));
+			if(commandId >= ID_OPTIONS_TUNINGS_NONE)
+			{
+				_settingsInterface->onChangeGuitarTuning(GetTuningIndex(commandId));
+			}
+			else
+			{
+				//DebugWindow::trace("MainWindow::onCommand(%d)", commandId);
+			}
 			break;
 		}
 	}

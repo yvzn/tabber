@@ -21,7 +21,7 @@ SettingsInterface::~SettingsInterface()
 
 
 /**
- * Apply application's settings (such as window size, font, etc.) to the main window
+ * Once application's settings (such as window size, font, etc.) have been loaded, applies/displays them to/in the main window
  */
 void SettingsInterface::applySettings()
 {
@@ -40,7 +40,7 @@ void SettingsInterface::applySettings()
 	}
 	
 	//window's maximized state
-	if(settings->getMainWindowMaximizedState())
+	if(settings->isMainWindowMaximized())
  	{
        ShowWindow(hMainWindow, SW_MAXIMIZE);
 	}
@@ -52,8 +52,29 @@ void SettingsInterface::applySettings()
 	font.lfHeight = -MulDiv(font.lfHeight, GetDeviceCaps(GetDC(_mainWindow->getWindowHandle()), LOGPIXELSY), 72);
 	_mainWindow->getEditArea()->setFont(font);
 	
-	//edit area's typing mode
-	onChangeTypingMode(settings->getEditAreaTypingMode());
+	//guitar tunings (requires menu item creation)
+	HMENU mainMenu = _mainWindow->getMenu();
+	TuningDefinitions* tunings = _mainWindow->getApplication()->getTuningDefinitions();
+	int tuningCount = tunings->getTuningCount();
+ 	for(TuningIndex index=0; index<tuningCount; ++index)
+ 	{
+		InsertMenu(
+  			mainMenu,
+  			ID_OPTIONS_TUNINGS_NONE,
+  			MF_BYCOMMAND,
+  			GetCommandId(index+1),
+  			tunings->getTuningAt(index)->getName() );
+	}
+	InsertMenu(mainMenu, ID_OPTIONS_TUNINGS_NONE, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
+	onChangeGuitarTuning(settings->getSelectedTuningIndex());
+
+	//typing mode
+	onChangeTypingMode(settings->getTypingMode());
+
+	//chord modes
+	onChangeChordMode(ADD_EXTRA_SPACE, settings->isChordModeEnabled(ADD_EXTRA_SPACE));
+	onChangeChordMode(ADD_NAME,        settings->isChordModeEnabled(ADD_NAME)       );
+	onChangeChordMode(ARPEGGIO,        settings->isChordModeEnabled(ARPEGGIO)       );
 }
 
 
@@ -67,7 +88,7 @@ void SettingsInterface::saveSettings()
 	GetWindowRect(hMainWindow, &windowRect);
 	settings->setMainWindowRect(windowRect);
 	
-	settings->setMainWindowMaximizedState(IsZoomed(hMainWindow) > 0);
+	settings->setMainWindowMaximized(IsZoomed(hMainWindow) > 0);
 	
 	//edit area's font is set separately
 	
@@ -98,10 +119,20 @@ void SettingsInterface::onChooseFont()
 }
 
 
-void SettingsInterface::onChangeTypingMode(TypingMode newValue)
+void SettingsInterface::onChangeTypingMode(TypingMode newMode)
 {
-    _mainWindow->getApplication()->getSettings()->setEditAreaTypingMode(newValue);
-	_mainWindow->updateTypingMode(newValue);
+    _mainWindow->getApplication()->getSettings()->setTypingMode(newMode);
+    
+	//update menus
+	CheckMenuRadioItem(
+ 		_mainWindow->getMenu(),
+ 		ID_OPTIONS_TYPING_INSERT,
+ 		ID_OPTIONS_TYPING_SPECIAL,
+ 		GetCommandId(newMode),
+ 		MF_BYCOMMAND );
+
+	//update status bar
+	_mainWindow->getStatusBar()->updateTypingMode(newMode);
 }
 
 
@@ -110,8 +141,73 @@ void SettingsInterface::onChangeTypingMode(TypingMode newValue)
  */
 void SettingsInterface::onToggleTypingMode()
 {
-    TypingMode currentMode = _mainWindow->getApplication()->getSettings()->getEditAreaTypingMode();
-    currentMode = (TypingMode)((currentMode + 1) % TYPING_MODE_COUNT);
-    onChangeTypingMode(currentMode);
+    TypingMode mode = _mainWindow->getApplication()->getSettings()->getTypingMode();
+    mode = (TypingMode)((mode + 1) % TYPING_MODE_COUNT);
+    onChangeTypingMode(mode);
+}
+
+
+void SettingsInterface::onChangeGuitarTuning(TuningIndex newTuning)
+{
+    _mainWindow->getApplication()->getSettings()->setSelectedTuningIndex(newTuning);
+
+	//update menus
+	CheckMenuRadioItem(
+ 		_mainWindow->getMenu(),
+ 		ID_OPTIONS_TUNINGS_NONE,
+ 		ID_OPTIONS_TUNINGS_NONE + _mainWindow->getApplication()->getTuningDefinitions()->getTuningCount(),
+ 		GetCommandId(newTuning),
+ 		MF_BYCOMMAND );
+}
+
+
+void SettingsInterface::onToggleChordMode(ChordMode mode)
+{
+	onChangeChordMode(mode, ! _mainWindow->getApplication()->getSettings()->isChordModeEnabled(mode));
+}
+
+
+void SettingsInterface::onChangeChordMode(ChordMode mode, bool isModeEnabled)
+{
+	_mainWindow->getApplication()->getSettings()->setChordModeEnabled(mode, isModeEnabled);
+	
+	//update menus
+	unsigned int checkFlags = MF_BYCOMMAND | ( isModeEnabled ? MF_CHECKED : MF_UNCHECKED );
+	CheckMenuItem(
+ 		_mainWindow->getMenu(),
+ 		GetCommandId(mode),
+		checkFlags );
+}
+
+
+void SettingsInterface::onChooseStaffWidth()
+{
+    ApplicationSettings* settings = _mainWindow->getApplication()->getSettings();
+    
+	int action = PromptDialog::prompt(
+ 		_mainWindow->getWindowHandle(),
+ 		"Staff width (number of notes per line):",
+ 		settings->getStaffWidth() );
+ 		
+	if(action == IDOK)
+	{
+		settings->setStaffWidth(PromptDialog::getIntegerValue());
+	}
+}
+
+
+void SettingsInterface::onChooseChordDepth()
+{
+    ApplicationSettings* settings = _mainWindow->getApplication()->getSettings();
+
+	int action = PromptDialog::prompt(
+ 		_mainWindow->getWindowHandle(),
+		"Staff Height (number of lines per staff):",
+  		settings->getChordDepth() );
+
+	if(action == IDOK)
+	{
+		settings->setChordDepth(PromptDialog::getIntegerValue());
+	}
 }
 

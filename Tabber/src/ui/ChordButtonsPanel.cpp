@@ -1,5 +1,4 @@
 #include "ChordButtonsPanel.h"
-#include "../ui/MainWindow.h"
 
 const int ChordButtonsPanel::CHORD_BUTTON_HEIGHT = 25;
 const int ChordButtonsPanel::CHORD_BUTTON_WIDTH = 50;
@@ -42,7 +41,7 @@ void ChordButtonsPanel::create(HWND hParentWindow)
 	//subclassing (define my own window proc for this control)
 	_superClassWindowProc = (WNDPROC)SetWindowLong(_hWindow, GWL_WNDPROC, (long)ChordButtonsPanel::forwardMessage);
     
-    //store *this pointer in window handle so that I can access class variables and methods
+    //store *this pointer in window handle so that I can access class members later
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
     
 	_xNextButtonPosition = 0;

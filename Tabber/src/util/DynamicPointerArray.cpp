@@ -48,20 +48,5 @@ void DynamicPointerArray<Type>::addElement(Type* newElement)
 }
 
 
-template <class Type>
-Type* DynamicPointerArray<Type>::getElementAt(int index)
-{
-	assert(index < _elementCount);
-	return _values[index];
-}
-
-
-template <class Type>
-int DynamicPointerArray<Type>::getElementCount() const
-{
-	return _elementCount;
-}
-
-
 #endif // DYNAMICPOINTERARRAY_CPP
 

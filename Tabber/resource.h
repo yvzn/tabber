@@ -13,21 +13,37 @@
 #define IDI_ICON_LARGE 3000
 #define IDI_ICON_SMALL 3001
 
-#define ID_FILE_NEW                 5000
-#define ID_FILE_OPEN                5001
-#define ID_FILE_SAVE                5002
-#define ID_FILE_SAVEAS              5003
-#define ID_APP_EXIT                 5004
-#define ID_EDIT_UNDO                5008
-#define ID_EDIT_CUT                 5005
-#define ID_EDIT_COPY                5006
-#define ID_EDIT_PASTE               5007
-#define ID_OPTIONS_FONT             5009
-#define ID_OPTIONS_TYPING_TOGGLE    5011
-#define ID_OPTIONS_TYPING_INSERT    5012
-#define ID_OPTIONS_TYPING_OVERWRITE 5013
-#define ID_OPTIONS_TYPING_SPECIAL   5014
-#define ID_HELP_ABOUT               5010
+#define ID_FILE_NEW      5000
+#define ID_FILE_OPEN     5001
+#define ID_FILE_SAVE     5002
+#define ID_FILE_SAVEAS   5003
+#define ID_APP_EXIT      5004
+
+#define ID_EDIT_UNDO        5008
+#define ID_EDIT_CUT         5005
+#define ID_EDIT_COPY        5006
+#define ID_EDIT_PASTE       5007
+#define ID_EDIT_DELETE      5016
+#define ID_EDIT_SELECT_ALL  5015
+
+#define ID_INSERT_STAFF  5018
+#define ID_INSERT_BAR    5019
+#define ID_INSERT_TUNING 5020
+
+#define ID_OPTIONS_FONT              5200
+#define ID_OPTIONS_TYPING_TOGGLE     5201
+#define ID_OPTIONS_TYPING_INSERT     5202
+#define ID_OPTIONS_TYPING_OVERWRITE  5203
+#define ID_OPTIONS_TYPING_SPECIAL    5204
+#define ID_OPTIONS_CHORD_EXTRA_SPACE 5205
+#define ID_OPTIONS_CHORD_NAME        5206
+#define ID_OPTIONS_CHORD_ARPEGGIO    5207
+#define ID_OPTIONS_STAFF_WIDTH       5208
+#define ID_OPTIONS_STAFF_HEIGHT      5209
+
+#define ID_OPTIONS_TUNINGS_NONE      5901    //must remain the higher of options
+
+#define ID_HELP_ABOUT  5010
 
 #define IDC_FIRST_CHORD 10000
 
@@ -36,4 +52,8 @@
 	
 #define IDD_DEBUG_DIALOG 4001
 #define IDC_DEBUG_OUTPUT 2005
+
+#define IDD_PROMPT_DIALOG 4002
+#define IDC_PROMPT_STRING 2006
+#define IDC_PROMPT_VALUE 2007
 

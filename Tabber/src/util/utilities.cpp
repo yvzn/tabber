@@ -1,4 +1,5 @@
 #include "utilities.h"
+#include <cmath>
 
 
 /**
@@ -12,6 +13,17 @@ void __assertion_failed(const char* condition, const char* file, int line)
 	}
 }
 
+
+/**
+ * Conversion from integer to string
+ * @return a pointer to internal structure containing the result of the conversion. Client should not rely on permanent availability of this structure and should rather copy result in its own structure.
+ */
+const char* toString(int value)
+{
+	static char conversionBuffer[20];
+	wsprintf(conversionBuffer, "%d", value);
+	return (const char*)conversionBuffer;
+}
 
 /**
  * Builds an absolute path to specified file name using Exe directory

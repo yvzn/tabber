@@ -1,4 +1,4 @@
-#include "EditArea.h" 
+#include "EditArea.h"
 #include "../ui/MainWindow.h"
 
 
@@ -10,6 +10,7 @@ EditArea::EditArea(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
 	_displayFont = NULL;
+	_heuristics = new EditionHeuristics(this);
 	OBJECT_CREATED;
 }
 
@@ -17,7 +18,7 @@ EditArea::EditArea(MainWindow* parentWindow)
 EditArea::~EditArea()
 {
 	if(_displayFont != NULL) DeleteObject(_displayFont);
-
+	delete _heuristics;
 	OBJECT_DELETED;
 }
 
@@ -45,8 +46,11 @@ void EditArea::create(HWND hParentWindow)
 	//subclassing (define my own window proc for this control)
 	_superClassWindowProc = (WNDPROC)SetWindowLong(_hWindow, GWL_WNDPROC, (long)EditArea::forwardMessage);
     
-    //store *this pointer in window handle so that I can access class variables and methods
+    //store *this pointer in window handle so that I can access class members later
     SetProp(_hWindow, "CorrespondingObject", (void*)this);
+    
+    //initialise heuristics
+	_heuristics->setWindowHandle(_hWindow);
 }
 
 
@@ -187,7 +191,7 @@ void EditArea::loadContentFrom(const char* fileName)
 
 
 
-// WIN32's MESSAGES HANDLING //////////////////////////////////////////////////
+// WIN32's MESSAGES HANDLING (DISPATCHERS) ////////////////////////////////////
 
 
 void EditArea::doCommand(UINT command)
@@ -206,7 +210,7 @@ LRESULT CALLBACK EditArea::forwardMessage (
     WPARAM wParam,
     LPARAM lParam )
 {
-	//retrieve *this pointer and then forward message
+	//retrieve instance pointer and then forward message
     EditArea* editArea = (EditArea*)GetProp(hWindow, "CorrespondingObject");
     if (editArea)
     {
@@ -241,6 +245,7 @@ LRESULT CALLBACK EditArea::handleMessage (
 			_mainWindow->setCommandEnabled(ID_EDIT_PASTE, true);
 			onDocumentModified();
 			onSelectionChange();
+			break;
 		}
 		
     	case WM_PASTE:
@@ -281,41 +286,25 @@ LRESULT CALLBACK EditArea::handleMessage (
 		case WM_CHAR:
 		{
       		// characters keystrokes
+      		
  			onDocumentModified();
- 			
-		    switch(wParam)
-		    {
-				case VK_DELETE: // handled by both WM_KEYUP and WM_CHAR
-        		case VK_BACK:   //     "       "       "           "
-               	case VK_RETURN:
+ 			switch(_mainWindow->getApplication()->getSettings()->getTypingMode())
+ 			{
+				case OVERWRITE:
+        		{
+					return onCharOverwriteMode(wParam);
+				}
+
+				case SPECIAL:
+        		{
+              		return onCharSpecialMode(wParam);
+           		}
+           		
+				default:
         		{
 					break;
 				}
-				
-				default:
-    			{
-/*
-					//overtype
-                    WORD wStart,wEnd;
-                    DWORD dwResult;
-
-                    dwResult = SendMessage(_hWindow,EM_GETSEL,0,0L);
-                    wStart   = LOWORD(dwResult);
-                    wEnd     = HIWORD(dwResult);
-
-                    if (wEnd == wStart)
-                    {
-                       wEnd++;
-                       SendMessage(_hWindow,EM_SETSEL,wStart,wEnd);
-                    }
-
-                    SendMessage(_hWindow, EM_REPLACESEL, TRUE, (DWORD)((LPSTR)&wParam ));
-                    return (FALSE);
-//*/
-	    			break;
-    			}
-		    }
-
+			}
             break;
 		}
 	}
@@ -323,6 +312,10 @@ LRESULT CALLBACK EditArea::handleMessage (
 	// most subclassed messages still require a call to super class's window proc
 	return CallWindowProc(_superClassWindowProc, hWindow, message, wParam, lParam);
 }
+
+
+
+// WIN32's MESSAGES HANDLING (ACTIONS) ////////////////////////////////////////
 
 
 void EditArea::onKeyUp(int virtuakKeyCode)
@@ -362,12 +355,19 @@ void EditArea::onKeyUp(int virtuakKeyCode)
 void EditArea::onSelectionChange()
 {
     assert(_hWindow != NULL);
+    
+    DWORD selection = SendMessage(_hWindow, EM_GETSEL, 0, 0L);
+    
+	bool isTextSelected = _heuristics->isTextSelected(selection);
 
-	DWORD selection = SendMessage(_hWindow,EM_GETSEL, 0, 0L);
-	bool isTextSelected = LOWORD(selection) != HIWORD(selection);
+    _mainWindow->setCommandEnabled(ID_EDIT_COPY,   isTextSelected );
+    _mainWindow->setCommandEnabled(ID_EDIT_CUT,    isTextSelected );
+    _mainWindow->setCommandEnabled(ID_EDIT_DELETE, isTextSelected );
+    
+    bool isInsideStaff = _heuristics->isInsideStaff(selection);
 
-    _mainWindow->setCommandEnabled(ID_EDIT_COPY, isTextSelected );
-    _mainWindow->setCommandEnabled(ID_EDIT_CUT, isTextSelected );
+	_mainWindow->setCommandEnabled(ID_INSERT_BAR,    isInsideStaff );
+	_mainWindow->setCommandEnabled(ID_INSERT_TUNING, isInsideStaff );
 }
 
 
@@ -377,6 +377,134 @@ void EditArea::onDocumentModified()
 }
 
 
+void EditArea::onSelectAll()
+{
+    assert(_hWindow != NULL);
+    SendMessage(_hWindow, EM_SETSEL, 0, (LPARAM)-1);
+    onSelectionChange();
+}
+
+
+void EditArea::onDelete()
+{
+    assert(_hWindow != NULL);
+    SendMessage(_hWindow, EM_REPLACESEL, (WPARAM)TRUE, (LPARAM)"");
+    onSelectionChange();
+	onDocumentModified();
+}
+
+
+/**
+ * A character is entered in overwrite typing mode
+ */
+LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
+{
+	assert(_hWindow != NULL);
+
+    switch(virtuakKeyCode)
+    {
+		case VK_DELETE:
+		case VK_BACK:
+       	case VK_RETURN:
+		case VK_ESCAPE:
+		{
+      		// special, do nothing
+			break;
+		}
+
+		default:
+		{
+            DWORD selection = SendMessage(_hWindow, EM_GETSEL, 0, 0);
+
+            if (!_heuristics->isTextSelected(selection))
+            {
+				//do not overtype at the end of a lines (otherwise it would remove \r and/or \n)
+				if(!_heuristics->doesSelectionEndLine(selection))
+				{
+        			//expand selection by one character so that typing overwrites that extra character
+		            WORD  selStart  = LOWORD(selection);
+		            WORD  selEnd    = HIWORD(selection);
+		            
+               		selEnd++;
+               		SendMessage(_hWindow, EM_SETSEL, selStart, selEnd);
+				}
+            }
+
+            //SendMessage(_hWindow, EM_REPLACESEL, TRUE, (DWORD)((LPSTR)&virtuakKeyCode ));
+            //return FALSE;
+		}
+	}
+	
+	return CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+}
+
+
+/**
+ * A character is entered in special typing mode
+ */
+LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
+{
+    if(_heuristics->isInsideStaff())
+    {
+		return FALSE;
+	}
+	else
+	{
+		return CallWindowProc(_superClassWindowProc, _hWindow, WM_CHAR, (WPARAM)virtuakKeyCode, 0);
+	}
+}
 
 
 
+void EditArea::onInsertStaff()
+{
+	assert(_hWindow != NULL);
+
+	_heuristics->moveToNextLine();
+
+	ApplicationSettings* settings     = _mainWindow->getApplication()->getSettings();
+
+	//get guitar tuning
+ 	TuningIndex    tuningIndex  = settings->getSelectedTuningIndex();
+	bool           prefixTuning = tuningIndex > 0; // index 0 means no tuning
+	GuitarTuning*  tuning       = prefixTuning ? _mainWindow->getApplication()->getTuningDefinitions()->getTuningAt(tuningIndex-1) : NULL ;
+
+	//create / fill line buffer with '-'
+	int    lineSize     = settings->getStaffWidth();
+	char*  lineBuffer   = new char[lineSize + 1]; // +1 for the trailing '\0'
+	for(int pos=0; pos<lineSize; ++pos) lineBuffer[pos] = '-'; lineBuffer[lineSize] = '\0';
+
+	//create global buffer
+	int    staffHeight  = settings->getChordDepth();
+	char*  fullBuffer   = new char[6 /* "\r\n" x 3 */ + staffHeight * (lineSize + 2 /* "\r\n" */ ) + 1 /* "\0" */];
+	lstrcpy(fullBuffer, "\r\n\r\n");
+
+	//push lines
+	for(int string=0; string<staffHeight; ++string)
+	{
+		if(prefixTuning)
+		{
+   			for(int prefix=0; prefix<tuning->getWidth(); ++prefix) lineBuffer[prefix]=' '; // blanks the beginning
+
+			if(string<tuning->getNoteCount()) // adds tuning note, if defined
+			{
+				const char* note = tuning->getNote(tuning->getNoteCount() - string - 1); // notes order is reversed :/
+				lstrcpy(lineBuffer, note);
+				lineBuffer[lstrlen(note)] = ' '; // removes the '\0' at the end of note
+				lineBuffer[tuning->getWidth()] = '|';
+			}
+		}
+
+		lstrcat(fullBuffer, lineBuffer);
+		lstrcat(fullBuffer, "\r\n");
+	}
+
+	lstrcat(fullBuffer, "\r\n");
+	SendMessage(_hWindow, EM_REPLACESEL, (WPARAM)TRUE, (LPARAM)fullBuffer);
+
+	delete [] fullBuffer;
+	delete [] lineBuffer;
+
+    onSelectionChange();
+	onDocumentModified();
+}

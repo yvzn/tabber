@@ -24,12 +24,8 @@ BOOL CALLBACK AboutDialog::handleMessage(
     {
         case WM_INITDIALOG:
         {
-			HWND hTime = GetDlgItem(hWindow, IDC_VERSION_NUMBER);
-			if(hTime != NULL)
-			{
-				SetWindowText(hTime, __DATE__ " " __TIME__);
-			}
-        	return TRUE;
+			SetDlgItemText(hWindow, IDC_VERSION_NUMBER, __DATE__ " at " __TIME__);
+        	break;
 		}
       
         case WM_COMMAND:

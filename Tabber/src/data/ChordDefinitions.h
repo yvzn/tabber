@@ -16,18 +16,21 @@ class ChordDefinitions: protected DynamicPointerArray<ChordGroup>
 		~ChordDefinitions();
 		
 		void load              ();
-		void loadDefaultValues ();
 		void save              ();
 
 		void        addChordGroup      (ChordGroup* ) ;
-		int         getChordGroupCount ()             const;
-		ChordGroup* getChordGroupAt    (int )         ;
 		
+		inline int         getChordGroupCount ()          const { return getElementCount();   }
+		inline ChordGroup* getChordGroupAt    (int index)       { return getElementAt(index); }
+
 	protected:
 
-		static const char CHORD_DEFINITIONS_FILE_NAME[];
+		void loadDefaultValues ();
 		
-		char _chordDefinitionsFileFullName[MAX_PATH];
+	private:
+
+		static const char CHORD_DEFINITIONS_FILE_NAME[];
+		             char _chordDefinitionsFileFullName[MAX_PATH];
 
 };
 

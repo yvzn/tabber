@@ -14,11 +14,12 @@ class ChordGroup: protected DynamicPointerArray<GuitarChord>
 		ChordGroup(const char*);
 		virtual ~ChordGroup();
 
-		const char* getName() const;
+		inline const char* getName() const { return _name; }
 		
-		void          addChord     (GuitarChord* );
-		GuitarChord*  getChordAt   (int );
-		int           getChordCount() const; 
+		void addChord     (GuitarChord* );
+		
+		inline GuitarChord*  getChordAt   (int index) { return getElementAt(index); }
+		inline int           getChordCount() const    { return getElementCount();   }
 
 	protected:
 

@@ -16,11 +16,6 @@ ChordDefinitions::~ChordDefinitions()
 }
 
 
-/**
- * Basically, a ini file parser. Task is complicated because I do not kow the
- * names of the sections nor the name of the keys -- and also because ini
- * parsing functions in the API are a pain in the ass.
- */
 void ChordDefinitions::load()
 {
 	IniFileSequentialParser* parser = new IniFileSequentialParser(_chordDefinitionsFileFullName);
@@ -63,7 +58,7 @@ void ChordDefinitions::loadDefaultValues()
 		defaultGroup->addChord(new GuitarChord("D", "xx0232"));
 		defaultGroup->addChord(new GuitarChord("E", "022100"));
 		defaultGroup->addChord(new GuitarChord("F", "133211"));
-		defaultGroup->addChord(new GuitarChord("G", "320003"));
+ 		defaultGroup->addChord(new GuitarChord("G", "320003"));
 	}
 	addChordGroup(defaultGroup); 
 }
@@ -76,7 +71,7 @@ void ChordDefinitions::save()
 	DWORD bytesWritten; //useless but required
 
 	/* I write ini file on disk manually instead of using API functions because
-		writeprivateprofile*s do not erase previous values */
+		writeprivateprofile*s do not take structure reorganisation in account */
 	HANDLE hFile = CreateFile(
 		_chordDefinitionsFileFullName,
 		GENERIC_WRITE,
@@ -118,19 +113,9 @@ void ChordDefinitions::save()
 		throw new RuntimeException("ChordDefinitions::save", "Could not open chords definitions file");
 	}
 	
+#undef wf
+	
 	CloseHandle(hFile);
-}
-
-
-int ChordDefinitions::getChordGroupCount() const
-{
-	return DynamicPointerArray<ChordGroup>::getElementCount();
-}
-
-
-ChordGroup* ChordDefinitions::getChordGroupAt(int index)
-{
-	return DynamicPointerArray<ChordGroup>::getElementAt(index);
 }
 
 

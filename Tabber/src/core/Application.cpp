@@ -6,6 +6,7 @@ Application::Application()
 {
 	_settings     = new ApplicationSettings();
 	_chords       = new ChordDefinitions();
+	_tunings      = new TuningDefinitions();
 	_mainWindow   = new MainWindow(this);
 	OBJECT_CREATED;
 }
@@ -14,6 +15,7 @@ Application::Application()
 Application::~Application()
 {
 	delete _mainWindow;
+	delete _tunings;
 	delete _chords;
 	delete _settings;
 	OBJECT_DELETED;
@@ -22,15 +24,11 @@ Application::~Application()
 
 void Application::create(HINSTANCE hApplicationInstance)
 {	
-	assert(
- 		_settings != NULL &&
- 		_chords != NULL &&
-   		_mainWindow != NULL);
-
 	try
 	{
 		_settings->load();
 		_chords->load();
+		_tunings->load();
 		
 		_mainWindow->create(hApplicationInstance);
 

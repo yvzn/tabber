@@ -69,6 +69,7 @@ void MemoryWatcher::report() const
 		}
 	}
 	
+/*
 	//displays a message box with a useless feature to suspend execution
 	//(handy in case of crashes)
 	int action = MessageBox(
@@ -81,4 +82,5 @@ void MemoryWatcher::report() const
 	{
   		DebugWindow::copyTrace();
 	}
+//*/
 }

@@ -30,11 +30,12 @@ class MainWindow
 		void setCommandEnabled (int , bool );
 
 		inline Application*       getApplication       () { return _application;       }
-		inline EditArea*          getEditArea          () { return _editArea;          }
 		inline DocumentInterface* getDocumentInterface () { return _documentInterface; }
-		inline HWND&              getWindowHandle      () { return _hWindow;           }
 
-		void updateTypingMode(TypingMode );
+		inline EditArea*          getEditArea          () { return _editArea;          }
+		inline StatusBar*         getStatusBar         () { return _status;            }
+		inline HWND&              getWindowHandle      () { return _hWindow;           }
+  		inline HMENU              getMenu              () { return GetMenu(_hWindow);  }
 
 	public:
 	
@@ -59,13 +60,14 @@ class MainWindow
 		static const char WINDOW_CLASS_NAME[];
 
 		Application*       _application;
+		DocumentInterface* _documentInterface;
+		SettingsInterface* _settingsInterface;
+
 		MainToolbar*       _toolbar;
 		StatusBar*         _status;
 		ChordsToolbar*     _chordsToolbar;
 		EditArea*          _editArea;
-		DocumentInterface* _documentInterface;
-		SettingsInterface* _settingsInterface;
-		
+
 		HWND          _hWindow;
 
 };

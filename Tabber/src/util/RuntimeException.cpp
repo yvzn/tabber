@@ -39,7 +39,7 @@ void RuntimeException::setStackTrace(
  	const char* errorMessage,
   	bool        isHigherLevel )
 {
-	UINT stackLength = 6 + lstrlen(executionContext) + lstrlen(errorMessage);
+	UINT stackLength = 7 + lstrlen(executionContext) + lstrlen(errorMessage);
 	if(!isHigherLevel)	stackLength++;
 	
 	_stackTrace = new char[stackLength+1];

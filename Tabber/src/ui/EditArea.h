@@ -3,6 +3,7 @@
 
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
+#include "../ui/EditionHeuristics.h"
 
 /* forward */ class MainWindow;
 
@@ -22,19 +23,27 @@ class EditArea
 		void saveContentTo   (const char* );
 		void wipeContent     ( );
 
-		void doCommand(UINT );
+		void doCommand (UINT );
 
 		void setFont       (const LOGFONT& );
 		void setFocus      ( )              ;
+
+		void onSelectAll   ( );
+		void onDelete      ( );
+		void onInsertStaff ( );
+		
+		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
 	protected:
 
 		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
 		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 
-		void onKeyUp(int );
-		void onSelectionChange();
-		void onDocumentModified();
+		void    onSelectionChange   ( );
+		void    onDocumentModified  ( );
+		void    onKeyUp             (int );
+		LRESULT onCharSpecialMode   (int );
+		LRESULT onCharOverwriteMode (int);
 
 	protected:
 
@@ -44,6 +53,8 @@ class EditArea
 		HWND     _hWindow;
 		HFONT    _displayFont;
 		
+		EditionHeuristics* _heuristics;
+
 };
 
 #endif // EDITAREA_H
