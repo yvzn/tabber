@@ -3,7 +3,7 @@
 
 #include "../util/utilities.h"
 
-/* forward */ class MainWindow;
+/* forward */ class ChordsToolbar;
 
 
 /**
@@ -14,7 +14,7 @@ class ChordButtonsPanel
 
 	public:
 
-		ChordButtonsPanel();
+		ChordButtonsPanel(ChordsToolbar* );
 		~ChordButtonsPanel();
 
 		void create(HWND );
@@ -35,6 +35,8 @@ class ChordButtonsPanel
 		static const int CHORD_BUTTON_HEIGHT;
 		static const int CHORD_BUTTON_WIDTH;
 		static const int CHORD_BUTTON_PADDING;
+
+		ChordsToolbar* _toolbar;
 		
 		WNDPROC  _superClassWindowProc;
 		HWND     _hWindow;

@@ -24,10 +24,10 @@ class DebugWindow
 		static void create(HINSTANCE );
 	    static LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 		static void writeln(const char* );
-	    
-	    static HWND _hWindow;
-	    static bool _isWindowClassNotRegistered;
 
+		static HWND _hWindow;
+	    static bool _isWindowClassNotRegistered;
+	    
 };
 
 

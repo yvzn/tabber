@@ -52,6 +52,7 @@ class MainWindow
 
 		void onCreate   (HWND );
 		void onClose    ( );
+		void onDestroy  ( );
 		void onSize     ( );
 		void onDropFiles(HDROP );
 

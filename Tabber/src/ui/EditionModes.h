@@ -38,7 +38,37 @@ DECLARE_CONVERSION_FUNCTIONS(ChordMode, ID_OPTIONS_CHORD_EXTRA_SPACE);
 
 
 
-// TODO: GetChordIndex(unsigned int command Id)
+/**
+ * Index of the current chord to be added inside staff
+ */
+typedef struct
+{
+	int group;
+	int chord;
+}
+ChordIndex;
+
+
+/**
+ * Conversion functions for chord indexes.
+ * Windows's command id's are stored in a WORD (16 bits). I use the higher bit
+ * to mark chords commandIds (1<<15 = 32768 = IDC_FIRST_CHORD), seven more bits
+ * to code chord's groupIndex, and the 8 lower bits to code chord's Id.
+ */
+inline unsigned int GetCommandId (ChordIndex index)
+{
+	return IDC_FIRST_CHORD + ((index.group & 0x7F) << 8) + (index.chord & 0xFF);
+}
+
+
+inline ChordIndex GetChordIndex(unsigned int commandId)
+{
+	assert( commandId >= IDC_FIRST_CHORD);
+	commandId -= IDC_FIRST_CHORD;
+
+	ChordIndex result = { (commandId >> 8) & 0x7F , commandId & 0xFF };
+	return result;
+}
 
 
 #endif //EDITIONMODES_H

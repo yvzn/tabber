@@ -1,6 +1,7 @@
 #include "ChordDefinitions.h" 
 
 const char ChordDefinitions::CHORD_DEFINITIONS_FILE_NAME[] = "chords.ini";
+const int  ChordDefinitions::MAX_GROUP_COUNT = 128;
 
 
 ChordDefinitions::ChordDefinitions()
@@ -121,6 +122,9 @@ void ChordDefinitions::save()
 
 void ChordDefinitions::addChordGroup(ChordGroup* newGroup)
 {
-	DynamicPointerArray<ChordGroup>::addElement(newGroup);
+	if( getChordGroupCount() < MAX_GROUP_COUNT )
+	{
+		DynamicPointerArray<ChordGroup>::addElement(newGroup);
+	}
 }
 

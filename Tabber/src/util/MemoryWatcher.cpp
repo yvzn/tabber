@@ -67,20 +67,18 @@ void MemoryWatcher::report() const
   				"Memory at address %#x unfreed (%d bytes) (File: '%s', Line: %d)",
 				(*i)->address, (*i)->size, (*i)->file, (*i)->line);
 		}
-	}
 
-/*
-	//displays a message box with a useless feature to suspend execution
-	//(handy in case of crashes)
-	int action = MessageBox(
-		HWND_DESKTOP,
-   		"Should I copy debugging trace content to clipboard ?",
-  		"Tabber - Debug Trace",
-   		MB_ICONQUESTION | MB_YESNO);
+//*
+		int action = MessageBox(
+			HWND_DESKTOP,
+   			"Should I copy debugging trace content to clipboard ?",
+  			"Tabber - Debug Trace",
+   			MB_ICONQUESTION | MB_YESNO);
 
-	if(action == IDYES)
-	{
-  		DebugWindow::copyTrace();
-	}
+		if(action == IDYES)
+		{
+  			DebugWindow::copyTrace();
+		}
 //*/
+	}
 }

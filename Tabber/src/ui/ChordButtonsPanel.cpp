@@ -1,12 +1,15 @@
 #include "ChordButtonsPanel.h"
+#include "../ui/ChordsToolbar.h"
+#include "../ui/MainWindow.h"
 
 const int ChordButtonsPanel::CHORD_BUTTON_HEIGHT = 25;
 const int ChordButtonsPanel::CHORD_BUTTON_WIDTH = 50;
 const int ChordButtonsPanel::CHORD_BUTTON_PADDING = 2;
 
 
-ChordButtonsPanel::ChordButtonsPanel()
+ChordButtonsPanel::ChordButtonsPanel(ChordsToolbar* toolbar)
 {
+	_toolbar = toolbar;
 	OBJECT_CREATED;
 }
 
@@ -135,7 +138,7 @@ LRESULT CALLBACK ChordButtonsPanel::handleMessage (
 {
     if(message == WM_COMMAND && LOWORD(wParam) >= IDC_FIRST_CHORD)
     {
-		DebugWindow::trace("%d", LOWORD(wParam));
+		_toolbar->getMainWindow()->getEditArea()->onInsertChord(LOWORD(wParam));
 	}
 	else
 	{

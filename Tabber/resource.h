@@ -41,11 +41,11 @@
 #define ID_OPTIONS_STAFF_WIDTH       5208
 #define ID_OPTIONS_STAFF_HEIGHT      5209
 
-#define ID_OPTIONS_TUNINGS_NONE      5901    //must remain the higher of options
+#define ID_OPTIONS_TUNINGS_NONE      5901    // any higher ID is considered as a Tuning ID
 
 #define ID_HELP_ABOUT  5010
 
-#define IDC_FIRST_CHORD 10000
+#define IDC_FIRST_CHORD 32768  // any higher control ID is considered as a Chord ID
 
 #define IDD_ABOUT_DIALOG 4000
 #define IDC_VERSION_NUMBER 2004

@@ -587,7 +587,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit55]
-FileName=src\ui\Dispatchers.h
+FileName=src\ui\EditionActions.h
 CompileCpp=1
 Folder=User Iterface
 Compile=1
@@ -597,7 +597,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit56]
-FileName=src\ui\Dispatchers.cpp
+FileName=src\ui\EditionActions.cpp
 CompileCpp=1
 Folder=User Iterface
 Compile=1

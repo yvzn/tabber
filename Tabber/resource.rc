@@ -31,7 +31,7 @@ BEGIN
 	BEGIN
 		MENUITEM "&Staff\tCtrl+Shift+S",         ID_INSERT_STAFF
 		MENUITEM "Vertical &bar\tCtrl+Shift+B",  ID_INSERT_BAR
-		MENUITEM "&Tuning"                    ,  ID_INSERT_TUNING
+		MENUITEM "&Tuning\tCtrl+Shift+T",        ID_INSERT_TUNING
 	END
 	POPUP "&Settings"
 	BEGIN
@@ -88,6 +88,7 @@ BEGIN
 
 	"S",         ID_INSERT_STAFF,  VIRTKEY, CONTROL, SHIFT
 	"B",         ID_INSERT_BAR,    VIRTKEY, CONTROL, SHIFT
+	"T",         ID_INSERT_TUNING, VIRTKEY, CONTROL, SHIFT
 END
 
 

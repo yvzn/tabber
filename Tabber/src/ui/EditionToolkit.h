@@ -55,19 +55,23 @@ class EditionToolkit
 
 		inline unsigned int getColumnIndex   (unsigned int position)  const { return position - getLineStart( getLineIndex(position) );           }
 
-		inline DWORD getSelection     ( )                   const { return SendMessage(_hWindow, EM_GETSEL,       0,                0); }
+		inline DWORD getSelection     ( )                       const { return SendMessage(_hWindow, EM_GETSEL,       0,                0); }
 		inline void  setSelection (unsigned int start, unsigned int end) const { SendMessage(_hWindow, EM_SETSEL, (WPARAM)start, (LPARAM)end); }
-		inline void  setSelection     (DWORD selection)     const { setSelection(__startOf(selection), __endOf(selection)); }
-		inline void  replaceSelection (const char* string)  const { SendMessage(_hWindow, EM_REPLACESEL,  TRUE, (LPARAM)string); }
+		inline void  setSelection     (DWORD selection)         const { setSelection(__startOf(selection), __endOf(selection)); }
+		inline void  replaceSelection (const char* string ="")  const { SendMessage(_hWindow, EM_REPLACESEL,  TRUE, (LPARAM)string); }
 
 
 		// Other utilities ////////////
 
-		void copyNoteAtBufferStart(GuitarChord* , unsigned int , char* );
-		void copyAndFillAtLineCol(const char* , unsigned int , unsigned int , unsigned int , char ='-');
+		inline EditArea* getEditArea() const { return _editArea; }
 
-		void saveCursorPosition    (DWORD);           DECLARE_SHORT_VERSION(void, saveCursorPosition, {} );
-		void restoreCursorPosition (int =0, int =0);
+		unsigned int getCharacterIndex (unsigned int& , unsigned int& );
+
+		void copyNoteAtBufferStart (GuitarChord* , unsigned int , char* );
+		void copyAndFillAtLineCol  (const char* , unsigned int , unsigned int , unsigned int , char ='-');
+
+		void  saveCursorPosition    (DWORD );          DECLARE_SHORT_VERSION(void, saveCursorPosition, {} );
+		void  restoreCursorPosition (int =0, int =0);
 
 	private:
 

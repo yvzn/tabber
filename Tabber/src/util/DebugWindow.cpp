@@ -211,4 +211,3 @@ void DebugWindow::copyTrace()
 	SendMessage(hEdit, EM_SETSEL, 0, -1);
 	SendMessage(hEdit, WM_COPY, 0, 0);
 }
-

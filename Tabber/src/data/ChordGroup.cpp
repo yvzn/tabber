@@ -1,5 +1,7 @@
 #include "ChordGroup.h"
 
+const int  ChordGroup::MAX_CHORD_COUNT = 256;
+
 
 ChordGroup::ChordGroup(const char* groupName)
 {
@@ -19,6 +21,9 @@ ChordGroup::~ChordGroup()
 
 void ChordGroup::addChord(GuitarChord* newChord)
 {
-	DynamicPointerArray<GuitarChord>::addElement(newChord);
+	if( getChordCount() < MAX_CHORD_COUNT )
+	{
+		DynamicPointerArray<GuitarChord>::addElement(newChord);
+	}
 }
 

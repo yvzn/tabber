@@ -178,7 +178,7 @@ LRESULT CALLBACK MainWindow::handleMessage(
         
         case WM_SETFOCUS  :  _editArea->setFocus();       break;
 
-        case WM_DESTROY   :  PostQuitMessage(0);          break;
+        case WM_DESTROY   :  onDestroy();                 break;
         
         default:
     	{
@@ -298,6 +298,12 @@ void MainWindow::onClose()
 
 		DestroyWindow(_hWindow);
 	}
+}
+
+
+void MainWindow::onDestroy()
+{
+	PostQuitMessage(0);
 }
 
 

@@ -23,6 +23,8 @@ class ChordGroup: protected DynamicPointerArray<GuitarChord>
 
 	protected:
 
+		static const int  MAX_CHORD_COUNT;
+
 		char*  _name;
 	
 };

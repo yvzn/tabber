@@ -8,12 +8,18 @@ ChordsToolbar::ChordsToolbar(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
 	_panels = NULL;
+	_panelCount = 0;
 	OBJECT_CREATED;
 }
 
 
 ChordsToolbar::~ChordsToolbar()
 {
+	for(int panelIndex=0; panelIndex < _panelCount; ++panelIndex)
+	{
+		if(_panels[panelIndex] != NULL) delete _panels[panelIndex];
+	}
+
 	if(_panels != NULL) delete [] _panels;
 	OBJECT_DELETED;
 }
@@ -57,24 +63,27 @@ void ChordsToolbar::create(HWND hParentWindow)
 	}
 	
 	//create child panels
-	_panels = new ChordButtonsPanel[_panelCount];
-	int buttonCommandId = IDC_FIRST_CHORD;
+	_panels = new ChordButtonsPanel*[_panelCount];
+	ZeroMemory(_panels, sizeof(_panels));
+
 	for(groupIndex=0; groupIndex < _panelCount; ++groupIndex)
 	{
 		ChordGroup* currentGroup = chords->getChordGroupAt(groupIndex);
-		
+		_panels[groupIndex] = new ChordButtonsPanel(this);
+
 		try
 		{	
-			_panels[groupIndex].create(hParentWindow);
+			_panels[groupIndex]->create(hParentWindow);
 			
 			//load buttons
 			int chordCount = currentGroup->getChordCount();
 			for(int chordIndex=0; chordIndex < chordCount; ++chordIndex)
 			{
-				_panels[groupIndex].addButton(
+				ChordIndex index = { groupIndex, chordIndex };
+
+				_panels[groupIndex]->addButton(
 					currentGroup->getChordAt(chordIndex)->getName(),
-					buttonCommandId );
-				++buttonCommandId;
+					GetCommandId(index) );
 			}
 		}
 		catch(RuntimeException* ex)
@@ -82,10 +91,10 @@ void ChordsToolbar::create(HWND hParentWindow)
 			throw new RuntimeException("ChordsToolbar::create", ex);
 		}
 
-		_panels[groupIndex].hide();
+		_panels[groupIndex]->hide();
 	}
 	_activePanelIndex = 0;
-	_panels[_activePanelIndex].show();
+	_panels[_activePanelIndex]->show();
 }
 
 
@@ -109,7 +118,7 @@ void ChordsToolbar::resize(const RECT& newSize)
 
 	    DeferWindowPos(
 	    	deferWindowPosStructure, 
-	        _panels[_activePanelIndex].getWindowHandle(),
+	        _panels[_activePanelIndex]->getWindowHandle(),
 	        HWND_TOP,
 			newSize.left, newSize.top, newSize.right - newSize.left, newSize.bottom - newSize.top,
 			0 ); 
@@ -124,8 +133,8 @@ void ChordsToolbar::updateOnTabChange()
 	int oldActivePanel = _activePanelIndex;
 	
 	//hide & seek :)
-	_panels[oldActivePanel].hide();
-	_panels[newActivePanel].show();
+	_panels[oldActivePanel]->hide();
+	_panels[newActivePanel]->show();
 
 	_activePanelIndex = newActivePanel;	
 }

@@ -4,7 +4,7 @@
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
 #include "../ui/EditionToolkit.h"
-#include "../ui/Dispatchers.h"
+#include "../ui/EditionActions.h"
 
 /* forward */ class MainWindow;
 
@@ -34,6 +34,7 @@ class EditArea
 		void onInsertStaff  ( );
 		void onInsertTuning ( );
 		void onInsertBar    ( );
+		void onInsertChord  (unsigned int );
 
 		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
@@ -44,11 +45,12 @@ class EditArea
 
 		void    onSelectionChange   ( );
 		void    onDocumentModified  ( );
-		void    onKeyUp             (int );
+		LRESULT onKeyUp             (int );
 		LRESULT onCharSpecialMode   (int );
 		LRESULT onCharOverwriteMode (int);
 
-		void insert(Dispatcher* );
+		//void insert(Dispatcher* );
+		void apply(StaffAction *);
 
 	protected:
 

@@ -22,6 +22,8 @@ class ChordsToolbar
 		
 		void updateOnTabChange();
 
+		inline MainWindow* getMainWindow() const { return _mainWindow; }
+
 	public:
 	
 		static const int CHORDS_TOOLBAR_HEIGHT;
@@ -32,9 +34,9 @@ class ChordsToolbar
 	
 		HWND  _hWindow;
 
-		ChordButtonsPanel* _panels;
-		int                _panelCount;
-		int                _activePanelIndex;
+		ChordButtonsPanel** _panels;
+		int                 _panelCount;
+		int                 _activePanelIndex;
 
 };
 

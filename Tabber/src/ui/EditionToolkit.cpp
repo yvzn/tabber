@@ -88,13 +88,13 @@ bool EditionToolkit::isStaffLine(DWORD selection)
 bool EditionToolkit::isStaffLine(unsigned int lineIndex)
 {
     assert(_hWindow != NULL);
- 
+
     int lineStart  = getLineStart (lineIndex);
 	int lineLength = getLineLength(lineStart);
+	WORD bufferSize = lineLength+2;
 
-	char* buffer = new char[lineLength+1];
-	ZeroMemory(buffer, sizeof(buffer));
-	buffer[0] = (char)lineLength+1; // see EM_GETLINE reference
+	char* buffer = new char[bufferSize];
+	CopyMemory(buffer, &bufferSize, sizeof(WORD)); // see EM_GETLINE reference
 	SendMessage(_hWindow, EM_GETLINE, (WPARAM)lineIndex, (LPARAM)buffer);
 
 	int occurences=0;
@@ -217,6 +217,28 @@ void EditionToolkit::moveToStaffStart(DWORD& selection)
 
 
 /**
+ * Safe conversion from (line, column) to character index (as used in edit controls)
+ * If line is not long enough to reach column, the last column of the line is used.
+ * If line is greater than total number of lines, the last line is used.
+ */
+unsigned int EditionToolkit::getCharacterIndex(unsigned int& line, unsigned int& column)
+{
+	assert(_hWindow != NULL);
+
+	unsigned int b; // used to save multiple calls in min macro
+
+	b = getLineCount() - 1;
+	line = min ( line , b );
+	unsigned int lineStart = getLineStart(line);
+
+	b = getLineLength ( lineStart );
+	column = min ( column , b );
+
+	return lineStart + column;
+}
+
+
+/**
  * Copies the nth note of a chord at the beginning of a buffer, adding space if required and removing unnecessary '\0's
  */
 void  EditionToolkit::copyNoteAtBufferStart(GuitarChord* chord, unsigned int noteIndex, char* buffer)
@@ -237,7 +259,7 @@ void  EditionToolkit::copyNoteAtBufferStart(GuitarChord* chord, unsigned int not
  * Copies at least (requiredWidth) characters from buffer to edit control, at specified position.
  * If the buffer is smaller than (requiredWidth), extra (paddingCharacter)s are added.
  * If line is not long enough to reach column, the buffer is copied at the end of the line.
- * If line is not valid, nothing is done.
+ * If line is greater than total number of lines, nothing is done.
  */
 void EditionToolkit::copyAndFillAtLineCol(
 	const char*  buffer,
@@ -250,12 +272,10 @@ void EditionToolkit::copyAndFillAtLineCol(
 
 	if(line < getLineCount())
 	{
-		unsigned int lineStart = getLineStart(line);
-		unsigned int lineLength = getLineLength(lineStart);
-		unsigned int position = lineStart + min(col, lineLength);
+		unsigned int position = getCharacterIndex(line, col);
 		setSelection(position, position);
 
-		int length = lstrlen(buffer);
+		unsigned int length = lstrlen(buffer);
   		if(length >= requiredWidth)
 		{
 			replaceSelection(buffer);
@@ -265,7 +285,7 @@ void EditionToolkit::copyAndFillAtLineCol(
 			char* fullString = new char[requiredWidth+1];
 
 			CopyMemory(fullString, buffer, length);
-			for(int pos=length; pos<requiredWidth; ++pos)
+			for(unsigned int pos=length; pos<requiredWidth; ++pos)
 			{
 				fullString[pos] = paddingCharacter;
 			}
@@ -300,15 +320,8 @@ void EditionToolkit::saveCursorPosition(DWORD selection)
 void EditionToolkit::restoreCursorPosition(int columnOffset, int lineOffset)
 {
 	assert(_hWindow != NULL);
-	unsigned int a, b; // used to save multiple calls in min macro
-
-	a = _cursorPosition.y + lineOffset; b = getLineCount() - 1;
-	unsigned int lineStart = getLineStart( min ( a , b ) ) ;
-
-	a = _cursorPosition.x + columnOffset; b = getLineLength ( lineStart );
-	unsigned int column = min ( a , b );
-
-	unsigned int position  = lineStart + column;
-
+	unsigned int line = _cursorPosition.y + lineOffset;
+	unsigned int col = _cursorPosition.x + columnOffset;
+	unsigned int position = getCharacterIndex( line , col );
 	setSelection(position, position);
 }

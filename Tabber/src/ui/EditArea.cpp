@@ -283,7 +283,10 @@ LRESULT CALLBACK EditArea::handleMessage (
 		case WM_KEYUP:
       	{
 			// special keystrokes
-			onKeyUp(wParam);
+			if( onKeyUp(wParam) == FALSE )
+			{
+				return FALSE;
+			}
 			break;
 		}
 		
@@ -328,7 +331,10 @@ LRESULT CALLBACK EditArea::handleMessage (
 // WIN32's MESSAGES HANDLING (ACTIONS) ////////////////////////////////////////
 
 
-void EditArea::onKeyUp(int virtuakKeyCode)
+/**
+ * returns TRUE if event must be re-processed after call by Superclass's WindowProc, FALSE if it has been processed internally
+ */
+LRESULT EditArea::onKeyUp(int virtuakKeyCode)
 {
 	switch(virtuakKeyCode)
   	{
@@ -348,8 +354,7 @@ void EditArea::onKeyUp(int virtuakKeyCode)
 		case VK_DELETE:
    		case VK_BACK:
    		{
-			onDocumentModified();
-			onSelectionChange();
+			//special, do nothing
 			break;
 		}
 
@@ -359,6 +364,7 @@ void EditArea::onKeyUp(int virtuakKeyCode)
 			break;
 		}
 	}
+	return TRUE;
 }
 
 
@@ -406,6 +412,10 @@ void EditArea::onDelete()
 }
 
 
+
+// TYPING MODES ///////////////////////////////////////////////////////////////
+
+
 /**
  * A character is entered in overwrite typing mode
  */
@@ -415,8 +425,8 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
 
     switch(virtuakKeyCode)
     {
-		case VK_DELETE:
 		case VK_BACK:
+		case VK_DELETE:
        	case VK_RETURN:
 		case VK_ESCAPE:
 		{
@@ -460,11 +470,35 @@ LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
     {
 	    switch(virtuakKeyCode)
 	    {
-			case VK_DELETE:
-			case VK_BACK:
 			case VK_ESCAPE:
 			{
 	      		// special, do nothing
+				break;
+			}
+
+			case VK_BACK:
+			{
+				DWORD selection = _toolkit->getSelection();
+				unsigned int selEnd = __endOf(selection);
+				if( selEnd != _toolkit->getLineStart( _toolkit->getLineIndex( selEnd ) ) )
+				{
+					StaffAction* action = new BackwardRemover();
+					apply(action);
+					delete action;
+				}
+				break;
+			}
+
+			case VK_DELETE: //buggy --> I can't intercept VK_DELETE correctly
+			{
+/*
+				if( !_toolkit->doesSelectionEndLine() )
+				{
+					StaffAction* action = new ForwardRemover();
+					apply(action);
+					delete action;
+				}
+//*/
 				break;
 			}
 
@@ -478,11 +512,12 @@ LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 
 			default:
 			{
- 				Dispatcher* dispatcher = new KeyStrokeDispatcher(virtuakKeyCode, _toolkit->getLineIndex( __endOf(_toolkit->getSelection()) ));
-				insert(dispatcher);
-				delete dispatcher;
+				StaffAction* action = new KeyStrokeDispatcher(virtuakKeyCode, _toolkit->getLineIndex( __endOf(_toolkit->getSelection()) ));
+				apply(action);
+				delete action;
 				break;
 			}
+		return FALSE;
 		}
 	}
 	else
@@ -601,9 +636,30 @@ void EditArea::onInsertTuning()
  */
 void EditArea::onInsertBar()
 {
-	Dispatcher* dispatcher = new BarDispatcher();
-	insert(dispatcher);
-	delete dispatcher;
+	StaffAction* action = new BarDispatcher();
+	apply(action);
+	delete action;
+}
+
+
+/**
+ * Inserts a chord at cursor position
+ * @param commandId Command identifier of chord to insert
+ */
+void EditArea::onInsertChord(unsigned int commandId)
+{
+	if( _toolkit->isInsideStaff() )
+	{
+		ChordIndex index = GetChordIndex(commandId);
+
+		StaffAction* action = new ChordDispatcher(
+			_mainWindow->getApplication()->getChordDefinitions()->getChordGroupAt(index.group)->getChordAt(index.chord) );
+
+		apply(action);
+		delete action;
+	}
+
+	setFocus();
 }
 
 
@@ -611,12 +667,9 @@ void EditArea::onInsertBar()
 // UTILITIES //////////////////////////////////////////////////////////////////
 
 
-/**
- * Inserts data read from the specified dispatcher at cursor position inside the edit control
- */
-void EditArea::insert(Dispatcher* dispatcher)
+void EditArea::apply(StaffAction* action)
 {
-	assert(_hWindow != NULL);
+	assert(_hWindow != NULL && _toolkit->isInsideStaff());
 
 	DWORD selection = _toolkit->getSelection();
 	_toolkit->saveCursorPosition(selection);
@@ -627,17 +680,16 @@ void EditArea::insert(Dispatcher* dispatcher)
 
 	for(unsigned int line=firstLine; line<=lastLine; ++line)
 	{
-		_toolkit->copyAndFillAtLineCol(dispatcher->getString(line), line, column, dispatcher->getStringWidth());
+		action->applyAt(line, column, _toolkit);
 	}
 
 	if(_mainWindow->getApplication()->getSettings()->isChordModeEnabled(ADD_NAME) && firstLine>0)
 	{
-		//add a blank on the chords name line
-		_toolkit->copyAndFillAtLineCol(dispatcher->getHeaderString(), firstLine-1, column, dispatcher->getStringWidth(), ' ');
+		// add header (chord names, spaces, ...)
+		action->applyAt(firstLine-1, column, _toolkit, true);
 	}
 
-	_toolkit->restoreCursorPosition(+dispatcher->getStringWidth());
-	onSelectionChange();
+	_toolkit->restoreCursorPosition(action->getActionOffset());
 	onDocumentModified();
 }
 

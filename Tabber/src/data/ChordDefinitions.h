@@ -32,6 +32,8 @@ class ChordDefinitions: protected DynamicPointerArray<ChordGroup>
 		static const char CHORD_DEFINITIONS_FILE_NAME[];
 		             char _chordDefinitionsFileFullName[MAX_PATH];
 
+		static const int  MAX_GROUP_COUNT;
+
 };
 
 #endif // CHORDDEFINITIONS_H
