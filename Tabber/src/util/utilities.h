@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <commctrl.h> //toolbars, statusbars, tab controls..
+#include <cmath>
 
 #include "../resource.h"
 

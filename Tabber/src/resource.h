@@ -13,18 +13,23 @@
 #define IDI_ICON_LARGE 3000
 #define IDI_ICON_SMALL 3001
 
-#define ID_FILE_NEW      5000
-#define ID_FILE_OPEN     5001
-#define ID_FILE_SAVE     5002
-#define ID_FILE_SAVEAS   5003
-#define ID_APP_EXIT      5004
+#define ID_FILE_NEW        5000
+#define ID_FILE_OPEN       5001
+#define ID_FILE_SAVE       5002
+#define ID_FILE_SAVEAS     5003
+#define ID_FILE_PAGESETUP  5024
+#define ID_FILE_PRINT      5025
+#define ID_APP_EXIT        5004
 
 #define ID_EDIT_UNDO        5008
 #define ID_EDIT_CUT         5005
 #define ID_EDIT_COPY        5006
 #define ID_EDIT_PASTE       5007
 #define ID_EDIT_DELETE      5016
-#define ID_EDIT_SELECT_ALL  5015
+#define ID_EDIT_SELECTALL   5015
+#define ID_EDIT_FIND        5021
+#define ID_EDIT_FINDNEXT    5022
+#define ID_EDIT_REPLACE     5023
 
 #define ID_INSERT_STAFF  5018
 #define ID_INSERT_BAR    5019
@@ -57,3 +62,6 @@
 #define IDC_PROMPT_STRING 2006
 #define IDC_PROMPT_VALUE 2007
 
+#define IDD_PRINT_DIALOG 4003
+#define IDC_PRINT_DOCUMENT 2008
+#define IDC_PRINT_STATUS 2009

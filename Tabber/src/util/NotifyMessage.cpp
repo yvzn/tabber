@@ -9,7 +9,7 @@ void NotifyMessage::publicError(const char* errorMsg)
 	MessageBox (
 		HWND_DESKTOP,
 		errorMsg,
-		"An error occured",
+		"Error",
 		MB_ICONERROR | MB_OK );
 }
 

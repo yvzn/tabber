@@ -83,19 +83,35 @@ bool EditionToolkit::isStaffLine(DWORD selection)
 
 
 /**
+ * Retrieves the specified line into the provided buffer, which is allocated if it's not large enough
+ * @return the number of characters in the line
+ */
+unsigned int EditionToolkit::getLine(unsigned int lineIndex, char*& buffer) const
+{
+    unsigned int lineStart  = getLineStart (lineIndex);
+	unsigned int lineLength = getLineLength(lineStart);
+	WORD bufferSize = lineLength+2;
+
+	if(buffer==NULL || sizeof(buffer)/sizeof(char) < bufferSize)
+	{
+		if(buffer != NULL) delete [] buffer;
+		buffer = new char[bufferSize];
+	}
+
+	CopyMemory(buffer, &bufferSize, sizeof(WORD)); // see EM_GETLINE reference
+	return SendMessage(_hWindow, EM_GETLINE, (WPARAM)lineIndex, (LPARAM)buffer);
+}
+
+
+/**
  * Says if specified line can be considered as part of a staff
  */
 bool EditionToolkit::isStaffLine(unsigned int lineIndex)
 {
     assert(_hWindow != NULL);
 
-    int lineStart  = getLineStart (lineIndex);
-	int lineLength = getLineLength(lineStart);
-	WORD bufferSize = lineLength+2;
-
-	char* buffer = new char[bufferSize];
-	CopyMemory(buffer, &bufferSize, sizeof(WORD)); // see EM_GETLINE reference
-	SendMessage(_hWindow, EM_GETLINE, (WPARAM)lineIndex, (LPARAM)buffer);
+	char* buffer = NULL;
+	int lineLength = getLine(lineIndex, buffer);
 
 	int occurences=0;
 	for(int index=0; index<lineLength; ++index)
@@ -245,7 +261,7 @@ void  EditionToolkit::copyNoteAtBufferStart(GuitarChord* chord, unsigned int not
 {
 	for(int prefix=0; prefix<chord->getWidth(); ++prefix) buffer[prefix]=' ';
 
-	if(noteIndex < chord->getNoteCount())
+	if(noteIndex < (unsigned int)chord->getNoteCount())
 	{
 		const char* note = chord->getNote(chord->getNoteCount() - noteIndex - 1); // note order is reversed :/
 		CopyMemory(buffer, note, lstrlen(note)); // does not copy the final '\0'

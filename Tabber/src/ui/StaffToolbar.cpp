@@ -57,6 +57,8 @@ LRESULT CALLBACK StaffToolbar::handleMessage (
 			wParam,
 			lParam );
 		_parent->getMainWindow()->getEditArea()->setFocus();
+
+		return FALSE;
 	}
 	else
 	{

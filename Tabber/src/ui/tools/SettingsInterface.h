@@ -3,7 +3,7 @@
 
 #include "../../util/utilities.h"
 #include "../../core/ApplicationSettings.h"
-#include "../../ui/PromptDialog.h"
+#include "../../ui/dialogs/PromptDialog.h"
 
 /* forward */ class MainWindow;
 

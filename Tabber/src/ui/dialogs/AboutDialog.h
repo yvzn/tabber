@@ -1,7 +1,7 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
-#include "../util/utilities.h"
+#include "../../util/utilities.h"
 
 
 class AboutDialog

@@ -49,6 +49,8 @@ class EditionToolkit
 #define __startOf(selection) LOWORD(selection)
 #define __endOf(selection) HIWORD(selection)
 
+		unsigned int getLine(unsigned int line, char*& buffer) const;
+
 		inline unsigned int getLineIndex     (unsigned int position)  const { return SendMessage(_hWindow, EM_LINEFROMCHAR, (WPARAM)position, 0); }
 		inline unsigned int getLineLength    (unsigned int position)  const { return SendMessage(_hWindow, EM_LINELENGTH,   (WPARAM)position, 0); }
 		inline unsigned int getLineStart     (unsigned int line)      const { return SendMessage(_hWindow, EM_LINEINDEX,    (WPARAM)line,     0); }
@@ -57,9 +59,9 @@ class EditionToolkit
 		inline unsigned int getColumnIndex   (unsigned int position)  const { return position - getLineStart( getLineIndex(position) );           }
 
 		inline DWORD getSelection     ( )                       const { return SendMessage(_hWindow, EM_GETSEL,       0,                0); }
-		inline void  setSelection (unsigned int start, unsigned int end) const { SendMessage(_hWindow, EM_SETSEL, (WPARAM)start, (LPARAM)end); }
-		inline void  setSelection     (DWORD selection)         const { setSelection(__startOf(selection), __endOf(selection)); }
-		inline void  replaceSelection (const char* string ="")  const { SendMessage(_hWindow, EM_REPLACESEL,  TRUE, (LPARAM)string); }
+		inline void  setSelection (unsigned int start, unsigned int end) { SendMessage(_hWindow, EM_SETSEL, (WPARAM)start, (LPARAM)end); }
+		inline void  setSelection     (DWORD selection)               { setSelection(__startOf(selection), __endOf(selection)); }
+		inline void  replaceSelection (const char* string ="")        { SendMessage(_hWindow, EM_REPLACESEL,  TRUE, (LPARAM)string); }
 
 
 		// Other utilities ////////////

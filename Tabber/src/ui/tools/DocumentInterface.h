@@ -26,6 +26,8 @@ class DocumentInterface
 		void onDocumentOpen   ( );
 		void onDocumentOpen   (const char* );
 
+		inline const char* getFileName() const { return _fileName; }
+
 	protected:
 
 		void blankDocumentFlags();
@@ -37,9 +39,9 @@ class DocumentInterface
 
 		MainWindow* _mainWindow;
 
-		bool _isDocumentModified;
-		bool _isFileLoaded;
-		char _filePathAndName[MAX_PATH];
+		bool  _isDocumentModified;
+		bool  _isFileLoaded;
+		char  _filePathAndName[MAX_PATH];
 		char* _fileName;
 		
 		OPENFILENAME _fileDialogOptions;

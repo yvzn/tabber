@@ -13,20 +13,24 @@ MainWindow::MainWindow(Application* application)
 	InitCommonControls();
 
 	_application      = application;
+
 	_toolbar          = new MainToolbar();
 	_status           = new StatusBar();
 	_chordsTabControl = new ChordsTabControl(this);
 	_editArea         = new EditArea(this);
 	_staff            = new StaffToolbar(_chordsTabControl);
+
 	_documentInterface = new DocumentInterface(this);
 	_settingsInterface = new SettingsInterface(this);
-	
+	_printerInterface  = new PrinterInterface(this);
+
 	OBJECT_CREATED;
 }
 
 
 MainWindow::~MainWindow()
 {
+	delete _printerInterface;
 	delete _settingsInterface;
 	delete _documentInterface;
 
@@ -35,6 +39,7 @@ MainWindow::~MainWindow()
 	delete _chordsTabControl;
 	delete _toolbar;
 	delete _status;
+
 	OBJECT_DELETED;
 }
 
@@ -202,18 +207,23 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 	{
 		case ID_APP_EXIT: onClose(); break;
 		
-		case ID_FILE_NEW    : _documentInterface->onNewDocument();     break;
-		case ID_FILE_SAVE   : _documentInterface->onDocumentSave();    break;
-		case ID_FILE_SAVEAS : _documentInterface->onDocumentSaveAs();  break;
-		case ID_FILE_OPEN   : _documentInterface->onDocumentOpen();    break;
-		
-		case ID_EDIT_CUT        : _editArea->doCommand(WM_CUT);    break;
-		case ID_EDIT_COPY       : _editArea->doCommand(WM_COPY);   break;
-		case ID_EDIT_PASTE      : _editArea->doCommand(WM_PASTE);  break;
-		case ID_EDIT_UNDO       : _editArea->doCommand(WM_UNDO);   break;
-		case ID_EDIT_SELECT_ALL : _editArea->onSelectAll();        break;
-		case ID_EDIT_DELETE     : _editArea->onDelete();           break;
-		
+		case ID_FILE_NEW       : _documentInterface->onNewDocument();     break;
+		case ID_FILE_SAVE      : _documentInterface->onDocumentSave();    break;
+		case ID_FILE_SAVEAS    : _documentInterface->onDocumentSaveAs();  break;
+		case ID_FILE_OPEN      : _documentInterface->onDocumentOpen();    break;
+		case ID_FILE_PAGESETUP : _printerInterface->onChoosePageSetup();  break;
+		case ID_FILE_PRINT     : _printerInterface->onPrint();            break;
+
+		case ID_EDIT_CUT       : _editArea->doCommand(WM_CUT);    break;
+		case ID_EDIT_COPY      : _editArea->doCommand(WM_COPY);   break;
+		case ID_EDIT_PASTE     : _editArea->doCommand(WM_PASTE);  break;
+		case ID_EDIT_UNDO      : _editArea->doCommand(WM_UNDO);   break;
+		case ID_EDIT_SELECTALL : _editArea->onSelectAll();        break;
+		case ID_EDIT_DELETE    : _editArea->onDelete();           break;
+		case ID_EDIT_FIND      : break;
+		case ID_EDIT_FINDNEXT  : break;
+		case ID_EDIT_REPLACE   : break;
+
 		case ID_INSERT_STAFF  : _editArea->onInsertStaff();  break;
 		case ID_INSERT_TUNING : _editArea->onInsertTuning(); break;
 		case ID_INSERT_BAR    : _editArea->onInsertBar();    break;

@@ -44,7 +44,6 @@ void ChordsTabControl::create(HWND hParentWindow)
 	}
 
 	ApplyUsersDefaultFont(_hWindow);
-	int groupIndex;
 	
 	createTabs(hParentWindow);
 	createChildPanels(hParentWindow);

@@ -38,7 +38,11 @@ class EditArea
 
 		void onSelectionChange ( );
 
-		inline MainWindow* getMainWindow() const { return _mainWindow; }
+		inline MainWindow*     getMainWindow () { return _mainWindow;  }
+		inline EditionToolkit* getToolkit    () { return _toolkit;     }
+
+		inline HWND   getWindowHandle () { return _hWindow;     }
+		inline HFONT  getDisplayFont  () { return _displayFont; }
 
 	protected:
 

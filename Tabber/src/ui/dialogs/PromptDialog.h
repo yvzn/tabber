@@ -1,7 +1,7 @@
 #ifndef PROMPTDIALOG_H
 #define PROMPTDIALOG_H
 
-#include "../util/utilities.h"
+#include "../../util/utilities.h"
 
 
 class PromptDialog

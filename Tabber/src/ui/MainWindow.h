@@ -10,11 +10,15 @@
 #include "../ui/StatusBar.h"
 #include "../ui/ChordsTabControl.h"
 #include "../ui/EditArea.h"
-#include "../ui/AboutDialog.h"
 #include "../ui/StaffToolbar.h"
 
 #include "../ui/tools/DocumentInterface.h"
 #include "../ui/tools/SettingsInterface.h"
+#include "../ui/tools/PrinterInterface.h"
+
+#include "../ui/dialogs/AboutDialog.h"
+
+
 
 
 class MainWindow
@@ -37,7 +41,8 @@ class MainWindow
 		inline EditArea*          getEditArea          () { return _editArea;          }
 		inline StatusBar*         getStatusBar         () { return _status;            }
 		inline StaffToolbar*      getStaffToolbar      () { return _staff;             }
-		inline HWND&              getWindowHandle      () { return _hWindow;           }
+
+		inline HWND               getWindowHandle      () { return _hWindow;           }
   		inline HMENU              getMenu              () { return GetMenu(_hWindow);  }
 
 	public:
@@ -64,8 +69,10 @@ class MainWindow
 		static const char WINDOW_CLASS_NAME[];
 
 		Application*       _application;
+
 		DocumentInterface* _documentInterface;
 		SettingsInterface* _settingsInterface;
+		PrinterInterface*  _printerInterface;
 
 		MainToolbar*       _toolbar;
 		StatusBar*         _status;
