@@ -1,16 +1,19 @@
 #include "MainWindow.h"
 
-const char MainWindow::WINDOW_CLASS_NAME[] = "Tabber";
+const char MainWindow::WINDOW_CLASS_NAME[] = "MainWindow";
+const char MainWindow::APPLICATION_NAME[] = "Tabber";
 
 
 MainWindow::MainWindow(Application* application)
 {
 	InitCommonControls();
 
-	_application   = application;
-	_toolbar       = new MainToolbar();
-	_status        = new StatusBar();
-	_chordsToolbar = new ChordsToolbar(this);
+	_application     = application;
+	_toolbar         = new MainToolbar();
+	_status          = new StatusBar();
+	_chordsToolbar   = new ChordsToolbar(this);
+	_editArea        = new EditArea(this);
+	_documentManager = new DocumentManager(this);
 	
 	OBJECT_CREATED;
 }
@@ -18,6 +21,8 @@ MainWindow::MainWindow(Application* application)
 
 MainWindow::~MainWindow()
 {
+	delete _documentManager;
+	delete _editArea;
 	delete _chordsToolbar;
 	delete _toolbar;
 	delete _status;
@@ -54,15 +59,15 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
 	WNDCLASSEX wndClass;
 	ZeroMemory(&wndClass, sizeof(wndClass));
     wndClass.cbSize        = sizeof(WNDCLASSEX);
-    wndClass.style         = 0;
+    //wndClass.style         = 0;
     wndClass.lpfnWndProc   = MainWindow::WindowProc;
-    wndClass.cbClsExtra    = 0;
-    wndClass.cbWndExtra    = 0;
+    //wndClass.cbClsExtra    = 0;
+    //wndClass.cbWndExtra    = 0;
     wndClass.hInstance     = hApplicationInstance;
     wndClass.hIcon         = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_LARGE));
     wndClass.hIconSm       = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_SMALL));
     wndClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wndClass.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
+    wndClass.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE);
     wndClass.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN_MENU);
     wndClass.lpszClassName = WINDOW_CLASS_NAME;
 
@@ -74,7 +79,7 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     _hWindow = CreateWindowEx (
         0,
         WINDOW_CLASS_NAME,
-        "Tabber",
+        "Untitled - Tabber",
         windowStyle, 
         x, y, width, height,
         HWND_DESKTOP, NULL, hApplicationInstance, NULL );
@@ -98,6 +103,24 @@ void MainWindow::show(int showState) const
 Application* MainWindow::getApplication()
 {
 	return _application;
+}
+
+
+HWND& MainWindow::getWindowHandle()
+{
+	return _hWindow;
+}
+
+
+void MainWindow::setWindowTitle(const char* documentName)
+{
+	PostMessage(_hWindow, WM_SETTEXT, 0, (LPARAM)documentName);
+}
+
+
+EditArea* MainWindow::getEditArea()
+{
+	return _editArea;
 }
 
 
@@ -169,7 +192,8 @@ void MainWindow::onCreate(HWND hPrecreateWindow)
 		//load view
 		_toolbar->create(hPrecreateWindow);
 		_status->create(hPrecreateWindow);
-		_chordsToolbar->create(hPrecreateWindow);		
+		_chordsToolbar->create(hPrecreateWindow);
+		_editArea->create(hPrecreateWindow);
 	}
 	catch(RuntimeException* ex)
 	{
@@ -182,18 +206,19 @@ void MainWindow::onClose()
 {
 	assert(_hWindow != NULL);
 	
-	//prompt to save if document has been modified
+	if(_documentManager->continueIfDocumentModified())
+	{
+		//save settings
+		RECT windowRect;
+		GetWindowRect(_hWindow, &windowRect);
 	
-	//save settings
-	RECT windowRect;
-	GetWindowRect(_hWindow, &windowRect);
+		ApplicationSettings* appSettings = _application->getSettings();
+		appSettings->setMainWindowRect(windowRect);
+		appSettings->setMainWindowMaximizedState(IsZoomed(_hWindow) > 0);
+		appSettings->save();
 	
-	ApplicationSettings* appSettings = _application->getSettings();
-	appSettings->setMainWindowRect(windowRect);
-	appSettings->setMainWindowMaximizedState(IsZoomed(_hWindow) > 0);
-	appSettings->save();
-	
-	DestroyWindow(_hWindow);
+		DestroyWindow(_hWindow);
+	}
 }
 
 
@@ -213,30 +238,42 @@ void MainWindow::onSize()
 	GetClientRect(_hWindow, &clientRect);
 
  	//position child windows: chords toolbar
- 	RECT childRect;
- 	childRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
- 	childRect.top = max(toolbarRect.bottom - toolbarRect.top, childRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
- 	childRect.left = clientRect.left;
- 	childRect.right = clientRect.right;
-	_chordsToolbar->resize(childRect); 	
+ 	RECT chordsToolbarRect;
+ 	chordsToolbarRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
+ 	chordsToolbarRect.top = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+ 	chordsToolbarRect.left = clientRect.left;
+ 	chordsToolbarRect.right = clientRect.right;
+	_chordsToolbar->resize(chordsToolbarRect);
+	
+	//edit area
+	RECT editAreaRect;
+	editAreaRect.bottom = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+	editAreaRect.top = toolbarRect.bottom - toolbarRect.top;
+	editAreaRect.left = clientRect.left;
+ 	editAreaRect.right = clientRect.right;
+	_editArea->resize(editAreaRect);
 }
 
 
 void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 {
-	assert(_hWindow != NULL);
-	
 	switch(LOWORD(wParam))
 	{
 		case ID_APP_EXIT:
 		{
-			PostMessage(_hWindow, WM_CLOSE, 0, 0);
+			onClose();
+			break;
+		}
+		
+		case ID_FILE_NEW:
+		{
+			_documentManager->onNewDocument();
 			break;
 		}
 		
 		default:
 		{
-			NotifyMessage::debug("Command: %d !", LOWORD(wParam));
+			//NotifyMessage::debug("MainWindow Command => %d ", LOWORD(wParam));
 			break;
 		}
 	}
@@ -253,7 +290,7 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 	{
 		case TCN_SELCHANGE: 
 		{
-			//maybe I should check if message sender IS the chords toolbar
+			//maybe I should check if source window IS the chords toolbar
 			_chordsToolbar->updateOnTabChange();
 			
 			//I send a "resize" message so that not-displayed-before-therefore-not-resized-but-now-displayed tabs are sized properly
@@ -262,4 +299,5 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 		}
 	}
 }
+
 

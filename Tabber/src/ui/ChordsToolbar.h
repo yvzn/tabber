@@ -3,6 +3,7 @@
 
 #include "../util/utilities.h"
 #include "../core/Application.h"
+#include "../ui/ChordButtonsPanel.h"
 
 
 /* forward */ class MainWindow;
@@ -21,25 +22,19 @@ class ChordsToolbar
 		
 		void updateOnTabChange();
 
-		static const int CHORDS_TOOLBAR_HEIGHT;
-		static const int CHORD_BUTTON_HEIGHT;
-		static const int CHORD_BUTTON_WIDTH;
-		static const int CHORD_BUTTON_PADDING;
-		
-	protected:
+	public:
 	
-		void hidePanel(int );
-		void showPanel(int );
-
+		static const int CHORDS_TOOLBAR_HEIGHT;
+		
 	protected:
 	
 		MainWindow* _mainWindow;
 	
 		HWND  _hWindow;
 
-		int   _panelCount;
-		HWND* _panels;
-		int   _activePanelIndex;
+		ChordButtonsPanel* _panels;
+		int                _panelCount;
+		int                _activePanelIndex;
 
 };
 

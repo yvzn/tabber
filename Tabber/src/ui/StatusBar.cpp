@@ -44,7 +44,7 @@ void StatusBar::resize()
 void StatusBar::setTextInPart(int indexOfPart, const char* newPartText)
 {
 	assert(_hWindow != NULL);
-    SendMessage(_hWindow, SB_SETTEXT, (WPARAM)indexOfPart, (LPARAM)newPartText);
+    PostMessage(_hWindow, SB_SETTEXT, (WPARAM)indexOfPart, (LPARAM)newPartText);
 }
 
 
