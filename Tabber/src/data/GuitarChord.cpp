@@ -1,6 +1,7 @@
 #include "GuitarChord.h"
 
-#define EXTENDED_SEQUENCE_SEPARATOR ','
+const char GuitarChord::EXTENDED_SEQUENCE_SEPARATOR = ',';
+const char GuitarChord::INVISIBLE_NOTE = 'x';
 
 
 /**

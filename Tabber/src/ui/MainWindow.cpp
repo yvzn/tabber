@@ -12,11 +12,12 @@ MainWindow::MainWindow(Application* application)
 {
 	InitCommonControls();
 
-	_application     = application;
-	_toolbar         = new MainToolbar();
-	_status          = new StatusBar();
-	_chordsToolbar   = new ChordsToolbar(this);
-	_editArea        = new EditArea(this);
+	_application      = application;
+	_toolbar          = new MainToolbar();
+	_status           = new StatusBar();
+	_chordsTabControl = new ChordsTabControl(this);
+	_editArea         = new EditArea(this);
+	_staff            = new StaffToolbar(_chordsTabControl);
 	_documentInterface = new DocumentInterface(this);
 	_settingsInterface = new SettingsInterface(this);
 	
@@ -28,8 +29,10 @@ MainWindow::~MainWindow()
 {
 	delete _settingsInterface;
 	delete _documentInterface;
+
+	delete _staff;
 	delete _editArea;
-	delete _chordsToolbar;
+	delete _chordsTabControl;
 	delete _toolbar;
 	delete _status;
 	OBJECT_DELETED;
@@ -254,7 +257,7 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 		case TCN_SELCHANGE: 
 		{
 			//maybe I should check if source window IS the chords toolbar
-			_chordsToolbar->updateOnTabChange();
+			_chordsTabControl->updateOnTabChange();
 			
 			//I send a "resize" message so that not-displayed-before-therefore-not-resized-but-now-displayed tabs are sized properly
 			SendMessage(_hWindow, WM_SIZE, 0, 0);
@@ -278,7 +281,8 @@ void MainWindow::onCreate(HWND hPrecreateWindow)
 		//load view
 		_toolbar->create(hPrecreateWindow);
 		_status->create(hPrecreateWindow);
-		_chordsToolbar->create(hPrecreateWindow);
+		_staff->create(hPrecreateWindow); // must be created before _chordsTabControl, which it belongs to
+		_chordsTabControl->create(hPrecreateWindow);
 		_editArea->create(hPrecreateWindow);
 	}
 	catch(RuntimeException* ex)
@@ -323,16 +327,16 @@ void MainWindow::onSize()
 	GetClientRect(_hWindow, &clientRect);
 
  	//position child windows: chords toolbar
- 	RECT chordsToolbarRect;
- 	chordsToolbarRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
- 	chordsToolbarRect.top = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
- 	chordsToolbarRect.left = clientRect.left;
- 	chordsToolbarRect.right = clientRect.right;
-	_chordsToolbar->resize(chordsToolbarRect);
+ 	RECT chordsTabControlRect;
+ 	chordsTabControlRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
+ 	chordsTabControlRect.top = max(toolbarRect.bottom - toolbarRect.top + 10, chordsTabControlRect.bottom - ChordsTabControl::CHORDS_TOOLBAR_HEIGHT);
+ 	chordsTabControlRect.left = clientRect.left;
+ 	chordsTabControlRect.right = clientRect.right;
+	_chordsTabControl->resize(chordsTabControlRect);
 
 	//edit area
 	RECT editAreaRect;
-	editAreaRect.bottom = max(toolbarRect.bottom - toolbarRect.top + 10, chordsToolbarRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+	editAreaRect.bottom = max(toolbarRect.bottom - toolbarRect.top + 10, chordsTabControlRect.bottom - ChordsTabControl::CHORDS_TOOLBAR_HEIGHT);
 	editAreaRect.top = toolbarRect.bottom - toolbarRect.top;
 	editAreaRect.left = clientRect.left;
  	editAreaRect.right = clientRect.right;

@@ -2,43 +2,39 @@
 #define CHORDSTOOLBAR_H
 
 #include "../util/utilities.h"
-#include "../core/Application.h"
-#include "../ui/ChordButtonsPanel.h"
+#include "../ui/ChordsTabControlPanel.h"
+#include "../ui/tools/EditionActions.h"
 
 
-/* forward */ class MainWindow;
-
-
-class ChordsToolbar
+/**
+ * A basic container for buttons, with the ability to process button clicks.
+ */
+class ChordsToolbar: public ChordsTabControlPanel
 {
 
 	public:
 
-		ChordsToolbar(MainWindow* );
+		ChordsToolbar(ChordsTabControl* );
 		~ChordsToolbar();
 
 		void create(HWND );
-		void resize(const RECT& );
-		
-		void updateOnTabChange();
 
-		inline MainWindow* getMainWindow() const { return _mainWindow; }
+		void addButton(const char* , int );
 
-	public:
-	
-		static const int CHORDS_TOOLBAR_HEIGHT;
-		
 	protected:
-	
-		MainWindow* _mainWindow;
-	
-		HWND  _hWindow;
 
-		ChordButtonsPanel** _panels;
-		int                 _panelCount;
-		int                 _activePanelIndex;
+		LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
+
+	protected:
+
+		static const int CHORD_BUTTON_HEIGHT;
+		static const int CHORD_BUTTON_WIDTH;
+		static const int CHORD_BUTTON_PADDING;
+
+		int _xNextButtonPosition;
 
 };
+
 
 #endif // CHORDSTOOLBAR_H
 

@@ -1,5 +1,5 @@
 #include "SettingsInterface.h"
-#include "../ui/MainWindow.h"
+#include "../../ui/MainWindow.h"
 
 
 SettingsInterface::SettingsInterface(MainWindow* parentWindow)
@@ -74,7 +74,6 @@ void SettingsInterface::applySettings()
 	//chord modes
 	onChangeChordMode(ADD_EXTRA_SPACE, settings->isChordModeEnabled(ADD_EXTRA_SPACE));
 	onChangeChordMode(ADD_NAME,        settings->isChordModeEnabled(ADD_NAME)       );
-	onChangeChordMode(ARPEGGIO,        settings->isChordModeEnabled(ARPEGGIO)       );
 }
 
 
@@ -208,6 +207,7 @@ void SettingsInterface::onChooseChordDepth()
 	if(action == IDOK)
 	{
 		settings->setChordDepth(PromptDialog::getIntegerValue());
+		_mainWindow->getEditArea()->onSelectionChange();
 	}
 }
 

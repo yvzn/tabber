@@ -97,7 +97,8 @@ void EditArea::wipeContent()
 {
 	assert(_hWindow != NULL);
 	SetWindowText(_hWindow, "");
-	SetFocus(_hWindow);
+	setFocus();
+	onSelectionChange();
 }
 
 
@@ -140,7 +141,7 @@ void EditArea::saveContentTo(const char* fileName)
 	
 	CloseHandle(hFile);
 
-	SetFocus(_hWindow);
+	setFocus();
 }
 
 
@@ -186,7 +187,7 @@ void EditArea::loadContentFrom(const char* fileName)
 
 	CloseHandle(hFile);
 
-	SetFocus(_hWindow);
+	setFocus();
 }
 
 
@@ -282,14 +283,22 @@ LRESULT CALLBACK EditArea::handleMessage (
 
 		case WM_KEYUP:
       	{
-			// special keystrokes
 			if( onKeyUp(wParam) == FALSE )
 			{
 				return FALSE;
 			}
 			break;
 		}
-		
+
+		case WM_KEYDOWN:
+      	{
+			if( onKeyDown(wParam) == FALSE )
+			{
+				return FALSE;
+			}
+			break;
+		}
+
 		case WM_CHAR:
 		{
       		// characters keystrokes
@@ -313,6 +322,11 @@ LRESULT CALLBACK EditArea::handleMessage (
 				}
 			}
             break;
+		}
+
+		default:
+  		{
+			break;
 		}
 	}
 
@@ -352,15 +366,54 @@ LRESULT EditArea::onKeyUp(int virtuakKeyCode)
 		}
 
 		case VK_DELETE:
-   		case VK_BACK:
    		{
-			//special, do nothing
+			onSelectionChange();
+			onDocumentModified();
 			break;
 		}
 
 		case VK_SNAPSHOT: // Print Screen
         {
         	_mainWindow->setCommandEnabled(ID_EDIT_PASTE, false);
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+	}
+	return TRUE;
+}
+
+
+/**
+ * returns TRUE if event must be re-processed after call by Superclass's WindowProc, FALSE if it has been processed internally
+ */
+LRESULT EditArea::onKeyDown(int virtuakKeyCode)
+{
+	assert(_hWindow != NULL);
+
+	switch(virtuakKeyCode)
+  	{
+		case VK_DELETE:
+   		{
+			//handled here because VK_DELETE does not generate those handy WM_CHAR events
+			if(_mainWindow->getApplication()->getSettings()->getTypingMode() == SPECIAL)
+			{
+				if( !_toolkit->doesSelectionEndLine() )
+				{
+					StaffAction* action = new ForwardRemover();
+					apply(action);
+					delete action;
+				}
+				return FALSE;
+			}
+			break;
+		}
+
+		default:
+		{
 			break;
 		}
 	}
@@ -426,7 +479,6 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
     switch(virtuakKeyCode)
     {
 		case VK_BACK:
-		case VK_DELETE:
        	case VK_RETURN:
 		case VK_ESCAPE:
 		{
@@ -447,9 +499,6 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
                		_toolkit->setSelection(__startOf(selection), __endOf(selection) + 1);
 				}
             }
-
-            //SendMessage(_hWindow, EM_REPLACESEL, TRUE, (DWORD)((LPSTR)&virtuakKeyCode ));
-            //return FALSE;
 		}
 	}
 	
@@ -466,7 +515,8 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
 LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 {
 	DWORD selection = _toolkit->getSelection();
-    if(_toolkit->isInsideStaff(selection))
+
+    if( _toolkit->isStaffLine(selection) )
     {
 	    switch(virtuakKeyCode)
 	    {
@@ -478,7 +528,6 @@ LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 
 			case VK_BACK:
 			{
-				DWORD selection = _toolkit->getSelection();
 				unsigned int selEnd = __endOf(selection);
 				if( selEnd != _toolkit->getLineStart( _toolkit->getLineIndex( selEnd ) ) )
 				{
@@ -486,19 +535,6 @@ LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 					apply(action);
 					delete action;
 				}
-				break;
-			}
-
-			case VK_DELETE: //buggy --> I can't intercept VK_DELETE correctly
-			{
-/*
-				if( !_toolkit->doesSelectionEndLine() )
-				{
-					StaffAction* action = new ForwardRemover();
-					apply(action);
-					delete action;
-				}
-//*/
 				break;
 			}
 
@@ -512,13 +548,15 @@ LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 
 			default:
 			{
-				StaffAction* action = new KeyStrokeDispatcher(virtuakKeyCode, _toolkit->getLineIndex( __endOf(_toolkit->getSelection()) ));
+				int line = _toolkit->getLineIndex( __endOf(selection) );
+				StaffAction* action = new SingleNoteDispatcher(virtuakKeyCode, line);
 				apply(action);
 				delete action;
 				break;
 			}
-		return FALSE;
 		}
+
+		return FALSE;
 	}
 	else
 	{
@@ -590,43 +628,15 @@ void EditArea::onInsertStaff()
  */
 void EditArea::onInsertTuning()
 {
-	assert(_hWindow != NULL && _toolkit->isInsideStaff());
-
  	TuningIndex tuningIndex  = _mainWindow->getApplication()->getSettings()->getSelectedTuningIndex();
 
 	if(tuningIndex > 0) // index 0 means no tuning
 	{
-		DWORD selection = _toolkit->getSelection();
-		_toolkit->saveCursorPosition(selection);
-		_toolkit->moveToStaffStart(selection);
-
 		GuitarTuning* tuning = _mainWindow->getApplication()->getTuningDefinitions()->getTuningAt(tuningIndex-1);
-		char*         buffer = new char[tuning->getWidth() + 1 /* '|' */ + 1 /* '\0' */];
 
-  		unsigned int lineIndex = _toolkit->getLineIndex(__endOf(selection));
-  		unsigned int lineCount = _toolkit->getLineCount();
-
-		int tuningString = 0;
-		while(lineIndex < lineCount && _toolkit->isStaffLine(lineIndex))
-		{
-			unsigned int lineStart = _toolkit->getLineStart(lineIndex);
-			_toolkit->setSelection(lineStart, lineStart);
-
-			_toolkit->copyNoteAtBufferStart(tuning, tuningString, buffer);
-			buffer[tuning->getWidth()+1] = '\0';
-
-			_toolkit->replaceSelection(buffer);
-
-			++lineIndex;
-			++tuningString;
-		}
-
-		delete [] buffer;
-
-		_toolkit->restoreCursorPosition(+tuning->getWidth()+1);
-
-		onSelectionChange();
-		onDocumentModified();
+		StaffAction* action = new TuningDispatcher(tuning);
+		apply(action);
+		delete action;
 	}
 }
 
@@ -646,14 +656,24 @@ void EditArea::onInsertBar()
  * Inserts a chord at cursor position
  * @param commandId Command identifier of chord to insert
  */
-void EditArea::onInsertChord(unsigned int commandId)
+void EditArea::onInsertChord(unsigned int commandId, ArpeggioDispatcher::Direction direction)
 {
 	if( _toolkit->isInsideStaff() )
 	{
 		ChordIndex index = GetChordIndex(commandId);
+		StaffAction* action;
 
-		StaffAction* action = new ChordDispatcher(
-			_mainWindow->getApplication()->getChordDefinitions()->getChordGroupAt(index.group)->getChordAt(index.chord) );
+		if(direction==ArpeggioDispatcher::NONE)
+		{
+			action = new ChordDispatcher(
+				_mainWindow->getApplication()->getChordDefinitions()->getChordGroupAt(index.group)->getChordAt(index.chord) );
+		}
+		else
+		{
+			action = new ArpeggioDispatcher(
+				_mainWindow->getApplication()->getChordDefinitions()->getChordGroupAt(index.group)->getChordAt(index.chord),
+				direction );
+		}
 
 		apply(action);
 		delete action;
@@ -685,8 +705,16 @@ void EditArea::apply(StaffAction* action)
 
 	if(_mainWindow->getApplication()->getSettings()->isChordModeEnabled(ADD_NAME) && firstLine>0)
 	{
-		// add header (chord names, spaces, ...)
-		action->applyAt(firstLine-1, column, _toolkit, true);
+		//fill header line if needed
+		unsigned int headerLine = firstLine - 1;
+  		unsigned int headerLength = _toolkit->getLineLength( _toolkit->getLineStart(headerLine) );
+		if( headerLength < column )
+		{
+			_toolkit->copyAndFillAtLineCol("", headerLine, headerLength, column - headerLength, ' ');
+		}
+
+		//add header (chord names, spaces, ...) at column
+		action->applyAt(headerLine, column, _toolkit, true);
 	}
 
 	_toolkit->restoreCursorPosition(action->getActionOffset());

@@ -8,11 +8,13 @@
 
 #include "../ui/MainToolbar.h"
 #include "../ui/StatusBar.h"
-#include "../ui/ChordsToolbar.h"
+#include "../ui/ChordsTabControl.h"
 #include "../ui/EditArea.h"
-#include "../ui/DocumentInterface.h"
-#include "../ui/SettingsInterface.h"
 #include "../ui/AboutDialog.h"
+#include "../ui/StaffToolbar.h"
+
+#include "../ui/tools/DocumentInterface.h"
+#include "../ui/tools/SettingsInterface.h"
 
 
 class MainWindow
@@ -34,6 +36,7 @@ class MainWindow
 
 		inline EditArea*          getEditArea          () { return _editArea;          }
 		inline StatusBar*         getStatusBar         () { return _status;            }
+		inline StaffToolbar*      getStaffToolbar      () { return _staff;             }
 		inline HWND&              getWindowHandle      () { return _hWindow;           }
   		inline HMENU              getMenu              () { return GetMenu(_hWindow);  }
 
@@ -66,8 +69,9 @@ class MainWindow
 
 		MainToolbar*       _toolbar;
 		StatusBar*         _status;
-		ChordsToolbar*     _chordsToolbar;
+		ChordsTabControl*  _chordsTabControl;
 		EditArea*          _editArea;
+		StaffToolbar*      _staff;
 
 		HWND          _hWindow;
 

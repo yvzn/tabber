@@ -1,6 +1,6 @@
 #include "EditionToolkit.h"
-#include "../ui/EditArea.h"
-#include "../ui/MainWindow.h"
+#include "../../ui/EditArea.h"
+#include "../../ui/MainWindow.h"
 
 
 

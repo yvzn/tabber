@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <commctrl.h> //toolbars, statusbars, tab controls..
 
-#include "../../resource.h"
+#include "../resource.h"
 
 #include "../util/NotifyMessage.h"
 #include "../util/RuntimeException.h"

@@ -1,5 +1,5 @@
 #include "DocumentInterface.h"
-#include "../ui/MainWindow.h"
+#include "../../ui/MainWindow.h"
 
 
 DocumentInterface::DocumentInterface(MainWindow* parentWindow)

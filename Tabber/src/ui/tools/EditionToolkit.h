@@ -1,8 +1,9 @@
 #ifndef EDITIONHEURISTICS_H
 #define EDITIONHEURISTICS_H
 
-#include "../util/utilities.h"
-#include "../data/GuitarChord.h"
+#include "../../util/utilities.h"
+#include "../../data/GuitarChord.h"
+#include "../../data/TuningDefinitions.h"
 
 /* forward */ class EditArea;
 

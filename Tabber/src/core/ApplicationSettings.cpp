@@ -36,7 +36,6 @@ void ApplicationSettings::load()
 	
 	_isChordModeEnabled[ADD_EXTRA_SPACE] = GetPrivateProfileInt("edition", "extra-space", 0, _settingsFileFullName) > 0;
 	_isChordModeEnabled[ADD_NAME] = GetPrivateProfileInt("edition", "add-name", 0, _settingsFileFullName) > 0;
-	_isChordModeEnabled[ARPEGGIO] = GetPrivateProfileInt("edition", "arpeggio", 0, _settingsFileFullName) > 0;
 	
 	_staffWidth = GetPrivateProfileInt("staff", "width", 80, _settingsFileFullName);
 	_chordDepth = GetPrivateProfileInt("staff", "height", 6, _settingsFileFullName);
@@ -62,7 +61,6 @@ void ApplicationSettings::save() const
 	
 	WritePrivateProfileString("edition", "extra-space", toString(_isChordModeEnabled[ADD_EXTRA_SPACE]), _settingsFileFullName);
 	WritePrivateProfileString("edition", "add-name", toString(_isChordModeEnabled[ADD_NAME]), _settingsFileFullName);
-	WritePrivateProfileString("edition", "arpeggio", toString(_isChordModeEnabled[ARPEGGIO]), _settingsFileFullName);
 	
 	WritePrivateProfileString("staff", "width", toString(_staffWidth), _settingsFileFullName);
 	WritePrivateProfileString("staff", "height", toString(_chordDepth), _settingsFileFullName);

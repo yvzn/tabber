@@ -1,7 +1,7 @@
 #include <windows.h>
 
-#include "src/core/Application.h"
-#include "src/util/utilities.h"
+#include "core/Application.h"
+#include "util/utilities.h"
 
 
 DEBUG_START;

@@ -31,7 +31,7 @@ DECLARE_CONVERSION_FUNCTIONS(TuningIndex, ID_OPTIONS_TUNINGS_NONE);
 /**
  * Modifies the way chords are added
  */
-typedef enum { ADD_EXTRA_SPACE=0, ADD_NAME, ARPEGGIO, CHORD_MODE_COUNT } ChordMode;
+typedef enum { ADD_EXTRA_SPACE=0, ADD_NAME, CHORD_MODE_COUNT } ChordMode;
 
 // declares GetCommandId(ChordMode ) and GetChordMode(unsigned int )
 DECLARE_CONVERSION_FUNCTIONS(ChordMode, ID_OPTIONS_CHORD_EXTRA_SPACE);

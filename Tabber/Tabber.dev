@@ -1,7 +1,7 @@
 [Project]
 FileName=Tabber.dev
 Name=Tabber
-UnitCount=56
+UnitCount=60
 Type=0
 Ver=1
 ObjFiles=
@@ -20,24 +20,14 @@ ObjectOutput=obj
 OverrideOutput=0
 OverrideOutputName=Tabber.exe
 HostApplication=
-Folders="Application Core","Data Model","User Iterface",Utilities
-CommandLine="C:\Documents and Settings\Moi\Bureau\test.tab"
+Folders="Application Core","Data Model","User Iterface","User Iterface/Toolkit",Utilities
+CommandLine="c:\documents and settings\moi\bureau\test.tab"
 UseCustomMakefile=0
 CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0000000000000000000000
-
-[Unit1]
-FileName=winmain.cpp
-CompileCpp=1
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
 
 [VersionInfo]
 Major=0
@@ -58,166 +48,6 @@ ProductVersion=
 AutoIncBuildNr=0
 
 [Unit5]
-FileName=src\ui\MainWindow.cpp
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit4]
-FileName=src\ui\MainWindow.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit7]
-FileName=src\core\ApplicationSettings.cpp
-CompileCpp=1
-Folder=Application Core
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit9]
-FileName=src\data\GuitarChord.cpp
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit10]
-FileName=src\data\ChordDefinitions.h
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit12]
-FileName=src\data\ChordGroup.h
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit11]
-FileName=src\data\ChordDefinitions.cpp
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit14]
-FileName=src\util\DynamicPointerArray.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit13]
-FileName=src\data\ChordGroup.cpp
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit18]
-FileName=src\util\RuntimeException.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit17]
-FileName=src\util\NotifyMessage.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit19]
-FileName=src\util\RuntimeException.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit21]
-FileName=src\util\utilities.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit20]
-FileName=src\util\utilities.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit23]
-FileName=src\util\DoubleNullStringTokenizer.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit22]
-FileName=src\util\DoubleNullStringTokenizer.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit6]
 FileName=src\core\ApplicationSettings.h
 CompileCpp=1
 Folder=Application Core
@@ -227,7 +57,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit4]
+FileName=src\ui\MainWindow.cpp
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit7]
 FileName=src\data\GuitarChord.h
 CompileCpp=1
 Folder=Data Model
@@ -237,7 +77,47 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit9]
+FileName=src\data\ChordDefinitions.h
+CompileCpp=1
+Folder=Data Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit10]
+FileName=src\data\ChordDefinitions.cpp
+CompileCpp=1
+Folder=Data Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit12]
+FileName=src\data\ChordGroup.cpp
+CompileCpp=1
+Folder=Data Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit11]
+FileName=src\data\ChordGroup.h
+CompileCpp=1
+Folder=Data Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit14]
 FileName=src\util\DynamicPointerArray.h
 CompileCpp=1
 Folder=Utilities
@@ -247,8 +127,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
-FileName=src\util\NotifyMessage.cpp
+[Unit13]
+FileName=src\util\DynamicPointerArray.cpp
 CompileCpp=1
 Folder=Utilities
 Compile=1
@@ -257,8 +137,8 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
-FileName=src\util\IniFileSequentialParser.cpp
+[Unit18]
+FileName=src\util\RuntimeException.h
 CompileCpp=1
 Folder=Utilities
 Compile=1
@@ -267,7 +147,47 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit17]
+FileName=src\util\RuntimeException.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit19]
+FileName=src\util\utilities.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit21]
+FileName=src\util\DoubleNullStringTokenizer.h
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit20]
+FileName=src\util\utilities.h
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit23]
 FileName=src\util\IniFileSequentialParser.h
 CompileCpp=1
 Folder=Utilities
@@ -277,28 +197,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
-FileName=resource.h
+[Unit22]
+FileName=src\util\DoubleNullStringTokenizer.cpp
 CompileCpp=1
-Folder=
+Folder=Utilities
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit2]
-FileName=src\core\Application.cpp
-CompileCpp=1
-Folder=Application Core
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit3]
-FileName=src\core\Application.h
+[Unit6]
+FileName=src\core\ApplicationSettings.cpp
 CompileCpp=1
 Folder=Application Core
 Compile=1
@@ -307,16 +217,37 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
-FileName=resource.rc
-Folder=Resources
+[Unit8]
+FileName=src\data\GuitarChord.cpp
+CompileCpp=1
+Folder=Data Model
 Compile=1
-Link=0
+Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit15]
+FileName=src\util\NotifyMessage.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit16]
+FileName=src\util\NotifyMessage.h
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit25]
 FileName=src\ui\MainToolbar.h
 CompileCpp=1
 Folder=User Iterface
@@ -326,8 +257,28 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
-FileName=src\ui\MainToolbar.cpp
+[Unit24]
+FileName=src\util\IniFileSequentialParser.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit2]
+FileName=src\core\Application.h
+CompileCpp=1
+Folder=Application Core
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit3]
+FileName=src\ui\MainWindow.h
 CompileCpp=1
 Folder=User Iterface
 Compile=1
@@ -336,17 +287,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit27]
 FileName=src\ui\StatusBar.h
-CompileCpp=1
 Folder=User Iterface
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit31]
+[Unit28]
 FileName=src\ui\StatusBar.cpp
 CompileCpp=1
 Folder=User Iterface
@@ -356,7 +307,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit29]
+FileName=src\ui\ChordsTabControl.cpp
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit30]
+FileName=src\ui\ChordsTabControl.h
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit31]
 FileName=src\ui\ChordsToolbar.h
 CompileCpp=1
 Folder=User Iterface
@@ -366,27 +337,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit34]
-FileName=src\ui\ChordButtonsPanel.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit35]
-FileName=src\ui\ChordButtonsPanel.cpp
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit36]
+[Unit33]
 FileName=src\ui\EditArea.h
 CompileCpp=1
 Folder=User Iterface
@@ -396,10 +347,40 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit34]
 FileName=src\ui\EditArea.cpp
 CompileCpp=1
 Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit35]
+FileName=src\ui\AboutDialog.h
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit36]
+FileName=src\ui\AboutDialog.cpp
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit37]
+FileName=src\util\MemoryWatcher.h
+CompileCpp=1
+Folder=Utilities
 Compile=1
 Link=1
 Priority=1000
@@ -416,127 +397,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit38]
-FileName=src\ui\DocumentInterface.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit39]
-FileName=src\ui\DocumentInterface.cpp
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit41]
-FileName=src\ui\SettingsInterface.cpp
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit40]
-FileName=src\ui\SettingsInterface.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit42]
-FileName=src\ui\AboutDialog.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit43]
-FileName=src\ui\AboutDialog.cpp
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit45]
-FileName=src\util\MemoryWatcher.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit44]
-FileName=src\util\MemoryWatcher.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit46]
-FileName=src\util\DebugWindow.h
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit47]
-FileName=src\util\DebugWindow.cpp
-CompileCpp=1
-Folder=Utilities
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit48]
-FileName=src\ui\EditionModes.h
-CompileCpp=1
-Folder=User Iterface
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit50]
-FileName=src\data\TuningDefinitions.cpp
-CompileCpp=1
-Folder=Data Model
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit49]
 FileName=src\data\TuningDefinitions.h
 CompileCpp=1
 Folder=Data Model
@@ -546,7 +407,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit51]
+[Unit40]
+FileName=src\util\DebugWindow.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit42]
+FileName=src\data\TuningDefinitions.cpp
+CompileCpp=1
+Folder=Data Model
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit43]
 FileName=src\ui\PromptDialog.cpp
 CompileCpp=1
 Folder=User Iterface
@@ -556,7 +437,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit52]
+[Unit45]
+FileName=src\ui\ChordsTabControlPanel.h
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit44]
 FileName=src\ui\PromptDialog.h
 CompileCpp=1
 Folder=User Iterface
@@ -566,20 +457,40 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit54]
-FileName=src\ui\EditionToolkit.cpp
+[Unit47]
+FileName=src\ui\tools\DocumentInterface.cpp
 CompileCpp=1
-Folder=User Iterface
+Folder=User Iterface/Toolkit
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit53]
-FileName=src\ui\EditionToolkit.h
+[Unit48]
+FileName=src\ui\tools\DocumentInterface.h
 CompileCpp=1
-Folder=User Iterface
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit49]
+FileName=src\ui\tools\EditionActions.cpp
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit52]
+FileName=src\ui\tools\EditionToolkit.cpp
+CompileCpp=1
+Folder=User Iterface/Toolkit
 Compile=1
 Link=1
 Priority=1000
@@ -587,7 +498,67 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit55]
-FileName=src\ui\EditionActions.h
+FileName=src\ui\tools\SettingsInterface.h
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit56]
+FileName=src\resource.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit57]
+FileName=src\resource.rc
+CompileCpp=1
+Folder=Resources
+Compile=1
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit58]
+FileName=src\winmain.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit38]
+FileName=src\util\MemoryWatcher.cpp
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit39]
+FileName=src\util\DebugWindow.h
+CompileCpp=1
+Folder=Utilities
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit46]
+FileName=src\ui\ChordsTabControlPanel.cpp
 CompileCpp=1
 Folder=User Iterface
 Compile=1
@@ -596,8 +567,78 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit56]
-FileName=src\ui\EditionActions.cpp
+[Unit50]
+FileName=src\ui\tools\EditionActions.h
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit51]
+FileName=src\ui\tools\EditionModes.h
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
+FileName=src\ui\tools\EditionToolkit.h
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit54]
+FileName=src\ui\tools\SettingsInterface.cpp
+CompileCpp=1
+Folder=User Iterface/Toolkit
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit1]
+FileName=src\core\Application.cpp
+CompileCpp=1
+Folder=Application Core
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit26]
+FileName=src\ui\MainToolbar.cpp
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit60]
+FileName=src\ui\StaffToolbar.cpp
+CompileCpp=1
+Folder=User Iterface
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit59]
+FileName=src\ui\StaffToolbar.h
 CompileCpp=1
 Folder=User Iterface
 Compile=1

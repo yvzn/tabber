@@ -15,10 +15,15 @@ class GuitarChord
 		inline const char* getName()      const { return _name;      }
 		inline int         getNoteCount() const { return _noteCount; }
 		
-		const char* getNote  (int n)  const { assert(n<_noteCount); return _notes[n];}
-		const char* getNotes ()       const;
+		inline const char* getNote  (int n)  const { assert(n<_noteCount); return (_notes[n][0] == INVISIBLE_NOTE) ? NULL : _notes[n] ; }
+		       const char* getNotes ()       const;
 
 		int getWidth() const { return _width; }
+
+	public:
+
+		static const char EXTENDED_SEQUENCE_SEPARATOR;
+		static const char INVISIBLE_NOTE;
 
 	protected:
 
@@ -35,6 +40,7 @@ class GuitarChord
 	    static char conversionBuffer[40];
 
 };
+
 
 #endif // GUITARCHORD_H
 

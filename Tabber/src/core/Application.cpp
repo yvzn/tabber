@@ -53,7 +53,7 @@ void Application::processCommandLine(const char* commandLine)
     if(length > 0)
     {
 	    //try to parse commandLine as a file name and then open it
-    	char* buffer = new char[length];
+    	char* buffer = new char[length+1];
     	char* fileName;
     
     	lstrcpy(buffer, commandLine);

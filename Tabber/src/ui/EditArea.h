@@ -3,8 +3,8 @@
 
 #include "../util/utilities.h"
 #include "../core/ApplicationSettings.h"
-#include "../ui/EditionToolkit.h"
-#include "../ui/EditionActions.h"
+#include "../ui/tools/EditionToolkit.h"
+#include "../ui/tools/EditionActions.h"
 
 /* forward */ class MainWindow;
 
@@ -34,7 +34,9 @@ class EditArea
 		void onInsertStaff  ( );
 		void onInsertTuning ( );
 		void onInsertBar    ( );
-		void onInsertChord  (unsigned int );
+		void onInsertChord  (unsigned int , ArpeggioDispatcher::Direction =ArpeggioDispatcher::NONE);
+
+		void onSelectionChange ( );
 
 		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
@@ -43,13 +45,12 @@ class EditArea
 		static LRESULT CALLBACK forwardMessage(HWND , UINT , WPARAM , LPARAM );
 		       LRESULT CALLBACK handleMessage(HWND , UINT , WPARAM , LPARAM );
 
-		void    onSelectionChange   ( );
 		void    onDocumentModified  ( );
 		LRESULT onKeyUp             (int );
+		LRESULT onKeyDown           (int );
 		LRESULT onCharSpecialMode   (int );
 		LRESULT onCharOverwriteMode (int);
 
-		//void insert(Dispatcher* );
 		void apply(StaffAction *);
 
 	protected:

@@ -2,7 +2,7 @@
 #define DEBUGWINDOW_H
 
 #include <windows.h>
-#include "../../resource.h"
+#include "../resource.h"
 #include "../util/NotifyMessage.h"
 
 

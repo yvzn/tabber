@@ -2,7 +2,7 @@
 #define APPLICATIONSETTINGS_H
 
 #include "../util/utilities.h"
-#include "../ui/EditionModes.h"
+#include "../ui/tools/EditionModes.h"
 
 
 class ApplicationSettings

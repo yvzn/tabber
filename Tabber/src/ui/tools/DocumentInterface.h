@@ -1,7 +1,7 @@
 #ifndef DOCUMENTINTERFACE_H
 #define DOCUMENTINTERFACE_H
 
-#include "../util/utilities.h"
+#include "../../util/utilities.h"
 
 /* forward */ class MainWindow;
 

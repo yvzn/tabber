@@ -1,9 +1,9 @@
 #ifndef SETTINGSINTERFACE_H
 #define SETTINGSINTERFACE_H
 
-#include "../util/utilities.h"
-#include "../core/ApplicationSettings.h"
-#include "../ui/PromptDialog.h"
+#include "../../util/utilities.h"
+#include "../../core/ApplicationSettings.h"
+#include "../../ui/PromptDialog.h"
 
 /* forward */ class MainWindow;
 
