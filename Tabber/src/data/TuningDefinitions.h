@@ -24,6 +24,8 @@ class TuningDefinitions: protected DynamicPointerArray<GuitarTuning>
 		inline GuitarTuning*  getTuningAt   (int index) { return getElementAt(index); }
 		inline int            getTuningCount() const    { return getElementCount();   }
 
+		inline const char*    getFileName   () const    { return _tuningDefinitionsFileFullName; }
+
 	private:
 
 		static const char TUNING_DEFINITIONS_FILE_NAME[];

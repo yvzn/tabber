@@ -1,6 +1,7 @@
 #include "DocumentInterface.h"
 #include "../../ui/MainWindow.h"
 
+bool DocumentInterface::_isDialogOpened = false;
 
 
 // CONSTR AND DESTR ///////////////////////////////////////////////////////////
@@ -32,7 +33,7 @@ DocumentInterface::DocumentInterface(MainWindow* parentWindow)
 	_findReplaceOptions.lpstrReplaceWith = _replaceWith;
 	_findReplaceOptions.wReplaceWithLen = 80;
 	_findReplaceOptions.Flags = FR_HIDEUPDOWN | FR_HIDEWHOLEWORD | FR_ENABLEHOOK;
-	_findReplaceOptions.lpfnHook = DocumentInterface::FindReplaceDlgProc;
+	_findReplaceOptions.lpfnHook = DocumentInterface::handleFindReplaceDialogMessage;
 
 	_hFindReplaceDialog = NULL;
 
@@ -204,8 +205,10 @@ bool DocumentInterface::onDocumentSaveAs()
 	}
 }
 
-
-void DocumentInterface::onDocumentOpen()
+/**
+ * @returns true if document was indeed opened -- false if user canceled
+ */
+bool DocumentInterface::onDocumentOpen()
 {
 	if(continueIfDocumentModified())
 	{
@@ -213,26 +216,32 @@ void DocumentInterface::onDocumentOpen()
 	    _fileDialogOptions.hwndOwner = _mainWindow->getWindowHandle();
 		if(GetOpenFileName(&_fileDialogOptions))
 		{
-        	loadSpecifiedDocument();
+        	return loadSpecifiedDocument();
 		}
 	}
+	return false;
 }
 
 
-void DocumentInterface::onDocumentOpen(const char* fileName)
+/**
+ * @returns true if document was indeed opened -- false if user canceled
+ */
+bool DocumentInterface::onDocumentOpen(const char* fileName)
 {
 	if(continueIfDocumentModified())
 	{
      	lstrcpy(_filePathAndName, fileName);
-		loadSpecifiedDocument();
+		return loadSpecifiedDocument();
 	}
+	return false;
 }
 
 
 /**
  * Loads the document specified in _filePathAndName member. An error message is displayed if operation fails.
+ * @returns true if document was indeed opened -- false if an error occured
  */
-void DocumentInterface::loadSpecifiedDocument()
+bool DocumentInterface::loadSpecifiedDocument()
 {
 	assert(lstrlen(_filePathAndName) > 0);
 	
@@ -243,6 +252,7 @@ void DocumentInterface::loadSpecifiedDocument()
 		setDocumentModified(false);
 	    updateFileName();
 		updateMainWindowTitle();
+		return true;
 	}
 	catch(RuntimeException* ex)
 	{
@@ -251,7 +261,9 @@ void DocumentInterface::loadSpecifiedDocument()
 			System::getLocaleString(IDERR_OPEN_DOCUMENT) );
 
 		delete ex;
+		return false;
 	}
+	return true;
 }
 
 /**
@@ -285,29 +297,41 @@ void DocumentInterface::updateFileName()
 
 void DocumentInterface::onFind()
 {
-	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
-
-	_hFindReplaceDialog = FindText(&_findReplaceOptions);
+	if(!_isDialogOpened)
+	{
+		_isDialogOpened = true;
+		_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
+		_hFindReplaceDialog = FindText(&_findReplaceOptions);
+	}
 }
 
 
 void DocumentInterface::onFindNext()
 {
-	_findReplaceOptions.Flags |= FR_FINDNEXT;
-	
-	_mainWindow->getEditArea()->onFindReplace(&_findReplaceOptions);
+	if(lstrlen(_findReplaceOptions.lpstrFindWhat) > 0)
+	{
+		_findReplaceOptions.Flags |= FR_FINDNEXT;
+		_mainWindow->getEditArea()->onFindReplace(&_findReplaceOptions);
+	}
+	else
+	{
+		onFind();
+	}
 }
 
 
 void DocumentInterface::onReplace()
 {
-	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
-
-	_hFindReplaceDialog = ReplaceText(&_findReplaceOptions);
+	if(!_isDialogOpened)
+	{
+		_isDialogOpened = true;
+		_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
+		_hFindReplaceDialog = ReplaceText(&_findReplaceOptions);
+	}
 }
 
 
-UINT APIENTRY DocumentInterface::FindReplaceDlgProc(
+UINT APIENTRY DocumentInterface::handleFindReplaceDialogMessage(
 	HWND hDialog,
 	UINT message,
 	WPARAM wParam,
@@ -317,6 +341,8 @@ UINT APIENTRY DocumentInterface::FindReplaceDlgProc(
 	{
 		case WM_INITDIALOG: return TRUE;
 		case WM_GETDLGCODE: return DLGC_WANTALLKEYS;
+		case WM_COMMAND   : if(LOWORD(wParam) == IDCANCEL)
+		case WM_CLOSE     : _isDialogOpened = false;
 	}
 
 	return FALSE;

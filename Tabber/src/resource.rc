@@ -44,28 +44,28 @@ BEGIN
 	END
 	POPUP "&Settings"
 	BEGIN
-		POPUP "&Staff"
-		BEGIN
-			MENUITEM "&Width...", ID_OPTIONS_STAFF_WIDTH
-			MENUITEM "&Height...", ID_OPTIONS_STAFF_HEIGHT
-		END
-		POPUP "&Typing mode\tIns"
-		BEGIN
-			MENUITEM "&Insert",      ID_OPTIONS_TYPING_INSERT
-			MENUITEM "&Overwrite",   ID_OPTIONS_TYPING_OVERWRITE
-			MENUITEM "&Special",     ID_OPTIONS_TYPING_SPECIAL
-		END
+		MENUITEM "Type &insert\tIns",      ID_OPTIONS_TYPING_INSERT
+		MENUITEM "Type &overwrite\tIns",   ID_OPTIONS_TYPING_OVERWRITE
+		MENUITEM "Type &special\tIns",     ID_OPTIONS_TYPING_SPECIAL
+		MENUITEM SEPARATOR
+		MENUITEM "Staff &width...",      ID_OPTIONS_STAFF_WIDTH
+		MENUITEM "Staff &height...",     ID_OPTIONS_STAFF_HEIGHT
+		MENUITEM SEPARATOR
 		POPUP "Guitar t&uning"
 		BEGIN
 			MENUITEM "&None",        ID_OPTIONS_TUNINGS_NONE
 		END
-		POPUP "Chord &insertion options"
-		BEGIN
-			MENUITEM "Add e&xtra space",    ID_OPTIONS_CHORD_EXTRA_SPACE
-			MENUITEM "Add chord &name",     ID_OPTIONS_CHORD_NAME
-		END
+		MENUITEM SEPARATOR
+		MENUITEM "Add e&xtra spaces",    ID_OPTIONS_CHORD_EXTRA_SPACE
+		MENUITEM "Add chord &names",     ID_OPTIONS_CHORD_NAME
 		MENUITEM SEPARATOR
 		MENUITEM "&Font...",         ID_OPTIONS_FONT
+		MENUITEM SEPARATOR
+		POPUP "&Advanced"
+		BEGIN
+			MENUITEM "Edit &chords",   ID_OPTIONS_EDIT_CHORDS
+			MENUITEM "Edit tu&nings",  ID_OPTIONS_EDIT_TUNINGS
+		END
 	END
 	POPUP "&Help"
 	BEGIN
@@ -131,6 +131,7 @@ BEGIN
 	IDS_INSERT_STAFF, "Insert staff"
 	IDS_INSERT_BAR, "Insert bar"
 	IDS_INSERT_TUNING, "Insert tuning"
+	IDS_CHANGES_ON_RESTART, "Changes will take effect on program restart"
 END
 
 

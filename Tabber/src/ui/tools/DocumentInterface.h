@@ -23,8 +23,8 @@ class DocumentInterface
 		void onNewDocument    ( );
 		bool onDocumentSave   ( );
 		bool onDocumentSaveAs ( );
-		void onDocumentOpen   ( );
-		void onDocumentOpen   (const char* );
+		bool onDocumentOpen   ( );
+		bool onDocumentOpen   (const char* );
 
 		void onFind    ( );
 		void onFindNext( );
@@ -39,9 +39,9 @@ class DocumentInterface
 		void blankDocumentFlags();
 		void updateMainWindowTitle();
 		void updateFileName();
-		void loadSpecifiedDocument();
+		bool loadSpecifiedDocument();
 	
-		static UINT APIENTRY FindReplaceDlgProc(HWND , UINT , WPARAM , LPARAM );
+		static UINT APIENTRY handleFindReplaceDialogMessage(HWND , UINT , WPARAM , LPARAM );
 
 	protected:
 
@@ -57,6 +57,7 @@ class DocumentInterface
 		FINDREPLACE _findReplaceOptions;
 
 		HWND  _hFindReplaceDialog;
+		static bool _isDialogOpened;
 		char* _findWhat;
 		char* _replaceWith;
 };

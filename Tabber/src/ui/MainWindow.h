@@ -66,6 +66,8 @@ class MainWindow
 		void onSize     ( );
 		void onDropFiles(HDROP );
 
+		void onEditSettingsFile(WORD );
+
 	protected:
 
 		static const char WINDOW_CLASS_NAME[];

@@ -45,7 +45,8 @@
 #define ID_OPTIONS_CHORD_ARPEGGIO    5207
 #define ID_OPTIONS_STAFF_WIDTH       5208
 #define ID_OPTIONS_STAFF_HEIGHT      5209
-
+#define ID_OPTIONS_EDIT_CHORDS       5210
+#define ID_OPTIONS_EDIT_TUNINGS      5211
 #define ID_OPTIONS_TUNINGS_NONE      5901    // any higher ID is considered as a Tuning ID
 
 #define ID_HELP_ABOUT  5010
@@ -80,6 +81,7 @@
 #define IDS_INSERT_STAFF            16011
 #define IDS_INSERT_BAR              16012
 #define IDS_INSERT_TUNING           16013
+#define IDS_CHANGES_ON_RESTART      16014
 
 #define IDERR_SAVE_CHORDS            24000
 #define IDERR_OPEN_CHORDS_FILE       24001

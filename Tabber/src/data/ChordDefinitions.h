@@ -23,6 +23,8 @@ class ChordDefinitions: protected DynamicPointerArray<ChordGroup>
 		inline int         getChordGroupCount ()          const { return getElementCount();   }
 		inline ChordGroup* getChordGroupAt    (int index)       { return getElementAt(index); }
 
+		inline const char*    getFileName   () const    { return _chordDefinitionsFileFullName; }
+
 	protected:
 
 		void loadDefaultValues ();

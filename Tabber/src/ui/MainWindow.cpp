@@ -235,16 +235,18 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		case ID_INSERT_TUNING : _editArea->onInsertTuning(); break;
 		case ID_INSERT_BAR    : _editArea->onInsertBar();    break;
 
-		case ID_OPTIONS_FONT              : _settingsInterface->onChooseFont();        break;
+		case ID_OPTIONS_FONT              : _settingsInterface->onChooseFont();       break;
 		case ID_OPTIONS_STAFF_WIDTH       : _settingsInterface->onChooseStaffWidth(); break;
 		case ID_OPTIONS_STAFF_HEIGHT      : _settingsInterface->onChooseChordDepth(); break;
-		case ID_OPTIONS_TYPING_TOGGLE     : _settingsInterface->onToggleTypingMode();  break;
+		case ID_OPTIONS_TYPING_TOGGLE     : _settingsInterface->onToggleTypingMode(); break;
 		case ID_OPTIONS_TYPING_INSERT     :
 		case ID_OPTIONS_TYPING_OVERWRITE  :
       	case ID_OPTIONS_TYPING_SPECIAL    : _settingsInterface->onChangeTypingMode(GetTypingMode(commandId)); break;
       	case ID_OPTIONS_CHORD_EXTRA_SPACE :
 		case ID_OPTIONS_CHORD_NAME        :
 		case ID_OPTIONS_CHORD_ARPEGGIO    : _settingsInterface->onToggleChordMode(GetChordMode(commandId)); break;
+		case ID_OPTIONS_EDIT_CHORDS       : 
+		case ID_OPTIONS_EDIT_TUNINGS      : onEditSettingsFile(commandId);  break;
 
 		case ID_HELP_ABOUT : AboutDialog::show(_hWindow);break;
       
@@ -377,5 +379,27 @@ void MainWindow::onDropFiles(HDROP droppedFiles)
     delete [] fileName;
 }
 
+
+/**
+ * Opens the specified settings file inside tabber
+ */
+void MainWindow::onEditSettingsFile(WORD commandId)
+{
+	const char* fileName;
+
+	if(commandId == ID_OPTIONS_EDIT_CHORDS)
+	{
+		fileName = _application->getChordDefinitions()->getFileName();
+	}
+	else
+	{
+		fileName = _application->getTuningDefinitions()->getFileName();
+	}
+
+	if(_documentInterface->onDocumentOpen(fileName))
+	{
+		NotifyMessage::alert(_hWindow, System::getLocaleString(IDS_CHANGES_ON_RESTART));
+	}
+}
 
 
