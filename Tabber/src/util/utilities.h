@@ -51,6 +51,7 @@ void __assertion_failed (const char*, const char*, int);
 // OTHER UTILITIES ------------------------------------------------------------
 
 void GetAbsoluteFileName(char* , const char* );
+void ApplyDefaultFont(HWND );
 
 
 #endif // UTILITIES_H

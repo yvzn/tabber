@@ -20,6 +20,8 @@ class MainWindow
 		void create(HINSTANCE ) ;
 		void show  (int )       const ;
 
+		Application* getApplication();
+
 	protected:
 
 		static LRESULT CALLBACK WindowProc(HWND , UINT , WPARAM , LPARAM );
@@ -28,14 +30,16 @@ class MainWindow
 		void onClose   ( );
 		void onSize    ( );
 		void onCommand (WPARAM , LPARAM );
+		void onNotify  (WPARAM , LPARAM );
 
 	protected:
 
 		static const char WINDOW_CLASS_NAME[];
 
-		Application*  _application;
-		MainToolbar*  _toolbar;
-		StatusBar*    _status;
+		Application*   _application;
+		MainToolbar*   _toolbar;
+		StatusBar*     _status;
+		ChordsToolbar* _chordsToolbar;
 		
 		HWND          _hWindow;
 

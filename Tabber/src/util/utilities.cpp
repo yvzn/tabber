@@ -44,3 +44,13 @@ void GetAbsoluteFileName(char* absoluteFileName, const char* relativeFileName)
 	lstrcat(absoluteFileName, relativeFileName);
 }
 
+
+/**
+ * Applies the default GUI font (as specified by the user in Windows's display settings) to a control
+ */
+void ApplyDefaultFont(HWND hControl)
+{
+	static HFONT defaultFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	
+	SendMessage(hControl, WM_SETFONT, (WPARAM)defaultFont, MAKELPARAM(FALSE, 0));
+}

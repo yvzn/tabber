@@ -12,9 +12,9 @@ class StatusBar
 		StatusBar();
 		~StatusBar();
 
-		void create       (HWND );
-		void resize ( );
-		RECT getSize();
+		void create  (HWND );
+		void resize  ( );
+		RECT getSize ( );
 		
 		void setTextInPart(int , const char * );
 

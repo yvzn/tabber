@@ -129,3 +129,15 @@ void ChordDefinitions::save() const
 	CloseHandle(hFile);
 }
 
+
+DynamicPointerArray<GuitarChord>* ChordDefinitions::getChords()
+{
+	return _chords;
+}
+
+
+DynamicPointerArray<ChordGroup>* ChordDefinitions::getChordGroups()
+{
+	return _chordGroups;
+}
+

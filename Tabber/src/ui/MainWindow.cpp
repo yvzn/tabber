@@ -7,9 +7,10 @@ MainWindow::MainWindow(Application* application)
 {
 	InitCommonControls();
 
-	_application = application;
-	_toolbar     = new MainToolbar();
-	_status      = new StatusBar();
+	_application   = application;
+	_toolbar       = new MainToolbar();
+	_status        = new StatusBar();
+	_chordsToolbar = new ChordsToolbar(this);
 	
 	OBJECT_CREATED;
 }
@@ -17,6 +18,7 @@ MainWindow::MainWindow(Application* application)
 
 MainWindow::~MainWindow()
 {
+	delete _chordsToolbar;
 	delete _toolbar;
 	delete _status;
 	OBJECT_DELETED;
@@ -29,7 +31,6 @@ MainWindow::~MainWindow()
 void MainWindow::create(HINSTANCE hApplicationInstance)
 {
 	ApplicationSettings* settings = _application->getSettings();
-	assert(settings != NULL);
 	
 	const RECT windowRect = settings->getMainWindowRect();
 	int x, y, width, height;
@@ -94,6 +95,12 @@ void MainWindow::show(int showState) const
 }
 
 
+Application* MainWindow::getApplication()
+{
+	return _application;
+}
+
+
 /**
  * Win32's message handling function
  */
@@ -137,6 +144,12 @@ LRESULT CALLBACK MainWindow::WindowProc(
     		break;
     	}
         
+        case WM_NOTIFY:
+        {
+    		gMainWindow->onNotify(wParam, lParam);
+    		break;
+        }
+        
         default:
         {
             return DefWindowProc(hWindow, message, wParam, lParam);
@@ -147,7 +160,7 @@ LRESULT CALLBACK MainWindow::WindowProc(
  
  
 /**
- * @param hPrecreateWindow on window creation, internal pointer is not yet available, so I use this temporary one
+ * @param hPrecreateWindow on window creation, internal pointer to window handle is not yet available, so I use the one privided by WindowProc
  */
 void MainWindow::onCreate(HWND hPrecreateWindow)
 {
@@ -156,7 +169,7 @@ void MainWindow::onCreate(HWND hPrecreateWindow)
 		//load view
 		_toolbar->create(hPrecreateWindow);
 		_status->create(hPrecreateWindow);
-		_status->setTextInPart(0, "Hello World !");
+		_chordsToolbar->create(hPrecreateWindow);
 		
 	}
 	catch(RuntimeException* ex)
@@ -173,11 +186,11 @@ void MainWindow::onClose()
 	//prompt to save if document has been modified
 	
 	//save settings
-	RECT rcWindow;
-	GetWindowRect(_hWindow, &rcWindow);
+	RECT windowRect;
+	GetWindowRect(_hWindow, &windowRect);
 	
 	ApplicationSettings* appSettings = _application->getSettings();
-	appSettings->setMainWindowRect(rcWindow);
+	appSettings->setMainWindowRect(windowRect);
 	appSettings->setMainWindowMaximizedState(IsZoomed(_hWindow) > 0);
 	appSettings->save();
 	
@@ -187,9 +200,26 @@ void MainWindow::onClose()
 
 void MainWindow::onSize()
 {
+	assert(_hWindow != NULL);
+
 	//toolbar and status bar can position/resize themselves automatically
 	_toolbar->resize();
 	_status->resize();
+	
+	//retrieve auto-resize results
+	RECT toolbarRect = _toolbar->getSize();
+	RECT statusRect = _status->getSize();
+
+	RECT clientRect;
+	GetClientRect(_hWindow, &clientRect);
+
+ 	//position child windows: chords toolbar
+ 	RECT childRect;
+ 	childRect.bottom = clientRect.bottom - (statusRect.bottom - statusRect.top);
+ 	childRect.top = max(toolbarRect.bottom - toolbarRect.top, childRect.bottom - ChordsToolbar::CHORDS_TOOLBAR_HEIGHT);
+ 	childRect.left = clientRect.left;
+ 	childRect.right = clientRect.right;
+	_chordsToolbar->resize(childRect); 	
 }
 
 
@@ -208,4 +238,21 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 }
 
 
+void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
+{
+	assert(_hWindow != NULL);
+	
+	LPNMHDR notifyMessage = (LPNMHDR)lParam;
+	
+	switch(notifyMessage->code)
+	{
+		case TCN_SELCHANGE: 
+		{
+			//maybe I should check if message sender IS the chords toolbar
+			_chordsToolbar->updateOnTabChange();
+			UpdateWindow(_hWindow);
+			break;
+		}
+	}
+}
 

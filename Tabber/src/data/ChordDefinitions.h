@@ -21,6 +21,9 @@ class ChordDefinitions
 		void loadDefaultValues ()       ;
 		void save              () const ;
 
+		DynamicPointerArray<GuitarChord>* getChords();
+		DynamicPointerArray<ChordGroup>*  getChordGroups();
+
 	protected:
 
 		static const char CHORD_DEFINITIONS_FILE_NAME[];
