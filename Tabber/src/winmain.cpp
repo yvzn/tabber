@@ -23,7 +23,7 @@ int WINAPI WinMain (
 	
 		while(GetMessage(&msg, NULL, 0, 0) > 0)
 		{
-   			if(!application->translateAccelerator(&msg)) // handle keyboard shortcuts
+   			if(!application->interceptMessage(&msg))
 			{
    				TranslateMessage(&msg);
 				DispatchMessage(&msg);

@@ -32,7 +32,7 @@ void PrintProgressDialog::hide()
 {
 	if(_hWindow != NULL)
 	{
-		SendMessage(_hWindow, WM_CLOSE, 0, 0);
+		onClose();
 	}
 }
 
@@ -75,25 +75,9 @@ BOOL CALLBACK PrintProgressDialog::handleMessage(
 		}
 		
         case WM_COMMAND:
-        {
-            switch(LOWORD(wParam))
-            {
-         		case IDCANCEL:
-                {
-					_continuePrinting = false;
-  			        DestroyWindow(hWindow);
-					_hWindow = NULL;
-  			        break;
-				}
-            }
-        	break;
- 		}
-      	
       	case WM_CLOSE:
   	    {
-			_continuePrinting = false;
-			DestroyWindow(hWindow);
-			_hWindow = NULL;
+			onClose();
   	        break;
 		}
 		
@@ -103,5 +87,31 @@ BOOL CALLBACK PrintProgressDialog::handleMessage(
         }    
     }
     return TRUE;
-}    
+}
+
+
+void PrintProgressDialog::onClose()
+{
+	_continuePrinting = false;
+	DestroyWindow(_hWindow);
+	_hWindow = NULL;
+}
+
+
+BOOL CALLBACK PrintProgressDialog::AbortProc(HDC printerDeviceContext, int errorCode)
+{
+    MSG message;
+
+    while (_continuePrinting && PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+	{
+        if (!IsDialogMessage(_hWindow, &message))
+		{
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+        }
+    }
+
+     return _continuePrinting;
+}
+
 

@@ -35,6 +35,8 @@ class MainWindow
 		void setWindowTitle    (const char* );
 		void setCommandEnabled (int , bool );
 
+		inline bool interceptMessage(MSG* message) { return _documentInterface->interceptMessage(message); }
+
 		inline Application*       getApplication       () { return _application;       }
 		inline DocumentInterface* getDocumentInterface () { return _documentInterface; }
 
@@ -80,7 +82,9 @@ class MainWindow
 		EditArea*          _editArea;
 		StaffToolbar*      _staff;
 
-		HWND          _hWindow;
+		HWND               _hWindow;
+
+		unsigned int       _findReplaceCommandId;
 
 };
 

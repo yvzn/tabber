@@ -17,9 +17,15 @@ class PrintProgressDialog
 
 	    static bool didUserCancelPrinting();
 		static void setCurrentPage(int page);
-	    
+
+		static BOOL CALLBACK AbortProc(HDC , int );
+
+	protected:
+
 	    static BOOL CALLBACK handleMessage(HWND, UINT, WPARAM, LPARAM);
-	    
+
+		static void onClose();
+
 	protected:
 
 		static HWND        _hWindow;

@@ -86,6 +86,9 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
     {
     	throw new RuntimeException("MainWindow::create", "Could not create main window");
     }
+
+	//register find/replace command
+	_findReplaceCommandId = RegisterWindowMessage(FINDMSGSTRING);
 }
 
 
@@ -176,7 +179,12 @@ LRESULT CALLBACK MainWindow::handleMessage(
     WPARAM wParam,
     LPARAM lParam )
 {
-    switch(message)
+	if(message == _findReplaceCommandId)
+	{
+		__trace("findReplaceCommand");
+		return 0;
+	}
+	else switch(message)
     {
 		case WM_CREATE    :  onCreate(hWindow);           break;
 		case WM_CLOSE     :  onClose();                   break;
@@ -214,15 +222,15 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		case ID_FILE_PAGESETUP : _printerInterface->onChoosePageSetup();  break;
 		case ID_FILE_PRINT     : _printerInterface->onPrint();            break;
 
-		case ID_EDIT_CUT       : _editArea->doCommand(WM_CUT);    break;
-		case ID_EDIT_COPY      : _editArea->doCommand(WM_COPY);   break;
-		case ID_EDIT_PASTE     : _editArea->doCommand(WM_PASTE);  break;
-		case ID_EDIT_UNDO      : _editArea->doCommand(WM_UNDO);   break;
-		case ID_EDIT_SELECTALL : _editArea->onSelectAll();        break;
-		case ID_EDIT_DELETE    : _editArea->onDelete();           break;
-		case ID_EDIT_FIND      : break;
-		case ID_EDIT_FINDNEXT  : break;
-		case ID_EDIT_REPLACE   : break;
+		case ID_EDIT_CUT       : _editArea->doCommand(WM_CUT);     break;
+		case ID_EDIT_COPY      : _editArea->doCommand(WM_COPY);    break;
+		case ID_EDIT_PASTE     : _editArea->doCommand(WM_PASTE);   break;
+		case ID_EDIT_UNDO      : _editArea->doCommand(WM_UNDO);    break;
+		case ID_EDIT_SELECTALL : _editArea->onSelectAll();         break;
+		case ID_EDIT_DELETE    : _editArea->onDelete();            break;
+		case ID_EDIT_FIND      : _documentInterface->onFind();     break;
+		case ID_EDIT_FINDNEXT  : _documentInterface->onFindNext(); break;
+		case ID_EDIT_REPLACE   : _documentInterface->onReplace();  break;
 
 		case ID_INSERT_STAFF  : _editArea->onInsertStaff();  break;
 		case ID_INSERT_TUNING : _editArea->onInsertTuning(); break;

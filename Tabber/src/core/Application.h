@@ -21,7 +21,7 @@ class Application
 		void show    (int )       const ;
 
 		void processCommandLine (const char* );
-		bool translateAccelerator (MSG* );
+		bool interceptMessage   (MSG* );
 
 		inline ApplicationSettings* getSettings          ( ) { return _settings;     }
 		inline ChordDefinitions*    getChordDefinitions  ( ) { return _chords;       }

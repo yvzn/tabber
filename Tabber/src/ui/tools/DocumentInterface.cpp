@@ -2,6 +2,10 @@
 #include "../../ui/MainWindow.h"
 
 
+
+// CONSTR AND DESTR ///////////////////////////////////////////////////////////
+
+
 DocumentInterface::DocumentInterface(MainWindow* parentWindow)
 {
 	_mainWindow = parentWindow;
@@ -14,16 +18,39 @@ DocumentInterface::DocumentInterface(MainWindow* parentWindow)
     _fileDialogOptions.lpstrFilter = "Tablatures (*.tab;*.crd)\0*.tab;*.crd\0Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
     _fileDialogOptions.lpstrFile = _filePathAndName;
     _fileDialogOptions.nMaxFile = MAX_PATH;
-    _fileDialogOptions.lpstrDefExt = "tab";   
-	
+    _fileDialogOptions.lpstrDefExt = "tab";
+
+	_findWhat = new char[80];
+	_findWhat[0] = '\0';
+	_replaceWith = new char[80];
+	_replaceWith[0] = '\0';
+
+	ZeroMemory(&_findReplaceOptions, sizeof(_findReplaceOptions));
+	_findReplaceOptions.lStructSize = sizeof(_findReplaceOptions);
+	_findReplaceOptions.lpstrFindWhat = _findWhat;
+	_findReplaceOptions.wFindWhatLen = 80;
+	_findReplaceOptions.lpstrReplaceWith = _replaceWith;
+	_findReplaceOptions.wReplaceWithLen = 80;
+	_findReplaceOptions.Flags = FR_ENABLEHOOK;
+	_findReplaceOptions.lpfnHook = DocumentInterface::FindReplaceDlgProc;
+
+	_hFindReplaceDialog = NULL;
+
 	OBJECT_CREATED;
 }
 
 
 DocumentInterface::~DocumentInterface()
 {
+	delete [] _findWhat;
+	delete [] _replaceWith;
+
 	OBJECT_DELETED;
 }
+
+
+
+// DOCUMENT IO ////////////////////////////////////////////////////////////////
 
 
 void DocumentInterface::setDocumentModified(bool newValue)
@@ -244,3 +271,53 @@ void DocumentInterface::updateFileName()
 }
 
 
+
+// FIND AND REPLACE ///////////////////////////////////////////////////////////
+
+
+void DocumentInterface::onFind()
+{
+	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
+
+	_hFindReplaceDialog = FindText(&_findReplaceOptions);
+}
+
+
+void DocumentInterface::onFindNext()
+{
+	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
+	_findReplaceOptions.Flags |= FR_FINDNEXT;
+
+	_hFindReplaceDialog = FindText(&_findReplaceOptions);
+}
+
+
+void DocumentInterface::onReplace()
+{
+	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
+
+	_hFindReplaceDialog = ReplaceText(&_findReplaceOptions);
+}
+
+
+UINT APIENTRY DocumentInterface::FindReplaceDlgProc(
+	HWND hDialog,
+	UINT message,
+	WPARAM wParam,
+	LPARAM lParam )
+{
+	switch (message)
+	{
+		case WM_INITDIALOG:
+		{
+			return TRUE;
+		}
+
+		case WM_GETDLGCODE:
+  		{
+  			return DLGC_WANTALLKEYS;
+  		}
+	}
+
+	return FALSE;
+}

@@ -87,16 +87,19 @@ void Application::processCommandLine(const char* commandLine)
 
 
 /**
- * Handles (translates and dispatches) keyboard shortcuts
+ * Filters messages dedicated to specific child windows (keyboard shortcuts, dialog messages, ...)
  * @param message system message to translate
- * @return true if message has been correctly identified and handled as a shortcut
+ * @return true if message is intercepted somewhere inside the application
  */
-bool Application::translateAccelerator(MSG* message)
+bool Application::interceptMessage(MSG* message)
 {
-	return TranslateAccelerator(
- 		_mainWindow->getWindowHandle(),
-   		_accelerators,
-   		message ) == TRUE;
+	return
+		TranslateAccelerator(
+ 			_mainWindow->getWindowHandle(),
+   			_accelerators,
+   			message ) == TRUE
+		||
+		_mainWindow->interceptMessage(message);
 }
 
 

@@ -23,6 +23,8 @@ class ChordsTabControl
 
 		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
+		inline bool interceptMessage(MSG* message) { return IsDialogMessage(_hWindow, message); }
+
 	public:
 	
 		static const int CHORDS_TOOLBAR_HEIGHT;

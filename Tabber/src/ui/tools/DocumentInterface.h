@@ -26,7 +26,13 @@ class DocumentInterface
 		void onDocumentOpen   ( );
 		void onDocumentOpen   (const char* );
 
+		void onFind    ( );
+		void onFindNext( );
+		void onReplace ( );
+
 		inline const char* getFileName() const { return _fileName; }
+
+		inline bool interceptMessage(MSG* message) { return IsDialogMessage(_hFindReplaceDialog, message); }
 
 	protected:
 
@@ -35,17 +41,24 @@ class DocumentInterface
 		void updateFileName();
 		void loadSpecifiedDocument();
 	
+		static UINT APIENTRY FindReplaceDlgProc(HWND , UINT , WPARAM , LPARAM );
+
 	protected:
 
 		MainWindow* _mainWindow;
+
+		OPENFILENAME _fileDialogOptions;
 
 		bool  _isDocumentModified;
 		bool  _isFileLoaded;
 		char  _filePathAndName[MAX_PATH];
 		char* _fileName;
 		
-		OPENFILENAME _fileDialogOptions;
-		
+		FINDREPLACE _findReplaceOptions;
+
+		HWND  _hFindReplaceDialog;
+		char* _findWhat;
+		char* _replaceWith;
 };
 
 #endif // DOCUMENTINTERFACE_H

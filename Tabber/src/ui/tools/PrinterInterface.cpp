@@ -8,10 +8,6 @@ PrinterInterface::PrinterInterface(MainWindow* parentWindow)
 
 	ZeroMemory(&_pageSetupOptions, sizeof(_pageSetupOptions));
 	_pageSetupOptions.lStructSize = sizeof(_pageSetupOptions);
-	_pageSetupOptions.rtMargin.top = 200;
-	_pageSetupOptions.rtMargin.left = 1000;
-	_pageSetupOptions.rtMargin.bottom = 1000;
-	_pageSetupOptions.rtMargin.right = 1000;
 	_pageSetupOptions.Flags = PSD_DEFAULTMINMARGINS;
 
 	ZeroMemory(&_printOptions, sizeof(_printOptions));
@@ -49,7 +45,9 @@ bool PrinterInterface::onChoosePageSetup()
 
 
 /**
- * Does the job :)
+ * Does the job :) Inspired by Petzold's "poppad.c"
+ * Temporary version, could be improved -- for instance, do not split
+ * staffs at page bottoms, remove these four for loops, simplify initialisations...
  * @see http://www.catch22.org.uk/tuts/printing.asp
  */
 void PrinterInterface::onPrint()
@@ -84,30 +82,32 @@ void PrinterInterface::onPrint()
 		margins.right  = MulDiv(margins.right,  GetDeviceCaps(deviceContext, LOGPIXELSX), 1000);
 		margins.bottom = MulDiv(margins.bottom, GetDeviceCaps(deviceContext, LOGPIXELSY), 1000);
 
-		int iPhysOffsetX = GetDeviceCaps(deviceContext, PHYSICALOFFSETX);
-		int iPhysOffsetY = GetDeviceCaps(deviceContext, PHYSICALOFFSETY);
-		int iPhysWidth   = GetDeviceCaps(deviceContext, PHYSICALWIDTH);
-		int iPhysHeight  = GetDeviceCaps(deviceContext, PHYSICALHEIGHT);
+		//compute adjustments (difference between specified margins and device's own margins)
+		RECT adjust;
+		adjust.left   = margins.left   - GetDeviceCaps(deviceContext, PHYSICALOFFSETX);
+		adjust.top    = margins.top    - GetDeviceCaps(deviceContext, PHYSICALOFFSETY);
+		adjust.right  = margins.right  - (GetDeviceCaps(deviceContext, PHYSICALWIDTH)  - GetDeviceCaps(deviceContext, PHYSICALOFFSETX) - GetDeviceCaps(deviceContext, HORZRES));
+		adjust.bottom = margins.bottom - (GetDeviceCaps(deviceContext, PHYSICALHEIGHT) - GetDeviceCaps(deviceContext, PHYSICALOFFSETY) - GetDeviceCaps(deviceContext, VERTRES));
 
-		int iLeftAdjust   = margins.left  - iPhysOffsetX;
-		int iTopAdjust    = margins.top   - iPhysOffsetY;
-		int iRightAdjust  = margins.right - (iPhysWidth  - iPhysOffsetX - GetDeviceCaps(deviceContext, HORZRES));
-		int iBottomAdjust = margins.right - (iPhysHeight - iPhysOffsetY - GetDeviceCaps(deviceContext, VERTRES));
+		if(adjust.left   < 0) adjust.left   = 0;
+		if(adjust.top    < 0) adjust.top    = 0;
+		if(adjust.bottom < 0) adjust.bottom = 0;
+		if(adjust.right  < 0) adjust.right  = 0;
 
-		int iWidth  = GetDeviceCaps(deviceContext, HORZRES) - (iLeftAdjust + iRightAdjust);
-		int iHeight = GetDeviceCaps(deviceContext, VERTRES) - (iTopAdjust + iBottomAdjust);
+		int iWidth  = GetDeviceCaps(deviceContext, HORZRES) - (adjust.left + adjust.right);
+		int iHeight = GetDeviceCaps(deviceContext, VERTRES) - (adjust.top + adjust.bottom);
 
-		//fonts and mappings (must re-set on every page (to be compatible with Win9x)
+		//select font to compute text metircs
 		HFONT printFont = _mainWindow->getEditArea()->getDisplayFont();
-		SetMapMode(deviceContext, MM_TEXT);
 		HFONT hOldFont = (HFONT)SelectObject(deviceContext, printFont);
 
 		//compute the number of lines per page
 		TEXTMETRIC metrics;
 		GetTextMetrics(deviceContext, &metrics);
 		int charHeight = metrics.tmHeight;
+		int charWidth = metrics.tmAveCharWidth;
 
-		int iHeaderHeight   = 1;
+		int iHeaderHeight   = 2;
 		int iTotalLines     = _mainWindow->getEditArea()->getToolkit()->getLineCount();
 		int iLinesPerPage   = (iHeight - iHeaderHeight) / charHeight;
 		int iTotalPages     = (iTotalLines + iLinesPerPage - 1) / iLinesPerPage;
@@ -119,17 +119,20 @@ void PrinterInterface::onPrint()
 		docInfo.cbSize = sizeof(docInfo);
 		docInfo.lpszDocName = _mainWindow->getDocumentInterface()->getFileName();
 
+		//show progress window and prepare printing cancelling
+		PrintProgressDialog::show(
+			_mainWindow->getWindowHandle(),
+			_mainWindow->getDocumentInterface()->getFileName(),
+			iTotalPages );
+		SetAbortProc(deviceContext, PrintProgressDialog::AbortProc);
+
 		//printing
 		BOOL bSuccess = TRUE;
 		BOOL bUserAbort = FALSE;
+		char* outputBuffer = new char[1024];
 
         if(StartDoc(deviceContext, &docInfo) > 0)
         {
-			PrintProgressDialog::show(
-				_mainWindow->getWindowHandle(),
-				_mainWindow->getDocumentInterface()->getFileName(),
-				iTotalPages );
-
             for(int iColCopy = 0; iColCopy < ((_printOptions.Flags & PD_COLLATE) ? _printOptions.nCopies : 1); iColCopy++)
             {
                 for(int iPage = 0; iPage < iTotalPages; iPage++)
@@ -145,27 +148,39 @@ void PrinterInterface::onPrint()
                         }
 
                         //Make all printing be offset by the amount specified for the margins
-                        SetViewportOrgEx(deviceContext, iLeftAdjust, iTopAdjust, NULL);
- 						SetViewportExtEx(deviceContext, iWidth, iHeight, NULL); //buggy !
+                        SetViewportOrgEx(deviceContext, adjust.left, adjust.top, NULL);
 
+						//Fonts and mapping (must reselect on every page to be compatible with Win9x)
+						SetMapMode(deviceContext, MM_TEXT);
                         hOldFont = (HFONT)SelectObject(deviceContext, printFont);
 
                         //print the current file line by line
                         for(int iLine = 0; iLine < iLinesPerPage; iLine++)
                         {
-                            char* szBuffer = NULL;
                             iLineNum = iLinesPerPage * iPage + iLine;
                             if(iLineNum > iTotalLines) break;
 
                             //get line (iLine) from the application, and store it into szBuffer
-							_mainWindow->getEditArea()->getToolkit()->getLine(iLineNum, szBuffer);
+							unsigned int length = _mainWindow->getEditArea()->getToolkit()->getLine(iLineNum, outputBuffer);
 
-                            TextOut(deviceContext, 0, charHeight * iLine + iHeaderHeight, szBuffer,
-                                    lstrlen(szBuffer) - 2);
+                            TextOut(
+								deviceContext,
+								0, charHeight * iLine,
+								outputBuffer, length );
 
                             bUserAbort = PrintProgressDialog::didUserCancelPrinting();
-							delete [] szBuffer;
                         }
+
+						//print header / footer
+						wsprintf(
+							outputBuffer,
+							"%s - Page %d/%d",
+							_mainWindow->getDocumentInterface()->getFileName(),
+							iPage+1, iTotalPages );
+						TextOut(
+							deviceContext,
+							(iWidth - charWidth * lstrlen(outputBuffer))/2, charHeight * (iLinesPerPage + 1),
+							outputBuffer, lstrlen(outputBuffer) );
 
                         SelectObject(deviceContext, hOldFont);
 
@@ -185,8 +200,6 @@ void PrinterInterface::onPrint()
                 if(!bSuccess || bUserAbort) break;
             }
 
-			PrintProgressDialog::hide();
-
         }
         else
         {
@@ -194,9 +207,25 @@ void PrinterInterface::onPrint()
         }
 
         if(bSuccess && !bUserAbort)
+		{
             EndDoc(deviceContext);
+		}
         else
+		{
             AbortDoc(deviceContext);
+			if(bUserAbort)
+			{
+				NotifyMessage::publicError("Printing cancelled by user");
+			}
+			else
+			{
+				NotifyMessage::publicError("Printing failed");
+			}
+		}
+
+		PrintProgressDialog::hide();
+
+		delete [] outputBuffer;
 
         DeleteDC(deviceContext);
 	}
