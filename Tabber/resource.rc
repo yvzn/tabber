@@ -1,10 +1,18 @@
 #include "resource.h"
-IDR_MAIN_MENU MENUEX
-BEGIN
-  POPUP "&File"
-  BEGIN
-    MENUITEM "&Quit",IDC_APP_EXIT
-  END
-END
 
+IDI_ICON_LARGE ICON "res/tabber_large.ico"
+IDI_ICON_SMALL ICON "res/tabber_small.ico"
+
+IDR_MAIN_MENU MENU
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&New",        ID_FILE_NEW
+		MENUITEM "&Open...",    ID_FILE_OPEN
+		MENUITEM "&Save",       ID_FILE_SAVE
+		MENUITEM "Save &As...", ID_FILE_SAVEAS
+		MENUITEM SEPARATOR
+		MENUITEM "&Quit",    ID_APP_EXIT		
+	END
+END
 

@@ -1,34 +1,33 @@
 #ifndef CHORDDEFINITIONS_H
 #define CHORDDEFINITIONS_H
 
-#include <iostream>
-#include <fstream>
+#include "../util/utilities.h"
+#include "../util/DynamicPointerArray.h"
+#include "../util/IniFileSequentialParser.h"
 
-#include "../core/utilities.h"
-#include "../core/DynamicArray.h"
-#include "../data/Chord.h"
+#include "../data/GuitarChord.h"
 #include "../data/ChordGroup.h"
 
 
-class CChordDefinitions
+class ChordDefinitions
 {
 
 	public:
 
-		CChordDefinitions();
-		~CChordDefinitions();
+		ChordDefinitions();
+		~ChordDefinitions();
 		
-		void load              ();
-		void loadDefaultValues ();
-		void save              ();
+		void load              ()       ;
+		void loadDefaultValues ()       ;
+		void save              () const ;
 
 	protected:
 
-		static const char SZ_CHORD_DEFINITIONS_FILE_NAME[];
+		static const char CHORD_DEFINITIONS_FILE_NAME[];
 		
-		char                         m_szAbsoluteFileName[MAX_PATH];
-		CDynamicArray<CChord>*       m_lpChords;
-		CDynamicArray<CChordGroup>*  m_lpChordGroups;
+		char                              _chordDefinitionsFileFullName[MAX_PATH];
+		DynamicPointerArray<GuitarChord>* _chords;
+		DynamicPointerArray<ChordGroup>*  _chordGroups;
 
 };
 

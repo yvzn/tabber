@@ -1,25 +1,25 @@
 #ifndef CHORDGROUP_H
 #define CHORDGROUP_H
 
-#include "../core/utilities.h"
+#include "../util/utilities.h"
 
 
-class CChordGroup
+class ChordGroup
 {
 
 	public:
 
-		CChordGroup(LPCSTR );
-		virtual ~CChordGroup();
+		ChordGroup(const char* , int);
+		virtual ~ChordGroup();
 
-		LPSTR getName();
-		int   getElementCount(); 
-		void  setElementCount(int ); 
+		const char* getName() const;
+		int getElementCount() const; 
+		void setElementCount(int ); 
 
 	protected:
 
-		LPSTR m_szName;
-		int   m_nElementCount;
+		char*  _name;
+		int    _elementCount;
 	
 };
 

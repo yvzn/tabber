@@ -1,71 +1,65 @@
 #include "Application.h"
 
 
-// required because CMainWindow::WindowProc must be static
+// required because MainWindow::WindowProc must be static
 #include "../ui/MainWindow.h"
-CMainWindow* g_lpMainWindow; 
+MainWindow* gMainWindow; 
 
 
-CApplication::CApplication()
+Application::Application()
 {
-	m_lpSettings   = new CGlobalSettings();
-	m_lpChords     = new CChordDefinitions();
-	g_lpMainWindow = new CMainWindow(this);
+	_settings    = new ApplicationSettings();
+	_chords      = new ChordDefinitions();
+	gMainWindow  = new MainWindow(this);
 	OBJECT_CREATED;
 }
 
 
-CApplication::~CApplication()
+Application::~Application()
 {
-	delete g_lpMainWindow;
-	delete m_lpChords;
-	delete m_lpSettings;
+	delete gMainWindow;
+	delete _chords;
+	delete _settings;
 	OBJECT_DELETED;
 }
 
 
-void CApplication::create(HINSTANCE hApplicationInstance)
+void Application::create(HINSTANCE hApplicationInstance)
 {	
 	assert(
- 		m_lpSettings != NULL &&
- 		m_lpChords != NULL &&
-   		g_lpMainWindow != NULL);
+ 		_settings != NULL &&
+ 		_chords != NULL &&
+   		gMainWindow != NULL);
 
 	try
 	{
-		m_lpSettings->load();
-		m_lpChords->load();
+		_settings->load();
+		_chords->load();
 		
-		g_lpMainWindow->create(
-  			hApplicationInstance,
-  			m_lpSettings->getMainWindowX(),
-  			m_lpSettings->getMainWindowY(),
-  			m_lpSettings->getMainWindowWidth(),
-  			m_lpSettings->getMainWindowHeight()
-          	);
+		gMainWindow->create(hApplicationInstance);
 	}
-	catch(CRuntimeException* lpException)
+	catch(RuntimeException* ex)
 	{
-		throw new CRuntimeException("CApplication::create", lpException);
+		throw new RuntimeException("Application::create", ex);
 	}
 }
 
 
-void CApplication::show(int nWindowShowState)
+void Application::show(int showState) const
 {
-	assert(g_lpMainWindow != NULL);
-	g_lpMainWindow->show(nWindowShowState);
+	assert(gMainWindow != NULL);
+	gMainWindow->show(showState);
 }
 
 
-CGlobalSettings* CApplication::getGlobalSettings()
+ApplicationSettings* Application::getSettings()
 {
-	return m_lpSettings;
+	return _settings;
 }
 
 
-CChordDefinitions* CApplication::getChordDefinitions()
+ChordDefinitions* Application::getChordDefinitions()
 {
-	return m_lpChords;
+	return _chords;
 }
 

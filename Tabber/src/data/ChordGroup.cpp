@@ -1,36 +1,39 @@
 #include "ChordGroup.h"
 
 
-CChordGroup::CChordGroup(LPCSTR szGroupName)
+ChordGroup::ChordGroup(const char* groupName, int elementCount)
 {
-	m_szName = (LPSTR)GlobalAlloc(GPTR, strlen(szGroupName));
-	strcpy(m_szName, szGroupName);
+	_name = new char[lstrlen(groupName)+1];
+	strcpy(_name, groupName);
+
+	_elementCount = elementCount;
 
 	OBJECT_CREATED;
 }
 
 
-CChordGroup::~CChordGroup()
+ChordGroup::~ChordGroup()
 {
-	GlobalFree(m_szName);
+	delete [] _name;
 	OBJECT_DELETED;
 }
 
 
-LPSTR CChordGroup::getName()
+const char* ChordGroup::getName() const
 {
-	return m_szName;
+	assert(_name != NULL);
+	return _name;
 }
 
 
-int CChordGroup::getElementCount()
+int ChordGroup::getElementCount() const
 {
-	return m_nElementCount;
+	return _elementCount;
 }
 
 
-void CChordGroup::setElementCount(int nNewCount)
+void ChordGroup::setElementCount(int newCount)
 {
-	m_nElementCount = nNewCount;
+	_elementCount = newCount;
 }
 

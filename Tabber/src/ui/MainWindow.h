@@ -1,43 +1,49 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-#include "../../resource.h"
-#include "../core/utilities.h"
+#include "../util/utilities.h"
+
 #include "../core/Application.h"
-#include "../core/GlobalSettings.h"
+#include "../core/ApplicationSettings.h"
+
+#include "../ui/components.h"
 
 
-class CMainWindow
+class MainWindow
 {
 
 	public:
 
-		CMainWindow(CApplication *);
-		virtual ~CMainWindow();
+		MainWindow(Application *);
+		virtual ~MainWindow();
 
-		void create(HINSTANCE , int , int , int , int );
-		void show  (int );
+		void create(HINSTANCE ) ;
+		void show  (int )       const ;
 
 	protected:
 
 		static LRESULT CALLBACK WindowProc(HWND , UINT , WPARAM , LPARAM );
 	
-		void onCreate  ( );
+		void onCreate  (HWND );
 		void onClose   ( );
+		void onSize    ( );
 		void onCommand (WPARAM , LPARAM );
 
 	protected:
 
-		static const char SZ_CLASS_NAME[];
+		static const char WINDOW_CLASS_NAME[];
 
-		CApplication* m_lpApplication;
-		HWND          m_hWindow;
+		Application*  _application;
+		MainToolbar*  _toolbar;
+		StatusBar*    _status;
+		
+		HWND          _hWindow;
 
 };
 
 
 // required because WindowProc must be static
-extern CMainWindow* g_lpMainWindow; 
+extern MainWindow* gMainWindow; 
 
 
 #endif // MAIN_WINDOW_H

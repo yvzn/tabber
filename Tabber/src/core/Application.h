@@ -1,29 +1,30 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "../core/utilities.h"
-#include "../core/GlobalSettings.h"
+#include "../util/utilities.h"
+#include "../core/ApplicationSettings.h"
 #include "../data/ChordDefinitions.h"
 
 
-class CApplication
+class Application
 {
 
 	public:
 
-		CApplication();
-		virtual ~CApplication();
+		Application();
+		virtual ~Application();
 
-		void create  (HINSTANCE );
-		void show    (int );
+		void create  (HINSTANCE )       ;
+		void show    (int )       const ;
 		
-		CGlobalSettings*   getGlobalSettings   ();
-		CChordDefinitions* getChordDefinitions (); 
-		
+		ApplicationSettings* getSettings         ( ) ;
+		ChordDefinitions*    getChordDefinitions ( ) ; 
+
 	protected:
 	
-		CGlobalSettings*   m_lpSettings;
-		CChordDefinitions* m_lpChords;
+		ApplicationSettings* _settings;
+		ChordDefinitions*    _chords;
+
 };
 
 

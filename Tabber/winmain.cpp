@@ -1,13 +1,10 @@
 #include <windows.h>
 
-#include "src/core/utilities.h"
 #include "src/core/Application.h"
+#include "src/util/utilities.h"
 
-//*
-#ifdef __DEBUG
-UINT g_uObjectCount = 0;
-#endif //__DEBUG
-//*/
+
+DEBUG_START;
 
 int WINAPI WinMain (
 	HINSTANCE hThisInstance,
@@ -16,12 +13,12 @@ int WINAPI WinMain (
 	int nCmdShow )
 {
 	MSG msg;
- 	CApplication* lpApplication = new CApplication();
+ 	Application* application = new Application();
 	
- 	try
+	try
 	{
-		lpApplication->create(hThisInstance);
-		lpApplication->show(nCmdShow);
+		application->create(hThisInstance);
+		application->show(nCmdShow);
 	
 		while(GetMessage(&msg, NULL, 0, 0) > 0)
 		{
@@ -29,19 +26,15 @@ int WINAPI WinMain (
 			DispatchMessage(&msg);
 		}
 	}
-	catch(CRuntimeException* lpException)
+	catch(RuntimeException* exception)
 	{
-		CRuntimeException ex("::Winmain", lpException);
-		CNotify::error(ex.getStackTrace());
+		RuntimeException ex("::Winmain", exception);
+		NotifyMessage::error(ex.getStackTrace());
 	}
 	
-	delete lpApplication;
+	delete application;
 
-//*
-#ifdef __DEBUG
-	CNotify::debug("object count: %d", g_uObjectCount);
-#endif //__DEBUG
-//*/
+DEBUG_STOP;
 	
 	return msg.wParam;
 }

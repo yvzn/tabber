@@ -1,18 +1,24 @@
 #include "MainWindow.h"
 
-const char CMainWindow::SZ_CLASS_NAME[] = "Tabber";
+const char MainWindow::WINDOW_CLASS_NAME[] = "Tabber";
 
 
-CMainWindow::CMainWindow(CApplication* lpApplication)
+MainWindow::MainWindow(Application* application)
 {
-	assert(lpApplication != NULL);
-	m_lpApplication = lpApplication;
+	InitCommonControls();
+
+	_application = application;
+	_toolbar     = new MainToolbar();
+	_status      = new StatusBar();
+	
 	OBJECT_CREATED;
 }
 
 
-CMainWindow::~CMainWindow()
+MainWindow::~MainWindow()
 {
+	delete _toolbar;
+	delete _status;
 	OBJECT_DELETED;
 }
 
@@ -20,78 +26,96 @@ CMainWindow::~CMainWindow()
 /**
  * @throws RuntimeException if an initialisation step screwed up
  */
-void CMainWindow::create(
-	HINSTANCE hApplicationInstance,
- 	int xPosition,
-  	int yPosition,
-   	int cxSize,
-    int cySize)
+void MainWindow::create(HINSTANCE hApplicationInstance)
 {
-	WNDCLASSEX wndClass;
+	ApplicationSettings* settings = _application->getSettings();
+	assert(settings != NULL);
+	
+	const RECT windowRect = settings->getMainWindowRect();
+	int x, y, width, height;
+	if(windowRect.top < 0)
+	{
+		// rect is not valid, use defaults values	
+		x = y = width = height = CW_USEDEFAULT;
+	}
+	else
+	{
+		x = windowRect.left; width = windowRect.right - windowRect.left;
+		y = windowRect.top; height = windowRect.bottom - windowRect.top;
+	}
 
+	DWORD windowStyle = WS_OVERLAPPEDWINDOW;
+	if(settings->getMainWindowMaximizedState())
+	{
+		windowStyle |= WS_MAXIMIZE;
+	}
+	
+	WNDCLASSEX wndClass;
 	ZeroMemory(&wndClass, sizeof(wndClass));
     wndClass.cbSize        = sizeof(WNDCLASSEX);
     wndClass.style         = 0;
-    wndClass.lpfnWndProc   = CMainWindow::WindowProc;
+    wndClass.lpfnWndProc   = MainWindow::WindowProc;
     wndClass.cbClsExtra    = 0;
     wndClass.cbWndExtra    = 0;
     wndClass.hInstance     = hApplicationInstance;
-    wndClass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
-    wndClass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+    wndClass.hIcon         = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_LARGE));
+    wndClass.hIconSm       = LoadIcon(hApplicationInstance, MAKEINTRESOURCE(IDI_ICON_SMALL));
     wndClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wndClass.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+    wndClass.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
     wndClass.lpszMenuName  = MAKEINTRESOURCE(IDR_MAIN_MENU);
-    wndClass.lpszClassName = SZ_CLASS_NAME;
+    wndClass.lpszClassName = WINDOW_CLASS_NAME;
 
     if(!RegisterClassEx(&wndClass))
     {
-    	throw new CRuntimeException("CMainWindow::create", "Could not register class");
+    	throw new RuntimeException("MainWindow::create", "Could not register class");
     }
 
-    m_hWindow = CreateWindowEx (
-        WS_EX_CLIENTEDGE,
-        SZ_CLASS_NAME,
-        "Untitled - Tabber",
-        WS_OVERLAPPEDWINDOW,
-        xPosition, yPosition, cxSize, cySize,
+    _hWindow = CreateWindowEx (
+        0,
+        WINDOW_CLASS_NAME,
+        "Tabber",
+        windowStyle, 
+        x, y, width, height,
         HWND_DESKTOP, NULL, hApplicationInstance, NULL );
 
-    if(m_hWindow == NULL)
+    if(_hWindow == NULL)
     {
-    	throw new CRuntimeException("CMainWindow::create", "Could not create window");
+    	throw new RuntimeException("MainWindow::create", "Could not create main window");
     }
 }
 
 
-void CMainWindow::show(int nWindowShowState)
+void MainWindow::show(int showState) const
 {
-	assert(m_hWindow != NULL);
+	assert(_hWindow != NULL);
 
-    ShowWindow(m_hWindow, nWindowShowState);
-    UpdateWindow(m_hWindow);
+    ShowWindow(_hWindow, showState);
+    UpdateWindow(_hWindow);
 }
 
 
 /**
  * Win32's message handling function
  */
-LRESULT CALLBACK CMainWindow::WindowProc(
+LRESULT CALLBACK MainWindow::WindowProc(
     HWND hWindow,
-    UINT uMsg,
+    UINT message,
     WPARAM wParam,
     LPARAM lParam )
 {
-    switch(uMsg)
+	assert(gMainWindow != NULL);
+
+    switch(message)
     {
 		case WM_CREATE:
         {
-        	g_lpMainWindow->onCreate();
+        	gMainWindow->onCreate(hWindow);
             break;
         }
         
 		case WM_CLOSE:
         {
-        	g_lpMainWindow->onClose();
+        	gMainWindow->onClose();
             break;
         }
         
@@ -101,66 +125,87 @@ LRESULT CALLBACK CMainWindow::WindowProc(
             break;
         }
         
+        case WM_SIZE:
+        {
+        	gMainWindow->onSize();
+        	break;
+        }
+        
     	case WM_COMMAND:
     	{
-    		g_lpMainWindow->onCommand(wParam, lParam);
+    		gMainWindow->onCommand(wParam, lParam);
     		break;
     	}
         
         default:
         {
-            return DefWindowProc(hWindow, uMsg, wParam, lParam);
+            return DefWindowProc(hWindow, message, wParam, lParam);
         }
     }
     return 0;
 }
  
  
-void CMainWindow::onCreate()
+/**
+ * @param hPrecreateWindow on window creation, internal pointer is not yet available, so I use this temporary one
+ */
+void MainWindow::onCreate(HWND hPrecreateWindow)
 {
-	//load view
+	try
+	{
+		//load view
+		_toolbar->create(hPrecreateWindow);
+		_status->create(hPrecreateWindow);
+		_status->setTextInPart(0, "Hello World !");
+		
+	}
+	catch(RuntimeException* ex)
+	{
+		throw new RuntimeException("MainWindow::onCreate", ex);
+	}
 }
  
 
-void CMainWindow::onClose()
+void MainWindow::onClose()
 {
-	RECT rcWindow;
-	CGlobalSettings*   lpSettings;
-	CChordDefinitions* lpChords;
-
-	assert(m_hWindow != NULL);
+	assert(_hWindow != NULL);
 	
 	//prompt to save if document has been modified
 	
 	//save settings
-	GetWindowRect(m_hWindow, &rcWindow);
-	lpSettings = m_lpApplication->getGlobalSettings();
-	lpSettings->setMainWindowHeight(rcWindow.bottom - rcWindow.top);
-	lpSettings->setMainWindowWidth(rcWindow.right - rcWindow.left);
-	lpSettings->setMainWindowY(rcWindow.top);
-	lpSettings->setMainWindowX(rcWindow.left);
-	lpSettings->save();
+	RECT rcWindow;
+	GetWindowRect(_hWindow, &rcWindow);
 	
-	//save chords (not required for now)
-	lpChords = m_lpApplication->getChordDefinitions();
-	lpChords->save();
+	ApplicationSettings* appSettings = _application->getSettings();
+	appSettings->setMainWindowRect(rcWindow);
+	appSettings->setMainWindowMaximizedState(IsZoomed(_hWindow) > 0);
+	appSettings->save();
 	
-	DestroyWindow(m_hWindow);
+	DestroyWindow(_hWindow);
 }
 
 
-void CMainWindow::onCommand(WPARAM wParam, LPARAM lParam)
+void MainWindow::onSize()
 {
-	assert(m_hWindow != NULL);
+	//toolbar and status bar can position/resize themselves automatically
+	_toolbar->resize();
+	_status->resize();
+}
+
+
+void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
+{
+	assert(_hWindow != NULL);
 	
 	switch(LOWORD(wParam))
 	{
-		case IDC_APP_EXIT:
+		case ID_APP_EXIT:
 		{
-			PostMessage(m_hWindow, WM_CLOSE, 0, 0);
+			PostMessage(_hWindow, WM_CLOSE, 0, 0);
 			break;
 		}
 	}
 }
+
 
 
