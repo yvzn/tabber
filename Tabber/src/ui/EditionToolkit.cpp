@@ -42,29 +42,29 @@ void EditionToolkit::setWindowHandle(HWND hEdit)
  */
 bool EditionToolkit::isSelectionValid(DWORD selection)
 {
-	return getLineIndex(HIWORD(selection)) < getLineCount();
+	assert(_hWindow != NULL);
+
+	return getLineIndex( __endOf(selection) ) < getLineCount();
 }
 
 
 /**
  * Says if some text is selected somewhere in the edit control
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
  */
 bool EditionToolkit::isTextSelected(DWORD selection)
 {
-	return HIWORD(selection) != LOWORD(selection);
+	return __endOf(selection) != __startOf(selection);
 }
 
 
 /**
  * Says if selection ends at the end of the line
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
  */
 bool EditionToolkit::doesSelectionEndLine(DWORD selection)
 {
 	assert(_hWindow != NULL);
 
-	WORD selectionEnd = HIWORD(selection);
+	WORD selectionEnd = __endOf(selection);
 	int  lineIndex    = getLineIndex(selectionEnd);
 
 	return (selectionEnd - getLineStart(lineIndex) == getLineLength(selectionEnd));
@@ -74,12 +74,11 @@ bool EditionToolkit::doesSelectionEndLine(DWORD selection)
 /**
  * Says if the line containing current selection can be considered in a staff line
  * Heuristic: Any line with more than 5 occurences of '-' is potentially accepted
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
  */
 bool EditionToolkit::isStaffLine(DWORD selection)
 {
     assert(_hWindow != NULL);
-	return isStaffLine( getLineIndex( (WPARAM)HIWORD(selection) ) );
+	return isStaffLine( getLineIndex( (WPARAM)__endOf(selection) ) );
 }
 
 
@@ -109,14 +108,11 @@ bool EditionToolkit::isStaffLine(unsigned int lineIndex)
 }
 
 
-/**
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
- */
 unsigned int EditionToolkit::getStaffFirstLineIndex(DWORD selection)
 {
-	//assert(isStaffLine(selection));
+	assert(_hWindow != NULL && isStaffLine(selection));
 
-	int lineIndex = getLineIndex( HIWORD(selection) );
+	int lineIndex = getLineIndex( __endOf(selection) );
 	while(lineIndex>=0 && isStaffLine((unsigned int)lineIndex))
 	{
 		--lineIndex;
@@ -126,14 +122,11 @@ unsigned int EditionToolkit::getStaffFirstLineIndex(DWORD selection)
 }
 
 
-/**
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
- */
 unsigned int EditionToolkit::getStaffLastLineIndex(DWORD selection)
 {
-	//assert(isStaffLine(selection));
+	assert(_hWindow != NULL && isStaffLine(selection));
 
-	unsigned int lineIndex = getLineIndex( HIWORD(selection) );
+	unsigned int lineIndex = getLineIndex( __endOf(selection) );
 	unsigned int lineCount = getLineCount();
 	while(lineIndex<lineCount && isStaffLine(lineIndex))
 	{
@@ -147,13 +140,12 @@ unsigned int EditionToolkit::getStaffLastLineIndex(DWORD selection)
 /**
  * Says if current selection can be considered as inside a staff
  * Heuristic: Any character inside a group of 6 (CHORD_DEPTH) consecutive staff lines (as defined by isStaffLine) is accepted
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start
  */
 bool EditionToolkit::isInsideStaff(DWORD selection)
 {
 	assert(_hWindow != NULL);
 
-	unsigned int currentLine = getLineIndex(HIWORD(selection));
+	unsigned int currentLine = getLineIndex( __endOf(selection) );
 	unsigned int chordDepth = _editArea->getMainWindow()->getApplication()->getSettings()->getChordDepth();
 
 	return isStaffLine(currentLine)
@@ -165,13 +157,13 @@ bool EditionToolkit::isInsideStaff(DWORD selection)
  * Moves selection to the beginning of next line.
  * If selection is inside a staff, move to the beginning of the first line following the staff.
  * If selection is a the end of the file, appends a new blank line and move to its beginning.
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start, in/out, location of current selection, recieves new location of selection.
+ * @param selection in/out, location of current selection, recieves new location of selection.
  */
 void EditionToolkit::moveToNextLine(DWORD& selection)
 {
 	assert(_hWindow != NULL);
 
-	unsigned int selEnd = HIWORD(selection);
+	unsigned int selEnd = __endOf(selection);
 	unsigned int lineIndex  = getLineIndex(selEnd);
 	unsigned int lineStart  = getLineStart(lineIndex);
 
@@ -205,11 +197,11 @@ void EditionToolkit::moveToNextLine(DWORD& selection)
 
 /**
  * Moves selection to the beginning of current staff.
- * @param selection HIWORD(selection) == end, LOWORD(selection) == start, in/out, location of current selection, recieves new location of selection.
+ * @param selection in/out, location of current selection, recieves new location of selection.
  */
 void EditionToolkit::moveToStaffStart(DWORD& selection)
 {
-	assert(isStaffLine(selection));
+	assert(_hWindow != NULL && isStaffLine(selection));
 
 	unsigned int firstLineIndex  = getStaffFirstLineIndex(selection);
 
@@ -227,19 +219,96 @@ void EditionToolkit::moveToStaffStart(DWORD& selection)
 /**
  * Copies the nth note of a chord at the beginning of a buffer, adding space if required and removing unnecessary '\0's
  */
-void  EditionToolkit::copyNoteAtBufferStart(GuitarChord* chord, int noteIndex, char* buffer)
+void  EditionToolkit::copyNoteAtBufferStart(GuitarChord* chord, unsigned int noteIndex, char* buffer)
 {
 	for(int prefix=0; prefix<chord->getWidth(); ++prefix) buffer[prefix]=' ';
 
 	if(noteIndex < chord->getNoteCount())
 	{
 		const char* note = chord->getNote(chord->getNoteCount() - noteIndex - 1); // note order is reversed :/
-		lstrcpy(buffer, note);
-		buffer[lstrlen(note)] = ' '; // removes the '\0' at the end of note
+		CopyMemory(buffer, note, lstrlen(note)); // does not copy the final '\0'
 	}
 
 	buffer[chord->getWidth()] = '|';
 }
 
 
+/**
+ * Copies at least (requiredWidth) characters from buffer to edit control, at specified position.
+ * If the buffer is smaller than (requiredWidth), extra (paddingCharacter)s are added.
+ * If line is not long enough to reach column, the buffer is copied at the end of the line.
+ * If line is not valid, nothing is done.
+ */
+void EditionToolkit::copyAndFillAtLineCol(
+	const char*  buffer,
+	unsigned int line,
+	unsigned int col,
+	unsigned int requiredWidth,
+	char         paddingCharacter )
+{
+	assert(_hWindow != NULL);
 
+	if(line < getLineCount())
+	{
+		unsigned int lineStart = getLineStart(line);
+		unsigned int lineLength = getLineLength(lineStart);
+		unsigned int position = lineStart + min(col, lineLength);
+		setSelection(position, position);
+
+		int length = lstrlen(buffer);
+  		if(length >= requiredWidth)
+		{
+			replaceSelection(buffer);
+		}
+		else
+		{
+			char* fullString = new char[requiredWidth+1];
+
+			CopyMemory(fullString, buffer, length);
+			for(int pos=length; pos<requiredWidth; ++pos)
+			{
+				fullString[pos] = paddingCharacter;
+			}
+			fullString[requiredWidth] = '\0';
+
+			replaceSelection(fullString);
+			delete [] fullString;
+		}
+	}
+}
+
+
+void EditionToolkit::saveCursorPosition(DWORD selection)
+{
+	assert(_hWindow != NULL);
+
+	// Just saving selection location is not enough because selection location
+	// is based on character-indexes, and if characters are typed between
+	// save and restore, character-indexes are changed.
+	// I prefer to rely on line/column location.
+
+	WORD selectionEnd = __endOf( selection );
+	_cursorPosition.x = getColumnIndex( selectionEnd );
+	_cursorPosition.y = getLineIndex( selectionEnd );
+}
+
+
+/**
+ * @param columnOffset extra offset added to cursor position, might be useful e.g. when restoring cursor position after typing
+ * @param lineOffset   extra offset added to cursor position, might be useful e.g. when restoring cursor position after typing
+ */
+void EditionToolkit::restoreCursorPosition(int columnOffset, int lineOffset)
+{
+	assert(_hWindow != NULL);
+	unsigned int a, b; // used to save multiple calls in min macro
+
+	a = _cursorPosition.y + lineOffset; b = getLineCount() - 1;
+	unsigned int lineStart = getLineStart( min ( a , b ) ) ;
+
+	a = _cursorPosition.x + columnOffset; b = getLineLength ( lineStart );
+	unsigned int column = min ( a , b );
+
+	unsigned int position  = lineStart + column;
+
+	setSelection(position, position);
+}

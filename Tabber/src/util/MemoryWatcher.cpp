@@ -68,8 +68,8 @@ void MemoryWatcher::report() const
 				(*i)->address, (*i)->size, (*i)->file, (*i)->line);
 		}
 	}
-	
-//*
+
+/*
 	//displays a message box with a useless feature to suspend execution
 	//(handy in case of crashes)
 	int action = MessageBox(

@@ -434,11 +434,7 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
 				if(!_toolkit->doesSelectionEndLine(selection))
 				{
         			//expand selection by one character so that typing overwrites that extra character
-		            WORD  selStart  = LOWORD(selection);
-		            WORD  selEnd    = HIWORD(selection);
-
-               		selEnd++;
-               		_toolkit->setSelection(selStart, selEnd);
+               		_toolkit->setSelection(__startOf(selection), __endOf(selection) + 1);
 				}
             }
 
@@ -459,9 +455,35 @@ LRESULT EditArea::onCharOverwriteMode(int virtuakKeyCode)
  */
 LRESULT EditArea::onCharSpecialMode(int virtuakKeyCode)
 {
-    if(_toolkit->isInsideStaff())
+	DWORD selection = _toolkit->getSelection();
+    if(_toolkit->isInsideStaff(selection))
     {
-		return FALSE;
+	    switch(virtuakKeyCode)
+	    {
+			case VK_DELETE:
+			case VK_BACK:
+			case VK_ESCAPE:
+			{
+	      		// special, do nothing
+				break;
+			}
+
+	       	case VK_RETURN:
+			{
+				_toolkit->moveToNextLine(selection);
+				onSelectionChange();
+				onDocumentModified();
+				break;
+			}
+
+			default:
+			{
+ 				Dispatcher* dispatcher = new KeyStrokeDispatcher(virtuakKeyCode, _toolkit->getLineIndex( __endOf(_toolkit->getSelection()) ));
+				insert(dispatcher);
+				delete dispatcher;
+				break;
+			}
+		}
 	}
 	else
 	{
@@ -535,17 +557,18 @@ void EditArea::onInsertTuning()
 {
 	assert(_hWindow != NULL && _toolkit->isInsideStaff());
 
-	DWORD selection = _toolkit->getSelection();
-	_toolkit->moveToStaffStart(selection);
-
  	TuningIndex tuningIndex  = _mainWindow->getApplication()->getSettings()->getSelectedTuningIndex();
 
 	if(tuningIndex > 0) // index 0 means no tuning
 	{
+		DWORD selection = _toolkit->getSelection();
+		_toolkit->saveCursorPosition(selection);
+		_toolkit->moveToStaffStart(selection);
+
 		GuitarTuning* tuning = _mainWindow->getApplication()->getTuningDefinitions()->getTuningAt(tuningIndex-1);
 		char*         buffer = new char[tuning->getWidth() + 1 /* '|' */ + 1 /* '\0' */];
 
-  		unsigned int lineIndex = _toolkit->getLineIndex(HIWORD(selection));
+  		unsigned int lineIndex = _toolkit->getLineIndex(__endOf(selection));
   		unsigned int lineCount = _toolkit->getLineCount();
 
 		int tuningString = 0;
@@ -564,11 +587,57 @@ void EditArea::onInsertTuning()
 		}
 
 		delete [] buffer;
-	}
 
-	onSelectionChange();
-	onDocumentModified();
+		_toolkit->restoreCursorPosition(+tuning->getWidth()+1);
+
+		onSelectionChange();
+		onDocumentModified();
+	}
 }
 
 
+/**
+ * Inserts a vertical bar at cursor position
+ */
+void EditArea::onInsertBar()
+{
+	Dispatcher* dispatcher = new BarDispatcher();
+	insert(dispatcher);
+	delete dispatcher;
+}
+
+
+
+// UTILITIES //////////////////////////////////////////////////////////////////
+
+
+/**
+ * Inserts data read from the specified dispatcher at cursor position inside the edit control
+ */
+void EditArea::insert(Dispatcher* dispatcher)
+{
+	assert(_hWindow != NULL);
+
+	DWORD selection = _toolkit->getSelection();
+	_toolkit->saveCursorPosition(selection);
+
+	unsigned int column = _toolkit->getColumnIndex(__endOf(selection));
+	unsigned int firstLine = _toolkit->getStaffFirstLineIndex(selection);
+	unsigned int lastLine = _toolkit->getStaffLastLineIndex(selection);
+
+	for(unsigned int line=firstLine; line<=lastLine; ++line)
+	{
+		_toolkit->copyAndFillAtLineCol(dispatcher->getString(line), line, column, dispatcher->getStringWidth());
+	}
+
+	if(_mainWindow->getApplication()->getSettings()->isChordModeEnabled(ADD_NAME) && firstLine>0)
+	{
+		//add a blank on the chords name line
+		_toolkit->copyAndFillAtLineCol(dispatcher->getHeaderString(), firstLine-1, column, dispatcher->getStringWidth(), ' ');
+	}
+
+	_toolkit->restoreCursorPosition(+dispatcher->getStringWidth());
+	onSelectionChange();
+	onDocumentModified();
+}
 

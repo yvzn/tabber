@@ -212,6 +212,7 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 		
 		case ID_INSERT_STAFF  : _editArea->onInsertStaff();  break;
 		case ID_INSERT_TUNING : _editArea->onInsertTuning(); break;
+		case ID_INSERT_BAR    : _editArea->onInsertBar();    break;
 
 		case ID_OPTIONS_FONT              : _settingsInterface->onChooseFont();        break;
 		case ID_OPTIONS_STAFF_WIDTH       : _settingsInterface->onChooseStaffWidth(); break;
