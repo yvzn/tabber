@@ -27,7 +27,7 @@ IniFileSequentialParser::IniFileSequentialParser(const char* fileName)
 		
  		if(_namesBufferCharactersCount != 0 && _namesBufferCharactersCount >= _namesBufferSize-2)
  		{
- 			//not large enough buffer: see reference for GetPrivateProfileSectionNames 
+ 			//not large enough, reallocate :( see reference for GetPrivateProfileSectionNames 
 			delete [] _namesBuffer;
 			_namesBufferSize *= 2;
 			_namesBuffer = new char[_namesBufferSize];
@@ -103,10 +103,12 @@ const char* IniFileSequentialParser::nextSection()
  			bufferIsNotLargeEnough = false;
  		}
 	}
- 			
+
+	// build keys and values
+	if(_keysValuesPairs != NULL) delete _keysValuesPairs;
+
 	if(_sectionBufferCharactersCount > 0) //one or more keys present in section
 	{
-		if(_keysValuesPairs != NULL) delete _keysValuesPairs;
 		_keysValuesPairs = new DoubleNullStringTokenizer(_sectionBuffer, _sectionBufferCharactersCount);
 	}
 	else
@@ -138,10 +140,10 @@ const char* const* IniFileSequentialParser::nextKey()
 	
 	// pairLength can be used as a majoring size for key & value buffers
  	// as pair = key + '=' + value (the '=' saves the extra
-  	// allocation for trailing '\0'
+  	// allocation for trailing '\0')
 	int pairLength = lstrlen(pair);
 
-	// multi-dimensional array allocation "a la mano" because C++ does not
+	// "a la mano" multi-dimensional array allocation, because C++ does not
 	// allow variable length multi-dimentional arrays
 	if(_keyValueBufferArray != NULL)
  	{

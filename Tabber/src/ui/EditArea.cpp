@@ -118,7 +118,7 @@ LRESULT CALLBACK EditArea::handleMessage (
 			_mainWindow->getDocumentInterface()->setDocumentModified(true);
 
 //*
-            if ((wParam != VK_BACK) && (wParam != VK_DELETE))
+            if ((wParam != VK_BACK) && (wParam != VK_DELETE) && (wParam != VK_RETURN))
             {
                 WORD wStart,wEnd;
                 DWORD dwResult;

@@ -2,6 +2,8 @@
 
 
 /**
+ * @param doubleNullString a pointer to one or more null-terminated strings, concatenated. The last string is followed by a second null character (hence the double-null).
+ * @param doubleNullStringLength sum of strings' length, including the null characters
  * @warning the double string to be tokenized must remain in memory during parsing
  */
 DoubleNullStringTokenizer::DoubleNullStringTokenizer(
@@ -12,7 +14,7 @@ DoubleNullStringTokenizer::DoubleNullStringTokenizer(
 
 	_string = doubleNullString;
 	_currentToken = const_cast<char*>(_string); //I just need the address
-	_endOfString = _currentToken + (doubleNullStringLength) * sizeof(char );
+	_endOfString = _currentToken + (doubleNullStringLength-1) * sizeof(char ); //address of the very last '\0'
 	
 	OBJECT_CREATED;
 }
