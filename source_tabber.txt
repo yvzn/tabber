@@ -1,0 +1,697 @@
+(* where to find out more : http://xkernel.free.fr/ *)
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, Unit2, Unit3;
+
+type
+  TForm1 = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    Button1: TButton;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Edit7: TEdit;
+    Panel2: TPanel;
+    Label2: TLabel;
+    Edit8: TEdit;
+    Edit9: TEdit;
+    Edit10: TEdit;
+    Edit11: TEdit;
+    Edit12: TEdit;
+    Edit13: TEdit;
+    Edit14: TEdit;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    OpenDialog1: TOpenDialog;
+    Button2: TButton;
+    Button3: TButton;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    Panel3: TPanel;
+    Label10: TLabel;
+    console: TEdit;
+    Button4: TButton;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
+    Label11: TLabel;
+    Button10: TButton;
+    Button11: TButton;
+    Panel4: TPanel;
+    Label12: TLabel;
+    CheckBox3: TCheckBox;
+    Button12: TButton;
+    Button13: TButton;
+    Button14: TButton;
+    Button15: TButton;
+    Button16: TButton;
+    Button17: TButton;
+    Button18: TButton;
+    Button19: TButton;
+    Button20: TButton;
+    Button21: TButton;
+    Button22: TButton;
+    Button23: TButton;
+    Button24: TButton;
+    Button25: TButton;
+    Button26: TButton;
+    Button27: TButton;
+    Button28: TButton;
+    CheckBox4: TCheckBox;
+    Button29: TButton;
+    Button30: TButton;
+    Button31: TButton;
+    Button32: TButton;
+    Button33: TButton;
+    Button34: TButton;
+    Button35: TButton;
+    Button36: TButton;
+    Button37: TButton;
+    Button38: TButton;
+    Button39: TButton;
+    Button40: TButton;
+    Button41: TButton;
+    Button42: TButton;
+    Button43: TButton;
+    Button44: TButton;
+    Button45: TButton;
+    Button46: TButton;
+    Image1: TImage;
+    CheckBox5: TCheckBox;
+    procedure FormCreate(Sender: TObject);
+    (* procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean); *)
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
+    procedure Button10Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
+    procedure Button13Click(Sender: TObject);
+    procedure Button14Click(Sender: TObject);
+    procedure Button15Click(Sender: TObject);
+    procedure Button16Click(Sender: TObject);
+    procedure Button17Click(Sender: TObject);
+    procedure Button18Click(Sender: TObject);
+    procedure Button19Click(Sender: TObject);
+    procedure Button20Click(Sender: TObject);
+    procedure Button21Click(Sender: TObject);
+    procedure Button22Click(Sender: TObject);
+    procedure Button23Click(Sender: TObject);
+    procedure Button24Click(Sender: TObject);
+    procedure Button25Click(Sender: TObject);
+    procedure Button26Click(Sender: TObject);
+    procedure Button27Click(Sender: TObject);
+    procedure Button28Click(Sender: TObject);
+    procedure Button29Click(Sender: TObject);
+    procedure Button30Click(Sender: TObject);
+    procedure Button31Click(Sender: TObject);
+    procedure Button32Click(Sender: TObject);
+    procedure Button33Click(Sender: TObject);
+    procedure Button34Click(Sender: TObject);
+    procedure Button35Click(Sender: TObject);
+    procedure Button36Click(Sender: TObject);
+    procedure Button37Click(Sender: TObject);
+    procedure Button38Click(Sender: TObject);
+    procedure Button39Click(Sender: TObject);
+    procedure Button40Click(Sender: TObject);
+    procedure Button41Click(Sender: TObject);
+    procedure Button42Click(Sender: TObject);
+    procedure Button43Click(Sender: TObject);
+    procedure Button44Click(Sender: TObject);
+    procedure Button45Click(Sender: TObject);
+    procedure Button46Click(Sender: TObject);
+  private
+    { Déclarations privées }
+  public
+    { Déclarations publiques }
+  end;
+
+type TABLO = array[0..6] of string;
+
+var
+  Form1: TForm1;
+  ch: TABLO; //tableau contenant les cordes; 0 est la ligne
+                             // des accords, 1:e, 2:B, 3:G, 4:D, 5:A, 6:E
+  document: boolean;         //y-a-il un document en memoire ?
+  MAXLIGNE: integer;         //maximum de caracteres par ligne (80)
+  pos: integer;              //position actuelle dans la ligne
+
+  fich: TextFile;            //fichier de sortie
+
+implementation
+
+{$R *.DFM}
+
+(* ---------------------------- procedures de moi --------------------------- *)
+
+function confirmation:boolean;
+//var i:integer;
+begin
+  //Form3.show;
+  //confirmation := Form3.cnf;
+
+  confirmation :=
+    ( MessageDlg('Confirmer la fermeture du fichier ?', mtConfirmation,
+      [mbOk, mbCancel], 0) = id_Ok );
+
+end;
+
+procedure refresh;
+begin
+  Form1.Edit1.Text := ch[0];
+  Form1.Edit2.Text := ch[1];
+  Form1.Edit3.Text := ch[2];
+  Form1.Edit4.Text := ch[3];
+  Form1.Edit5.Text := ch[4];
+  Form1.Edit6.Text := ch[5];
+  Form1.Edit7.Text := ch[6];
+end;
+
+procedure linefeed;
+var i:integer;
+begin
+  if document then
+  begin
+    Form1.console.Text := 'Ecriture dans le fichier';
+    writeln(fich, '');
+    writeln(fich, '   ' + ch[0]);
+    writeln(fich, '');
+    writeln(fich, 'e |' + ch[1]);
+    writeln(fich, 'B |' + ch[2]);
+    writeln(fich, 'G |' + ch[3]);
+    writeln(fich, 'D |' + ch[4]);
+    writeln(fich, 'A |' + ch[5]);
+    writeln(fich, 'E |' + ch[6]);
+    writeln(fich, '');
+  end
+  else
+    Form1.console.Text := 'Erreur: pas de fichier!';
+
+  for i := 0 to 6 do
+    ch[i] := '';
+  refresh;
+  pos := 0;
+  if document then Form1.console.Text := 'Ecriture terminee';
+end;
+
+procedure ajoute(var s:TABLO);
+var long,i,j,k:integer;
+    r: array[0..6] of integer;
+begin
+  r[0] := length(s[0]);
+
+  long := r[0];
+  for i := 1 to 6 do
+  begin
+    r[i] := length(s[i]);
+    if r[i]>long then long:=r[i];
+  end;
+
+  if Form1.CheckBox1.Checked then
+    long := long + 1;
+
+  if r[0]<long then
+  begin
+    k := long-r[0];
+    for j := 1 to k do
+      s[0] := s[0] + ' ';
+  end;
+
+  for i := 1 to 6 do
+    if r[i]<long then
+    begin
+      k := long-r[i];
+      for j := 1 to k do
+        s[i] := s[i] + '-';
+    end;
+
+  if pos+long>=MAXLIGNE then
+  begin
+    linefeed;
+    Form1.Console.Text := 'Nouvelle ligne!'; 
+  end;
+
+  for i := 0 to 6 do
+    ch[i] := ch[i] + s[i];
+
+  pos := pos + long;
+
+  refresh;
+end;
+
+procedure ajoute_blancs;
+var s: TABLO;
+    i: integer;
+begin
+  s[0] := ' ';
+  for i := 1 to 6 do
+    s[i] := '-';
+
+  ajoute(s);
+end;
+
+(* ---------------------------- procedures Delphi --------------------------- *)
+
+procedure TForm1.FormCreate(Sender: TObject);
+var i:integer;
+begin
+  //initialisations
+  MAXLIGNE := 80;
+  pos := 0;
+  OpenDialog1.Options := [ofCreatePrompt];
+  document := false;
+ 
+  for i := 0 to 6 do
+    ch[i] := '';
+end;
+
+(* cause des bugs *)
+(* procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if document then
+  begin
+     if (confirmation) then
+     begin
+       document := false;
+       linefeed;
+       CloseFile(fich);
+       CanClose := true;
+     end
+     else
+       CanClose := false;
+  end;
+end; *)
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  Edit1.Text := ch[0];
+  Edit2.Text := ch[1];
+  Edit3.Text := ch[2];
+  Edit4.Text := ch[3];
+  Edit5.Text := ch[4];
+  Edit6.Text := ch[5];
+  Edit7.Text := ch[6];
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+var s:string;
+begin
+  if document then
+  begin
+    if not(confirmation) then Exit;
+    document := false;
+    linefeed;
+    CloseFile(fich);
+  end;
+  if not(OpenDialog1.Execute) then
+  begin
+    document := false;
+    console.Text := 'attention, pas de fichier !';
+  end
+  else
+  begin
+    document := true;
+    s := OpenDialog1.Files[0];
+    Console.Text := s + ' ouvert';
+    AssignFile(fich,s);
+    Rewrite(fich);
+    writeln(fich,' --- Tablatures par Yew Tabber 1.0.0 ( http://xkernel.free.fr ) --- ');
+  end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var s: TABLO;
+begin
+  s[0] := Edit8.Text;
+  s[1] := Edit9.Text;
+  s[2] := Edit10.Text;
+  s[3] := Edit11.Text;
+  s[4] := Edit12.Text;
+  s[5] := Edit13.Text;
+  s[6] := Edit14.Text;
+
+  ajoute(s);
+
+  if CheckBox2.Checked then
+  begin
+    Edit8.Text := '';
+    Edit9.Text := '';
+    Edit10.Text := '';
+    Edit11.Text := '';
+    Edit12.Text := '';
+    Edit13.Text := '';
+    Edit14.Text := '';
+  end;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var s: TABLO;
+    i: integer;
+begin
+  s[0] := ' ';
+  for i := 1 to 6 do
+    s[i] := '-';
+
+  ajoute(s);
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+begin
+  AboutBox.show;
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+begin
+  if document then
+  begin
+    if not(confirmation) then Exit;
+    linefeed;
+    CloseFile(fich);
+    document := false;
+    console.Text := 'attention, pas de fichier !';
+  end;
+end;
+
+procedure TForm1.Button6Click(Sender: TObject);
+begin
+  if document then
+  begin
+     if not(confirmation) then Exit;
+     linefeed;
+     CloseFile(fich);
+  end;
+  Form1.close;
+end;
+
+procedure TForm1.Button8Click(Sender: TObject);
+var s: TABLO;
+    i: integer;
+begin
+  s[0] := ' ';
+  for i := 1 to 6 do
+    s[i] := '|';
+
+  ajoute(s);
+end;
+
+procedure TForm1.Button9Click(Sender: TObject);
+begin
+  if document then
+    linefeed
+  else
+    Button4Click(Sender);
+end;
+
+procedure TForm1.Button10Click(Sender: TObject);
+var i:integer;
+begin
+  if length(Edit1.Text)<>0 then
+    for i:=0 to 6 do
+      ch[i] := copy(ch[i], 1, length(ch[i]) - 1);
+  Edit1.Text := ch[0];
+  Edit2.Text := ch[1];
+  Edit3.Text := ch[2];
+  Edit4.Text := ch[3];
+  Edit5.Text := ch[4];
+  Edit6.Text := ch[5];
+  Edit7.Text := ch[6];
+end;
+
+procedure TForm1.Button11Click(Sender: TObject);
+var long,i,j,k:integer;
+    r: array[0..6] of integer;
+begin
+  ch[0] := Edit1.Text;
+  ch[1] := Edit2.Text;
+  ch[2] := Edit3.Text;
+  ch[3] := Edit4.Text;
+  ch[4] := Edit5.Text;
+  ch[5] := Edit6.Text;
+  ch[6] := Edit7.Text;
+
+  r[0] := length(ch[0]);
+
+  long := r[0];
+  for i := 1 to 6 do
+  begin
+    r[i] := length(ch[i]);
+    if r[i]>long then long:=r[i];
+  end;
+
+  if r[0]<long then
+  begin
+    k := long-r[0];
+    for j := 1 to k do
+      ch[0] := ch[0] + ' ';
+  end;
+
+  for i := 1 to 6 do
+    if r[i]<long then
+    begin
+      k := long-r[i];
+      for j := 1 to k do
+        ch[i] := ch[i] + '-';
+    end;
+
+  pos := long;
+
+  Edit1.Text := ch[0];
+  Edit2.Text := ch[1];
+  Edit3.Text := ch[2];
+  Edit4.Text := ch[3];
+  Edit5.Text := ch[4];
+  Edit6.Text := ch[5];
+  Edit7.Text := ch[6];
+end;
+
+(* par moi mais necessite une des procedures delphi *)
+procedure accord(s0, s1, s2, s3, s4, s5, s6: string);
+begin
+  with Form1 do
+  begin
+    if CheckBox4.Checked then
+      Edit8.Text := s0
+    else
+      Edit8.Text := '';
+    if Form1.CheckBox5.Checked then
+    begin
+      Edit9.Text := '----------' + s1;
+      Edit10.Text:= '--------' + s2 + '---' + s2;
+      Edit11.Text:= '------' + s3 + '-------' + s3;
+      Edit12.Text:= '----' + s4 + '-----------' + s4;
+      Edit13.Text:= '--' + s5 + '---------------' + s5;
+      Edit14.Text:= '' + s6 + '-------------------' + s6;
+    end
+    else
+    begin
+      Edit9.Text := s1;
+      Edit10.Text:= s2;
+      Edit11.Text:= s3;
+      Edit12.Text:= s4;
+      Edit13.Text:= s5;
+      Edit14.Text:= s6;
+    end;
+  end;
+  if Form1.CheckBox3.Checked then
+    Form1.Button2Click(Form1.Button2);
+end;
+
+(* --------------------------- accords predefinis -------------------------- *)
+
+procedure TForm1.Button12Click(Sender: TObject);
+begin
+  accord('A', '0', '2', '2', '2', '0', '-');
+end;
+
+procedure TForm1.Button13Click(Sender: TObject);
+begin
+  accord('B', '2', '4', '4', '4', '2', '-');
+end;
+
+procedure TForm1.Button14Click(Sender: TObject);
+begin
+  accord('C', '0', '1', '0', '2', '3', '-');
+end;
+
+procedure TForm1.Button15Click(Sender: TObject);
+begin
+  accord('D', '2', '3', '2', '0', '-', '-');
+end;
+
+procedure TForm1.Button16Click(Sender: TObject);
+begin
+  accord('E', '0', '0', '1', '2', '2', '0');
+end;
+
+procedure TForm1.Button17Click(Sender: TObject);
+begin
+  accord('F', '1', '1', '2', '3', '3', '1');
+end;
+
+procedure TForm1.Button18Click(Sender: TObject);
+begin
+  accord('G', '3', '3', '0', '0', '2', '3');
+end;
+
+procedure TForm1.Button19Click(Sender: TObject);
+begin
+  accord('Am', '0', '1', '2', '2', '0', '-');
+end;
+
+procedure TForm1.Button20Click(Sender: TObject);
+begin
+  accord('Bm', '2', '3', '4', '4', '2', '-');
+end;
+
+procedure TForm1.Button21Click(Sender: TObject);
+begin
+  accord('Cm', '3', '4', '5', '5', '3', '-');
+end;
+
+procedure TForm1.Button22Click(Sender: TObject);
+begin
+  accord('Dm', '1', '3', '2', '0', '-', '-');
+end;
+
+procedure TForm1.Button23Click(Sender: TObject);
+begin
+  accord('Em', '0', '0', '0', '2', '2', '0');
+end;
+
+procedure TForm1.Button24Click(Sender: TObject);
+begin
+  accord('Fm', '1', '1', '1', '3', '3', '1');
+end;
+
+procedure TForm1.Button25Click(Sender: TObject);
+begin
+  accord('Gm', '3', '3', '3', '5', '5', '3');
+end;
+
+procedure TForm1.Button26Click(Sender: TObject);
+begin
+  accord('A7', '0', '2', '0', '2', '0', '-');
+end;
+
+procedure TForm1.Button27Click(Sender: TObject);
+begin
+  accord('B7', '2', '4', '2', '4', '2', '-');
+end;
+
+procedure TForm1.Button28Click(Sender: TObject);
+begin
+  accord('C7', '0', '1', '3', '2', '3', '-');
+end;
+
+procedure TForm1.Button29Click(Sender: TObject);
+begin
+  accord('D7', '2', '1', '2', '0', '-', '-');
+end;
+
+procedure TForm1.Button30Click(Sender: TObject);
+begin
+  accord('E7', '0', '3', '1', '2', '2', '0');
+end;
+
+procedure TForm1.Button31Click(Sender: TObject);
+begin
+  accord('F7', '1', '4', '2', '1', '3', '1');
+end;
+
+procedure TForm1.Button32Click(Sender: TObject);
+begin
+  accord('G7', '3', '0', '0', '3', '2', '3');
+end;
+
+procedure TForm1.Button33Click(Sender: TObject);
+begin
+  accord('Ab', '4', '4', '5', '6', '6', '4');
+end;
+
+procedure TForm1.Button34Click(Sender: TObject);
+begin
+  accord('Bb', '1', '3', '3', '3', '1', '-');
+end;
+
+procedure TForm1.Button35Click(Sender: TObject);
+begin
+  accord('C#', '4', '6', '6', '6', '4', '-');
+end;
+
+procedure TForm1.Button36Click(Sender: TObject);
+begin
+  accord('Eb', '3', '4', '3', '1', '-', '-');
+end;
+
+procedure TForm1.Button37Click(Sender: TObject);
+begin
+  accord('F#', '2', '2', '3', '4', '4', '2');
+end;
+
+procedure TForm1.Button38Click(Sender: TObject);
+begin
+  accord('Bm7', '4', '2', '1', '3', '1', '-');
+end;
+
+procedure TForm1.Button39Click(Sender: TObject);
+begin
+  accord('Am7', '3', '1', '0', '2', '0', '-');
+end;
+
+procedure TForm1.Button40Click(Sender: TObject);
+begin
+  accord('Em7', '3', '3', '0', '0', '2', '0');
+end;
+
+procedure TForm1.Button41Click(Sender: TObject);
+begin
+  accord('Asus2', '0', '0', '2', '2', '0', '0');
+end;
+
+procedure TForm1.Button42Click(Sender: TObject);
+begin
+  accord('Csus2', '0', '3', '0', '2', '3', '-');
+end;
+
+procedure TForm1.Button43Click(Sender: TObject);
+begin
+  accord('C/B','0', '1', '0', '2', '0', '-');
+end;
+
+procedure TForm1.Button44Click(Sender: TObject);
+begin
+  accord('Dsus2', '0', '3', '2', '0', '-', '-');
+end;
+
+procedure TForm1.Button45Click(Sender: TObject);
+begin
+  accord('Aadd9', '0', '0', '6', '7', '7', '5')
+end;
+
+procedure TForm1.Button46Click(Sender: TObject);
+begin
+  accord('B?', '2', '0', '2', '1', '2', '-')
+end;
+
+end.
