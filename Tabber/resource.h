@@ -1,0 +1,5 @@
+
+#define IDR_MAIN_MENU 1000
+
+#define IDC_APP_EXIT 10000
+

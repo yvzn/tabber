@@ -1,0 +1,62 @@
+# Project: Tabber
+# Makefile created by Dev-C++ 4.9.8.7
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = Tabber_private.res
+OBJ  = obj/winmain.o obj/Application.o obj/Notify.o obj/MainWindow.o obj/RuntimeException.o obj/GlobalSettings.o obj/Chord.o obj/ChordDefinitions.o obj/utilities.o obj/DynamicArray.o obj/ChordGroup.o $(RES)
+LINKOBJ  = obj/winmain.o obj/Application.o obj/Notify.o obj/MainWindow.o obj/RuntimeException.o obj/GlobalSettings.o obj/Chord.o obj/ChordDefinitions.o obj/utilities.o obj/DynamicArray.o obj/ChordGroup.o $(RES)
+LIBS =  -L"e:/Dev-Cpp/lib" -mwindows 
+INCS =  -I"e:/Dev-Cpp/include" 
+CXXINCS =  -I"e:/Dev-Cpp/include/c++"  -I"e:/Dev-Cpp/include/c++/mingw32"  -I"e:/Dev-Cpp/include/c++/backward"  -I"e:/Dev-Cpp/include" 
+BIN  = obj/Tabber.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS = $(INCS) 
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before obj/Tabber.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "obj\Tabber.exe" $(LIBS)
+
+obj/winmain.o: winmain.cpp
+	$(CPP) -c winmain.cpp -o obj/winmain.o $(CXXFLAGS)
+
+obj/Application.o: src/core/Application.cpp
+	$(CPP) -c src/core/Application.cpp -o obj/Application.o $(CXXFLAGS)
+
+obj/Notify.o: src/core/Notify.cpp
+	$(CPP) -c src/core/Notify.cpp -o obj/Notify.o $(CXXFLAGS)
+
+obj/MainWindow.o: src/ui/MainWindow.cpp
+	$(CPP) -c src/ui/MainWindow.cpp -o obj/MainWindow.o $(CXXFLAGS)
+
+obj/RuntimeException.o: src/core/RuntimeException.cpp
+	$(CPP) -c src/core/RuntimeException.cpp -o obj/RuntimeException.o $(CXXFLAGS)
+
+obj/GlobalSettings.o: src/core/GlobalSettings.cpp
+	$(CPP) -c src/core/GlobalSettings.cpp -o obj/GlobalSettings.o $(CXXFLAGS)
+
+obj/Chord.o: src/data/Chord.cpp
+	$(CPP) -c src/data/Chord.cpp -o obj/Chord.o $(CXXFLAGS)
+
+obj/ChordDefinitions.o: src/data/ChordDefinitions.cpp
+	$(CPP) -c src/data/ChordDefinitions.cpp -o obj/ChordDefinitions.o $(CXXFLAGS)
+
+obj/utilities.o: src/core/utilities.cpp
+	$(CPP) -c src/core/utilities.cpp -o obj/utilities.o $(CXXFLAGS)
+
+obj/DynamicArray.o: src/core/DynamicArray.cpp
+	$(CPP) -c src/core/DynamicArray.cpp -o obj/DynamicArray.o $(CXXFLAGS)
+
+obj/ChordGroup.o: src/data/ChordGroup.cpp
+	$(CPP) -c src/data/ChordGroup.cpp -o obj/ChordGroup.o $(CXXFLAGS)
+
+Tabber_private.res: Tabber_private.rc 
+	$(WINDRES) -i Tabber_private.rc -I rc -o Tabber_private.res -O coff 
