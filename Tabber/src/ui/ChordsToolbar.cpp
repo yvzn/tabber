@@ -1,7 +1,10 @@
 #include "ChordsToolbar.h"
 #include "../ui/MainWindow.h"
 
-const int ChordsToolbar::CHORDS_TOOLBAR_HEIGHT = 100;
+const int ChordsToolbar::CHORDS_TOOLBAR_HEIGHT = 55;
+const int ChordsToolbar::CHORD_BUTTON_HEIGHT = 25;
+const int ChordsToolbar::CHORD_BUTTON_WIDTH = 50;
+const int ChordsToolbar::CHORD_BUTTON_PADDING = 2;
 
 
 ChordsToolbar::ChordsToolbar(MainWindow* parentWindow)
@@ -23,11 +26,8 @@ void ChordsToolbar::create(HWND hParentWindow)
 {
 	assert(_mainWindow != NULL);
 
-	ChordDefinitions* definitions = _mainWindow->getApplication()->getChordDefinitions();
-	DynamicPointerArray<GuitarChord>* chords = definitions->getChords();
-	DynamicPointerArray<ChordGroup>*  groups = definitions->getChordGroups();
-	int chordCount = chords->getElementCount();
-	_panelCount = groups->getElementCount();
+	ChordDefinitions* chords = _mainWindow->getApplication()->getChordDefinitions();
+	_panelCount = chords->getChordGroupCount();
 	
 	//tab control itself
 	_hWindow = CreateWindowEx (
@@ -43,16 +43,16 @@ void ChordsToolbar::create(HWND hParentWindow)
 		throw new RuntimeException("ChordsToolbar::create", "Could not create chords toolbar");	
 	}
 
-	ApplyDefaultFont(_hWindow);
+	ApplyUsersDefaultFont(_hWindow);
 	
 	//add tabs to the tab control
 	TC_ITEM tabSettings;
 	tabSettings.mask = TCIF_TEXT;
-	for(int index=0; index < _panelCount; ++index)
+	for(int groupIndex=0; groupIndex < _panelCount; ++groupIndex)
 	{
 		//pszText member is not const (Why not ?) so I need a cast
-		tabSettings.pszText = const_cast<char*>(groups->getElementAt(index)->getName());
-		if( TabCtrl_InsertItem(_hWindow, index, &tabSettings) == -1 )
+		tabSettings.pszText = const_cast<char*>(chords->getChordGroupAt(groupIndex)->getName());
+		if( TabCtrl_InsertItem(_hWindow, groupIndex, &tabSettings) == -1 )
 		{
 			throw new RuntimeException("ChordsToolbar::create", "Could not add a tab in toolbar");	
 		}
@@ -60,23 +60,50 @@ void ChordsToolbar::create(HWND hParentWindow)
 	
 	//create child panels
 	_panels = new HWND[_panelCount];
-	for(int index=0; index < _panelCount; ++index)
+	for(int groupIndex=0; groupIndex < _panelCount; ++groupIndex)
 	{
-		_panels[index] = CreateWindowEx(
+		ChordGroup* currentGroup = chords->getChordGroupAt(groupIndex);
+		
+		_panels[groupIndex] = CreateWindowEx(
 			0,
-			"STATIC",
+			"STATIC", //create a specific class to propagage WM_COMMAND
 			NULL,
 			WS_CHILD,
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			hParentWindow, NULL, GetModuleHandle(NULL), NULL );
-		if(_panels[index] == NULL)
+			
+		if(_panels[groupIndex] == NULL)
 		{
 			throw new RuntimeException("ChordsToolbar::create", "Could not add a tab in toolbar");			
 		}
 	
 		//load buttons
-		SendMessage(_panels[index], WM_SETTEXT, 0, (LPARAM)groups->getElementAt(index)->getName());
-		hidePanel(index);
+		int chordCount = currentGroup->getChordCount();
+		int buttonCommandId = IDC_FIRST_CHORD;
+		for(int chordIndex=0; chordIndex < chordCount; ++chordIndex)
+		{
+			HWND hButton = CreateWindowEx(
+				0,
+				"BUTTON",
+				currentGroup->getChordAt(chordIndex)->getName(),
+				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				chordIndex * (CHORD_BUTTON_WIDTH + CHORD_BUTTON_PADDING),
+    			CHORD_BUTTON_PADDING,
+       			CHORD_BUTTON_WIDTH,
+				CHORD_BUTTON_HEIGHT,
+				_panels[groupIndex],
+    			(HMENU)buttonCommandId,
+       			GetModuleHandle(NULL),
+          		NULL );
+          		
+			if(hButton == NULL)
+			{
+				throw new RuntimeException("ChordsToolbar::createChordButton", "Could not create chord button");			
+			}
+			
+			ApplyUsersDefaultFont(hButton);
+		}
+		hidePanel(groupIndex);
 	}
 	_activePanelIndex = 0;
 	showPanel(_activePanelIndex);
@@ -150,4 +177,5 @@ void ChordsToolbar::updateOnTabChange()
 
 	_activePanelIndex = newActivePanel;	
 }
+
 

@@ -22,7 +22,10 @@ class ChordsToolbar
 		void updateOnTabChange();
 
 		static const int CHORDS_TOOLBAR_HEIGHT;
-	
+		static const int CHORD_BUTTON_HEIGHT;
+		static const int CHORD_BUTTON_WIDTH;
+		static const int CHORD_BUTTON_PADDING;
+		
 	protected:
 	
 		void hidePanel(int );
@@ -38,7 +41,6 @@ class ChordsToolbar
 		HWND* _panels;
 		int   _activePanelIndex;
 
-		
 };
 
 #endif // CHORDSTOOLBAR_H

@@ -2,24 +2,27 @@
 #define CHORDGROUP_H
 
 #include "../util/utilities.h"
+#include "../util/DynamicPointerArray.h"
+#include "../data/GuitarChord.h"
 
 
-class ChordGroup
+class ChordGroup: protected DynamicPointerArray<GuitarChord>
 {
 
 	public:
 
-		ChordGroup(const char* , int);
+		ChordGroup(const char*);
 		virtual ~ChordGroup();
 
 		const char* getName() const;
-		int getElementCount() const; 
-		void setElementCount(int ); 
+		
+		void          addChord     (GuitarChord* );
+		GuitarChord*  getChordAt   (int );
+		int           getChordCount() const; 
 
 	protected:
 
 		char*  _name;
-		int    _elementCount;
 	
 };
 

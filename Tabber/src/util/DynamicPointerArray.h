@@ -13,9 +13,9 @@ class DynamicPointerArray
 		DynamicPointerArray();
 		virtual ~DynamicPointerArray();
 		
-		void  addElement      (Type* )      ;
-		Type* getElementAt    (int )        ;
-		int   getElementCount ()       const;
+		virtual void  addElement      (Type* )      ;
+		virtual Type* getElementAt    (int )        ;
+		virtual int   getElementCount ()       const;
 		
 	protected:
 	

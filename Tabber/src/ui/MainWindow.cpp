@@ -169,8 +169,7 @@ void MainWindow::onCreate(HWND hPrecreateWindow)
 		//load view
 		_toolbar->create(hPrecreateWindow);
 		_status->create(hPrecreateWindow);
-		_chordsToolbar->create(hPrecreateWindow);
-		
+		_chordsToolbar->create(hPrecreateWindow);		
 	}
 	catch(RuntimeException* ex)
 	{
@@ -234,6 +233,12 @@ void MainWindow::onCommand(WPARAM wParam, LPARAM lParam)
 			PostMessage(_hWindow, WM_CLOSE, 0, 0);
 			break;
 		}
+		
+		default:
+		{
+			NotifyMessage::debug("Command: %d !", LOWORD(wParam));
+			break;
+		}
 	}
 }
 
@@ -250,7 +255,9 @@ void MainWindow::onNotify(WPARAM wParam, LPARAM lParam)
 		{
 			//maybe I should check if message sender IS the chords toolbar
 			_chordsToolbar->updateOnTabChange();
-			UpdateWindow(_hWindow);
+			
+			//I send a "resize" message so that not-displayed-before-therefore-not-resized-but-now-displayed tabs are sized properly
+			SendMessage(_hWindow, WM_SIZE, 0, 0);
 			break;
 		}
 	}

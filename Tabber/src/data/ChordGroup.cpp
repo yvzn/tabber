@@ -1,12 +1,10 @@
 #include "ChordGroup.h"
 
 
-ChordGroup::ChordGroup(const char* groupName, int elementCount)
+ChordGroup::ChordGroup(const char* groupName)
 {
 	_name = new char[lstrlen(groupName)+1];
 	strcpy(_name, groupName);
-
-	_elementCount = elementCount;
 
 	OBJECT_CREATED;
 }
@@ -14,7 +12,6 @@ ChordGroup::ChordGroup(const char* groupName, int elementCount)
 
 ChordGroup::~ChordGroup()
 {
-	delete [] _name;
 	OBJECT_DELETED;
 }
 
@@ -26,14 +23,20 @@ const char* ChordGroup::getName() const
 }
 
 
-int ChordGroup::getElementCount() const
+int ChordGroup::getChordCount() const
 {
-	return _elementCount;
+	return DynamicPointerArray<GuitarChord>::getElementCount();
 }
 
 
-void ChordGroup::setElementCount(int newCount)
+void ChordGroup::addChord(GuitarChord* newChord)
 {
-	_elementCount = newCount;
+	DynamicPointerArray<GuitarChord>::addElement(newChord);
+}
+
+
+GuitarChord* ChordGroup::getChordAt (int index)
+{
+	return DynamicPointerArray<GuitarChord>::getElementAt(index);
 }
 
