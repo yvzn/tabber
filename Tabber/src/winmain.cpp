@@ -14,7 +14,7 @@ int WINAPI WinMain (
 {
 	MSG msg;
  	Application* application = new Application();
-	
+
 	try
 	{
 		application->create(hThisInstance);
@@ -33,7 +33,7 @@ int WINAPI WinMain (
 	catch(RuntimeException* exception)
 	{
 		RuntimeException ex("::Winmain", exception);
-		NotifyMessage::publicError(ex.getStackTrace());
+		NotifyMessage::publicError(HWND_DESKTOP, ex.getStackTrace());
 	}
 	
 	delete application;

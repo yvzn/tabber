@@ -233,6 +233,49 @@ void EditionToolkit::moveToStaffStart(DWORD& selection)
 
 
 /**
+ * Selects next occurence of searched string, when using Find/ReplaceText dialogs
+ * @param findReplace parameters of the find/replace operation
+ * @return true if another occurence has been found, false if not
+ */
+bool EditionToolkit::selectNextOccurence(LPFINDREPLACE findReplace)
+{
+	assert(_hWindow != NULL);
+
+	bool result;
+
+	//retrieve text
+	int   contentLength = GetWindowTextLength(_hWindow);
+	char* content       = new char[contentLength+1];
+	GetWindowText(_hWindow, content, contentLength+1);
+
+	//search string, starting from cursor position
+	DWORD selection = getSelection();
+	char* firstOccurence;
+
+	if(findReplace->Flags & FR_MATCHCASE)
+		firstOccurence = strstr(content + __endOf(selection)*sizeof(char), findReplace->lpstrFindWhat);
+	else
+		firstOccurence = stristr(content + __endOf(selection)*sizeof(char), findReplace->lpstrFindWhat);
+
+	if(firstOccurence != NULL)
+	{
+		unsigned int selStart = firstOccurence - content;
+		unsigned int selEnd = selStart + lstrlen(findReplace->lpstrFindWhat);
+		setSelection(selStart, selEnd);
+		SendMessage (_hWindow, EM_SCROLLCARET, 0, 0) ;
+		result = true;
+	}
+	else
+	{
+		result = false;
+	}
+
+	delete [] content;
+	return result;
+}
+
+
+/**
  * Safe conversion from (line, column) to character index (as used in edit controls)
  * If line is not long enough to reach column, the last column of the line is used.
  * If line is greater than total number of lines, the last line is used.

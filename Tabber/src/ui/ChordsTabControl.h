@@ -23,7 +23,7 @@ class ChordsTabControl
 
 		inline MainWindow* getMainWindow() const { return _mainWindow; }
 
-		inline bool interceptMessage(MSG* message) { return IsDialogMessage(_hWindow, message); }
+		inline bool interceptMessage(MSG* message) { return TRUE == IsDialogMessage(_hWindow, message); }
 
 	public:
 	

@@ -9,8 +9,9 @@ class NotifyMessage
 
 	public:
 
-		static void publicError(const char* );
-		static int  assertionFailed(const char* , const char* , int );
+		static void publicError     (HWND hParentWindow, const char* format, ...);
+		static void alert           (HWND hParentWindow, const char* format, ...);
+		static int  assertionFailed (const char* , const char* , int );
 
 };
 

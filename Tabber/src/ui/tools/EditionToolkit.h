@@ -56,19 +56,21 @@ class EditionToolkit
 		inline unsigned int getLineStart     (unsigned int line)      const { return SendMessage(_hWindow, EM_LINEINDEX,    (WPARAM)line,     0); }
 		inline unsigned int getLineCount     ( )                      const { return SendMessage(_hWindow, EM_GETLINECOUNT, 0,                0); }
 
-		inline unsigned int getColumnIndex   (unsigned int position)  const { return position - getLineStart( getLineIndex(position) );           }
+		       unsigned int getCharacterIndex (unsigned int& , unsigned int& );
+		inline unsigned int getColumnIndex    (unsigned int position)         const { return position - getLineStart( getLineIndex(position) ); }
 
 		inline DWORD getSelection     ( )                       const { return SendMessage(_hWindow, EM_GETSEL,       0,                0); }
 		inline void  setSelection (unsigned int start, unsigned int end) { SendMessage(_hWindow, EM_SETSEL, (WPARAM)start, (LPARAM)end); }
 		inline void  setSelection     (DWORD selection)               { setSelection(__startOf(selection), __endOf(selection)); }
 		inline void  replaceSelection (const char* string ="")        { SendMessage(_hWindow, EM_REPLACESEL,  TRUE, (LPARAM)string); }
 
+		       bool  selectNextOccurence(LPFINDREPLACE );
+
 
 		// Other utilities ////////////
 
 		inline EditArea* getEditArea() const { return _editArea; }
 
-		unsigned int getCharacterIndex (unsigned int& , unsigned int& );
 
 		void copyNoteAtBufferStart (GuitarChord* , unsigned int , char* );
 		void copyAndFillAtLineCol  (const char* , unsigned int , unsigned int , unsigned int , char ='-');

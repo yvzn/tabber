@@ -11,6 +11,7 @@ EditArea::EditArea(MainWindow* parentWindow)
 	_mainWindow = parentWindow;
 	_displayFont = NULL;
 	_toolkit = new EditionToolkit(this);
+	_isSearchedTextSelected = false;
 	OBJECT_CREATED;
 }
 
@@ -272,6 +273,7 @@ LRESULT CALLBACK EditArea::handleMessage (
 
 			// I do check selection on focus to initialise a few related things
 			selectionChanged = true;
+
       		break;
   		}
 
@@ -443,6 +445,8 @@ void EditArea::onSelectionChange()
 		_mainWindow->setCommandEnabled(ID_INSERT_BAR,    isInsideStaff );
 		_mainWindow->setCommandEnabled(ID_INSERT_TUNING, isInsideStaff );
 	}
+
+	_isSearchedTextSelected = false;
 }
 
 
@@ -687,10 +691,9 @@ void EditArea::onInsertChord(unsigned int commandId, ArpeggioDispatcher::Directi
 }
 
 
-
-// UTILITIES //////////////////////////////////////////////////////////////////
-
-
+/**
+ * Applies the specified action to each line of current staff
+ */
 void EditArea::apply(StaffAction* action)
 {
 	assert(_hWindow != NULL && _toolkit->isInsideStaff());
@@ -709,7 +712,7 @@ void EditArea::apply(StaffAction* action)
 
 	if(_mainWindow->getApplication()->getSettings()->isChordModeEnabled(ADD_NAME) && firstLine>0)
 	{
-		//fill header line if needed
+		//expand header line to the right length if needed
 		unsigned int headerLine = firstLine - 1;
   		unsigned int headerLength = _toolkit->getLineLength( _toolkit->getLineStart(headerLine) );
 		if( headerLength < column )
@@ -723,5 +726,59 @@ void EditArea::apply(StaffAction* action)
 
 	_toolkit->restoreCursorPosition(action->getActionOffset());
 	onDocumentModified();
+}
+
+
+
+
+// FIND/REPLACE //////////////////////////////////////////////////////////////////
+
+
+void EditArea::onFindReplace(LPFINDREPLACE findReplace)
+{
+	assert(_hWindow != NULL)
+
+	if( findReplace->Flags & FR_REPLACE && _isSearchedTextSelected )
+	{
+		_toolkit->replaceSelection(findReplace->lpstrReplaceWith);
+		onDocumentModified();
+	}
+
+	if( findReplace->Flags & FR_REPLACE || findReplace->Flags & FR_FINDNEXT)
+	{
+		if(_toolkit->selectNextOccurence(findReplace))
+		{
+			setFocus();
+			onSelectionChange();
+			_isSearchedTextSelected = true;
+		}
+		else
+		{
+			_isSearchedTextSelected = false;
+			NotifyMessage::alert(_mainWindow->getWindowHandle(), "No more occurences found");
+		}
+	}
+
+	else if(findReplace->Flags & FR_REPLACEALL)
+	{
+		int count=0;
+
+		while(_toolkit->selectNextOccurence(findReplace))
+		{
+			_toolkit->replaceSelection(findReplace->lpstrReplaceWith);
+			++count;
+		}
+
+		onSelectionChange();
+		onDocumentModified();
+
+		_isSearchedTextSelected = false;
+		NotifyMessage::alert(_mainWindow->getWindowHandle(), "%d occurences replaced", count);
+	}
+
+	else
+	{
+		_isSearchedTextSelected = false;
+	}
 }
 

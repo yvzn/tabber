@@ -32,7 +32,7 @@ class DocumentInterface
 
 		inline const char* getFileName() const { return _fileName; }
 
-		inline bool interceptMessage(MSG* message) { return IsDialogMessage(_hFindReplaceDialog, message); }
+		inline bool interceptMessage(MSG* message) { return TRUE == IsDialogMessage(_hFindReplaceDialog, message); }
 
 	protected:
 

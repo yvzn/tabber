@@ -50,7 +50,7 @@
 
 #define ID_HELP_ABOUT  5010
 
-#define IDC_FIRST_CHORD 32768  // any higher control ID is considered as a Chord ID
+#define IDC_FIRST_CHORD 32768  // any higher control ID is considered as a Chord ID (0x7F00 & group) | (0x00FF & chord)
 
 #define IDD_ABOUT_DIALOG 4000
 #define IDC_VERSION_NUMBER 2004

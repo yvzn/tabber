@@ -36,6 +36,8 @@ class EditArea
 		void onInsertBar    ( );
 		void onInsertChord  (unsigned int , ArpeggioDispatcher::Direction =ArpeggioDispatcher::NONE);
 
+		void onFindReplace  (LPFINDREPLACE );
+		
 		void onSelectionChange ( );
 
 		inline MainWindow*     getMainWindow () { return _mainWindow;  }
@@ -66,6 +68,8 @@ class EditArea
 		HFONT    _displayFont;
 		
 		EditionToolkit* _toolkit;
+
+		bool _isSearchedTextSelected;
 
 };
 

@@ -55,11 +55,9 @@ void PrinterInterface::onPrint()
 	if(!_arePageSetupOptionsValid) // initialise if user did not
 	{
 		_pageSetupOptions.Flags |= PSD_RETURNDEFAULT; // return directly, do not show
-  		if(!onChoosePageSetup())
-		{
-			throw new RuntimeException("PrinterInterface::onPrint", "Could not initialise Default Page Setup");
-		}
+  		bool setupDone = onChoosePageSetup();
 		_pageSetupOptions.Flags &= (~PSD_RETURNDEFAULT);
+		if(!setupDone) return;
 	}
 
 	_printOptions.hwndOwner = _mainWindow->getWindowHandle();
@@ -215,11 +213,15 @@ void PrinterInterface::onPrint()
             AbortDoc(deviceContext);
 			if(bUserAbort)
 			{
-				NotifyMessage::publicError("Printing cancelled by user");
+				NotifyMessage::publicError(
+					_mainWindow->getWindowHandle(),
+					"Printing cancelled by user" );
 			}
 			else
 			{
-				NotifyMessage::publicError("Printing failed");
+				NotifyMessage::publicError(
+					_mainWindow->getWindowHandle(),
+					"Printing failed" );
 			}
 		}
 
@@ -245,7 +247,7 @@ void PrinterInterface::convertToThousandthsOfInches(RECT& rectangle)
 	{
 		if(localeInfo[0] == '0') //metric system is used
   		{
-#define convert(x) ((int)(round(x * 100. / 254.)))
+#define convert(x) ((int)(ceil(x * 100. / 254.)))
 
 			rectangle.top    = convert(rectangle.top);
 			rectangle.left   = convert(rectangle.left);

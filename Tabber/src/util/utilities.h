@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <commctrl.h> //toolbars, statusbars, tab controls..
 #include <cmath>
+#include <cstring>
+#include <cctype>
 
 #include "../resource.h"
 
@@ -19,7 +21,7 @@
 // -- these features should be disabled under MSVC++
 
 
-#define __MY_DEBUG
+#undef __MY_DEBUG
 
 
 #ifdef __MY_DEBUG
@@ -83,8 +85,10 @@ void __assertion_failed (const char*, const char*, int);
 // OTHER UTILITIES ------------------------------------------------------------
 
 const char* toString(int );
-void        GetAbsoluteFileName(char* , const char* );
-void        ApplyUsersDefaultFont(HWND );
+      char* stristr(const char* , const char* );
+
+void    GetAbsoluteFileName(char* , const char* );
+void    ApplyUsersDefaultFont(HWND );
 
 
 #endif // UTILITIES_H

@@ -31,7 +31,7 @@ DocumentInterface::DocumentInterface(MainWindow* parentWindow)
 	_findReplaceOptions.wFindWhatLen = 80;
 	_findReplaceOptions.lpstrReplaceWith = _replaceWith;
 	_findReplaceOptions.wReplaceWithLen = 80;
-	_findReplaceOptions.Flags = FR_ENABLEHOOK;
+	_findReplaceOptions.Flags = FR_HIDEUPDOWN | FR_HIDEWHOLEWORD | FR_ENABLEHOOK;
 	_findReplaceOptions.lpfnHook = DocumentInterface::FindReplaceDlgProc;
 
 	_hFindReplaceDialog = NULL;
@@ -156,7 +156,10 @@ bool DocumentInterface::onDocumentSave()
 		}
 		catch(RuntimeException* ex)
 		{
-			NotifyMessage::publicError("Could not save file !\nMaybe file has \'read only\' attribute ?");
+			NotifyMessage::publicError(
+				_mainWindow->getWindowHandle(),
+				"Could not save file !\nMaybe file has \'read only\' attribute ?" );
+
 			delete ex;
 			return false;
 		}
@@ -188,7 +191,9 @@ bool DocumentInterface::onDocumentSaveAs()
 		}
 		catch(RuntimeException* ex)
 		{
-			NotifyMessage::publicError("Could not save file !\nMaybe it has \'read only\' attribute set ?");
+			NotifyMessage::publicError (
+				_mainWindow->getWindowHandle(),
+				"Could not save file !\nMaybe it has \'read only\' attribute set ?" );
 			delete ex;
 			return false;
 		}
@@ -241,7 +246,10 @@ void DocumentInterface::loadSpecifiedDocument()
 	}
 	catch(RuntimeException* ex)
 	{
-		NotifyMessage::publicError("Could not open file !\nMaybe it is used by another application ?");
+		NotifyMessage::publicError(
+			_mainWindow->getWindowHandle(),
+			"Could not open file !\nMaybe it is used by another application ?" );
+
 		delete ex;
 	}
 }
@@ -285,10 +293,9 @@ void DocumentInterface::onFind()
 
 void DocumentInterface::onFindNext()
 {
-	_findReplaceOptions.hwndOwner = _mainWindow->getWindowHandle();
 	_findReplaceOptions.Flags |= FR_FINDNEXT;
-
-	_hFindReplaceDialog = FindText(&_findReplaceOptions);
+	
+	_mainWindow->getEditArea()->onFindReplace(&_findReplaceOptions);
 }
 
 
@@ -308,15 +315,8 @@ UINT APIENTRY DocumentInterface::FindReplaceDlgProc(
 {
 	switch (message)
 	{
-		case WM_INITDIALOG:
-		{
-			return TRUE;
-		}
-
-		case WM_GETDLGCODE:
-  		{
-  			return DLGC_WANTALLKEYS;
-  		}
+		case WM_INITDIALOG: return TRUE;
+		case WM_GETDLGCODE: return DLGC_WANTALLKEYS;
 	}
 
 	return FALSE;

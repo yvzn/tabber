@@ -181,8 +181,7 @@ LRESULT CALLBACK MainWindow::handleMessage(
 {
 	if(message == _findReplaceCommandId)
 	{
-		__trace("findReplaceCommand");
-		return 0;
+		_editArea->onFindReplace((LPFINDREPLACE)lParam);
 	}
 	else switch(message)
     {

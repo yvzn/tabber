@@ -167,7 +167,7 @@ void DebugWindow::writeln(const char* text)
 		catch(RuntimeException* source)
 		{
 			RuntimeException ex("DebugWindow::debug", source);
-			NotifyMessage::publicError(ex.getStackTrace());
+			NotifyMessage::publicError(HWND_DESKTOP, ex.getStackTrace());
 		}    
 	} 
     
