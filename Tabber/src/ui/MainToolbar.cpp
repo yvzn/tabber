@@ -31,7 +31,7 @@ void MainToolbar::create(HWND hParentWindow)
 
 	if(_hWindow == NULL)
 	{
-		throw new RuntimeException("MainToolbar::create", "Could not create main toolbar");	
+		throw new RuntimeException("MainToolbar::create", System::getLocaleString(IDERR_CREATE_WINDOW));
 	}
 	
 	// Send the TB_BUTTONSTRUCTSIZE message, which is required for backward compatibility.
@@ -42,7 +42,7 @@ void MainToolbar::create(HWND hParentWindow)
     addBitmapParams.nID = IDB_STD_SMALL_COLOR;
     SendMessage(_hWindow, TB_ADDBITMAP, 0, (LPARAM)&addBitmapParams); 
     
-    _buttonCount = 9;
+    _buttonCount = 14;
     
    	TBBUTTON* buttons = new TBBUTTON[_buttonCount];
     ZeroMemory(buttons, sizeof(buttons));
@@ -63,8 +63,8 @@ void MainToolbar::create(HWND hParentWindow)
 
     buttons[3].fsStyle = TBSTYLE_SEP;
 
-    buttons[4].iBitmap = STD_UNDO;
-    buttons[4].idCommand = ID_EDIT_UNDO;
+    buttons[4].iBitmap = STD_PRINT;
+    buttons[4].idCommand = ID_FILE_PRINT;
 
     buttons[5].fsStyle = TBSTYLE_SEP;
 
@@ -76,6 +76,20 @@ void MainToolbar::create(HWND hParentWindow)
 
     buttons[8].iBitmap = STD_PASTE;
     buttons[8].idCommand = ID_EDIT_PASTE;
+
+    buttons[9].fsStyle = TBSTYLE_SEP;
+
+    buttons[10].iBitmap = STD_UNDO;
+    buttons[10].idCommand = ID_EDIT_UNDO;
+
+    buttons[11].fsStyle = TBSTYLE_SEP;
+
+    buttons[12].iBitmap = STD_FIND;
+    buttons[12].idCommand = ID_EDIT_FIND;
+
+    buttons[13].iBitmap = STD_REPLACE;
+    buttons[13].idCommand = ID_EDIT_REPLACE;
+
 
     SendMessage(_hWindow, TB_ADDBUTTONS, _buttonCount, (LPARAM)buttons);
     

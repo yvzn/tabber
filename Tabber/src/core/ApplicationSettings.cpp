@@ -5,7 +5,7 @@ const char ApplicationSettings::APPLICATION_SETTINGS_FILE_NAME[] = "tabber.ini";
 
 ApplicationSettings::ApplicationSettings()
 {
-	GetAbsoluteFileName(_settingsFileFullName, APPLICATION_SETTINGS_FILE_NAME);
+	System::getAbsoluteFileName(_settingsFileFullName, APPLICATION_SETTINGS_FILE_NAME);
 	OBJECT_CREATED;
 }
 
@@ -44,26 +44,26 @@ void ApplicationSettings::load()
 
 void ApplicationSettings::save() const
 {
-	WritePrivateProfileString("window", "top",     toString(_mainWindowRect.top)    , _settingsFileFullName);
-	WritePrivateProfileString("window", "right",   toString(_mainWindowRect.right)  , _settingsFileFullName);
-	WritePrivateProfileString("window", "bottom",  toString(_mainWindowRect.bottom) , _settingsFileFullName);
-	WritePrivateProfileString("window", "left",    toString(_mainWindowRect.left)   , _settingsFileFullName);
+	WritePrivateProfileString("window", "top",     String::toString(_mainWindowRect.top)    , _settingsFileFullName);
+	WritePrivateProfileString("window", "right",   String::toString(_mainWindowRect.right)  , _settingsFileFullName);
+	WritePrivateProfileString("window", "bottom",  String::toString(_mainWindowRect.bottom) , _settingsFileFullName);
+	WritePrivateProfileString("window", "left",    String::toString(_mainWindowRect.left)   , _settingsFileFullName);
 	
-	WritePrivateProfileString("window", "maximized", toString(_isMainWindowMaximized ? 1 : 0), _settingsFileFullName);
+	WritePrivateProfileString("window", "maximized", String::toString(_isMainWindowMaximized ? 1 : 0), _settingsFileFullName);
 	
-	WritePrivateProfileString("font", "size",   toString(_editAreaFont.lfHeight) , _settingsFileFullName);
-	WritePrivateProfileString("font", "weight", toString(_editAreaFont.lfWeight) , _settingsFileFullName);
-	WritePrivateProfileString("font", "italic", toString(_editAreaFont.lfItalic) , _settingsFileFullName);
+	WritePrivateProfileString("font", "size",   String::toString(_editAreaFont.lfHeight) , _settingsFileFullName);
+	WritePrivateProfileString("font", "weight", String::toString(_editAreaFont.lfWeight) , _settingsFileFullName);
+	WritePrivateProfileString("font", "italic", String::toString(_editAreaFont.lfItalic) , _settingsFileFullName);
 	WritePrivateProfileString("font", "face", _editAreaFont.lfFaceName, _settingsFileFullName);
 
-	WritePrivateProfileString("edition", "typing", toString(_typingMode) , _settingsFileFullName);
-	WritePrivateProfileString("edition", "tuning", toString(_tuningIndex)  , _settingsFileFullName);
+	WritePrivateProfileString("edition", "typing", String::toString(_typingMode) , _settingsFileFullName);
+	WritePrivateProfileString("edition", "tuning", String::toString(_tuningIndex)  , _settingsFileFullName);
 	
-	WritePrivateProfileString("edition", "extra-space", toString(_isChordModeEnabled[ADD_EXTRA_SPACE]), _settingsFileFullName);
-	WritePrivateProfileString("edition", "add-name", toString(_isChordModeEnabled[ADD_NAME]), _settingsFileFullName);
+	WritePrivateProfileString("edition", "extra-space", String::toString(_isChordModeEnabled[ADD_EXTRA_SPACE]), _settingsFileFullName);
+	WritePrivateProfileString("edition", "add-name", String::toString(_isChordModeEnabled[ADD_NAME]), _settingsFileFullName);
 	
-	WritePrivateProfileString("staff", "width", toString(_staffWidth), _settingsFileFullName);
-	WritePrivateProfileString("staff", "height", toString(_chordDepth), _settingsFileFullName);
+	WritePrivateProfileString("staff", "width", String::toString(_staffWidth), _settingsFileFullName);
+	WritePrivateProfileString("staff", "height", String::toString(_chordDepth), _settingsFileFullName);
 }
 
 

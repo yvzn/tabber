@@ -3,6 +3,7 @@
 
 #include "../../util/utilities.h"
 #include "../../ui/dialogs/PrintProgressDialog.h"
+#include "../../ui/tools/PrinterPager.h"
 
 /* forward */ class MainWindow;
 

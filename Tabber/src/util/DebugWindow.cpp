@@ -25,7 +25,7 @@ void DebugWindow::create(HINSTANCE hApplicationInstance)
     
         if(!RegisterClassEx(&wndClass))
         {
-        	throw new RuntimeException("DebugWindow::create", "Could not register class");
+			throw new RuntimeException("DebugWindow::create", System::getLocaleString(IDERR_REGISTER_WINDOW_CLASS));
         }
         _isWindowClassNotRegistered = false;
 	}    
@@ -43,7 +43,7 @@ void DebugWindow::create(HINSTANCE hApplicationInstance)
 
     if(_hWindow == NULL)
     {
-    	throw new RuntimeException("DebugWindow::create", "Could not create window");
+		throw new RuntimeException("DebugWindow::create", System::getLocaleString(IDERR_CREATE_WINDOW));
     }
     
     ShowWindow(_hWindow, SW_SHOWNOACTIVATE);
@@ -76,10 +76,10 @@ LRESULT CALLBACK DebugWindow::handleMessage(
         		
     		if(hEdit == NULL)
     		{
-		    	throw new RuntimeException("DebugWindow::handleMessage", "Could not create child edit area");
+		    	throw new RuntimeException("DebugWindow::handleMessage", System::getLocaleString(IDERR_CREATE_WINDOW));
     		}
     		
-    		ApplyUsersDefaultFont(hEdit);
+			System::applyGUIDefaultFont(hEdit);
 		    
     		break;
 		}

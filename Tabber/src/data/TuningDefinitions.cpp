@@ -5,7 +5,7 @@ const char TuningDefinitions::TUNING_DEFINITIONS_FILE_NAME[] = "tunings.ini";
 
 TuningDefinitions::TuningDefinitions()
 {
-	GetAbsoluteFileName(_tuningDefinitionsFileFullName, TUNING_DEFINITIONS_FILE_NAME);
+	System::getAbsoluteFileName(_tuningDefinitionsFileFullName, TUNING_DEFINITIONS_FILE_NAME);
 	OBJECT_CREATED;
 }
 
@@ -67,7 +67,7 @@ void TuningDefinitions::save()
 
 #define wf(str) \
 	if(!WriteFile(hFile, str, (DWORD)strlen(str), &bytesWritten, NULL)) \
-		throw new RuntimeException("TuningDefinitions::save", "Could not write tunings into file");
+	throw new RuntimeException("TuningDefinitions::save", System::getLocaleString(IDERR_SAVE_TUNINGS));
 
 	if(hFile != INVALID_HANDLE_VALUE)
 	{
@@ -85,7 +85,7 @@ void TuningDefinitions::save()
 	}
 	else
 	{
-		throw new RuntimeException("TuningDefinitions::save", "Could not open tunings definitions file");
+		throw new RuntimeException("TuningDefinitions::save", System::getLocaleString(IDERR_OPEN_TUNINGS_FILE));
 	}
 
 #undef wf

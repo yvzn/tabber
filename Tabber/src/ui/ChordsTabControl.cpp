@@ -40,10 +40,10 @@ void ChordsTabControl::create(HWND hParentWindow)
 
 	if(_hWindow == NULL)
 	{
-		throw new RuntimeException("ChordsTabControl::create", "Could not create chords toolbar");
+		throw new RuntimeException("ChordsTabControl::create", System::getLocaleString(IDERR_CREATE_WINDOW));
 	}
 
-	ApplyUsersDefaultFont(_hWindow);
+	System::applyGUIDefaultFont(_hWindow);
 	
 	createTabs(hParentWindow);
 	createChildPanels(hParentWindow);
@@ -62,10 +62,10 @@ void ChordsTabControl::createTabs(HWND hParentWindow)
 	tabSettings.mask = TCIF_TEXT;
 
 	//the first tab is the staff toolbar
-	tabSettings.pszText = "Staff";
+	tabSettings.pszText = const_cast<char*>(System::getLocaleString(IDS_STAFF_TOOLBAR_CAPTION));
 	if( TabCtrl_InsertItem(_hWindow, 0, &tabSettings) == -1 )
 	{
-		throw new RuntimeException("ChordsTabControl::createTabs", "Could not add a tab in tab control");
+		throw new RuntimeException("ChordsTabControl::createTabs", System::getLocaleString(IDERR_CREATE_TABS));
 	}
 
 	//the following ones are the chords toolbars
@@ -75,7 +75,7 @@ void ChordsTabControl::createTabs(HWND hParentWindow)
 		tabSettings.pszText = const_cast<char*>(chords->getChordGroupAt(groupIndex)->getName());
 		if( TabCtrl_InsertItem(_hWindow, groupIndex+1, &tabSettings) == -1 )
 		{
-			throw new RuntimeException("ChordsTabControl::createTabs", "Could not add a tab in tab control");
+			throw new RuntimeException("ChordsTabControl::createTabs", System::getLocaleString(IDERR_CREATE_TABS));
 		}
 	}
 }

@@ -67,13 +67,13 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
 
     if(!RegisterClassEx(&wndClass))
     {
-    	throw new RuntimeException("MainWindow::create", "Could not register class");
+    	throw new RuntimeException("MainWindow::create", System::getLocaleString(IDERR_REGISTER_WINDOW_CLASS));
     }
 
     _hWindow = CreateWindowEx (
         WS_EX_ACCEPTFILES,
         WINDOW_CLASS_NAME,
-        "Untitled - Tabber",
+        "",
         WS_OVERLAPPEDWINDOW, 
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         HWND_DESKTOP,
@@ -84,7 +84,7 @@ void MainWindow::create(HINSTANCE hApplicationInstance)
 
     if(_hWindow == NULL)
     {
-    	throw new RuntimeException("MainWindow::create", "Could not create main window");
+    	throw new RuntimeException("MainWindow::create", System::getLocaleString(IDERR_CREATE_WINDOW));
     }
 
 	//register find/replace command

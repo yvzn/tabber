@@ -6,7 +6,7 @@ const int  ChordDefinitions::MAX_GROUP_COUNT = 128;
 
 ChordDefinitions::ChordDefinitions()
 {
-	GetAbsoluteFileName(_chordDefinitionsFileFullName, CHORD_DEFINITIONS_FILE_NAME);	
+	System::getAbsoluteFileName(_chordDefinitionsFileFullName, CHORD_DEFINITIONS_FILE_NAME);	
 	OBJECT_CREATED;
 }
 
@@ -84,7 +84,7 @@ void ChordDefinitions::save()
 
 #define wf(str) \
 	if(!WriteFile(hFile, str, (DWORD)strlen(str), &bytesWritten, NULL)) \
-		throw new RuntimeException("ChordDefinitions::save", "Could not write chords into file");
+	throw new RuntimeException("ChordDefinitions::save", System::getLocaleString(IDERR_SAVE_CHORDS));
 
 	if(hFile != INVALID_HANDLE_VALUE)
 	{
@@ -111,7 +111,7 @@ void ChordDefinitions::save()
 	}
 	else
 	{
-		throw new RuntimeException("ChordDefinitions::save", "Could not open chords definitions file");
+		throw new RuntimeException("ChordDefinitions::save", System::getLocaleString(IDERR_OPEN_CHORDS_FILE));
 	}
 	
 #undef wf

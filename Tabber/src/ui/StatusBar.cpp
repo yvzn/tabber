@@ -27,10 +27,10 @@ void StatusBar::create(HWND hParentWindow)
 
 	if(_hWindow == NULL)
 	{
-		throw new RuntimeException("StatusBar::create", "Could not create main status bar");	
+		throw new RuntimeException("StatusBar::create", System::getLocaleString(IDERR_CREATE_WINDOW));	
 	}
 
-    int partsRightBorderPositions[] = {70, 100, -1};
+    int partsRightBorderPositions[] = {70, -1};
     SendMessage(_hWindow, SB_SETPARTS, sizeof(partsRightBorderPositions)/sizeof(int), (LPARAM)partsRightBorderPositions);
 }
 
@@ -67,19 +67,19 @@ void StatusBar::updateTypingMode(TypingMode typingMode)
 	{
 		case OVERWRITE:
       	{
-			lstrcpy(_typingModeString, "Overwrite");
+			lstrcpy(_typingModeString, System::getLocaleString(IDS_TYPE_OVERWRITE));
 			break;
 		}
 
 		case SPECIAL:
       	{
-			lstrcpy(_typingModeString, "Special");
+			lstrcpy(_typingModeString, System::getLocaleString(IDS_TYPE_SPECIAL));
 			break;
 		}
 
 		default:
       	{
-			lstrcpy(_typingModeString, "Insert");
+			lstrcpy(_typingModeString, System::getLocaleString(IDS_TYPE_INSERT));
 			break;
 		}
 	}

@@ -4,13 +4,13 @@
 #include <windows.h>
 #include <commctrl.h> //toolbars, statusbars, tab controls..
 #include <cmath>
-#include <cstring>
-#include <cctype>
 
 #include "../resource.h"
 
-#include "../util/NotifyMessage.h"
 #include "../util/RuntimeException.h"
+#include "../util/System.h"
+#include "../util/String.h"
+#include "../util/NotifyMessage.h"
 #include "../util/DebugWindow.h"
 
 
@@ -21,7 +21,7 @@
 // -- these features should be disabled under MSVC++
 
 
-#undef __MY_DEBUG
+#define __MY_DEBUG
 
 
 #ifdef __MY_DEBUG
@@ -81,14 +81,6 @@ void __assertion_failed (const char*, const char*, int);
 
 #define new DEBUG_NEW
 
-
-// OTHER UTILITIES ------------------------------------------------------------
-
-const char* toString(int );
-      char* stristr(const char* , const char* );
-
-void    GetAbsoluteFileName(char* , const char* );
-void    ApplyUsersDefaultFont(HWND );
 
 
 #endif // UTILITIES_H

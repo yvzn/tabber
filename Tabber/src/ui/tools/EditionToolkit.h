@@ -38,7 +38,7 @@ class EditionToolkit
 		bool isStaffLine(unsigned int );
 		bool isInsideStaff(DWORD );                   DECLARE_SHORT_VERSION(bool, isInsideStaff, return);
 		unsigned int getStaffFirstLineIndex(DWORD );  DECLARE_SHORT_VERSION(unsigned int, getStaffFirstLineIndex, return);
-		unsigned int getStaffLastLineIndex(DWORD);    DECLARE_SHORT_VERSION(unsigned int, getStaffLastLineIndex, return);
+		unsigned int getStaffLastLineIndex(DWORD );   DECLARE_SHORT_VERSION(unsigned int, getStaffLastLineIndex, return);
 
 		void moveToNextLine(DWORD& );                 DECLARE_SHORT_VERSION(void, moveToNextLine, {} );
 		void moveToStaffStart(DWORD& );               DECLARE_SHORT_VERSION(void, moveToStaffStart, {} );

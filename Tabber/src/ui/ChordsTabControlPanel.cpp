@@ -32,7 +32,7 @@ void ChordsTabControlPanel::create(HWND hParentWindow)
 
 	if(_hWindow == NULL)
 	{
-		throw new RuntimeException("ChordsToolbar::create", "Could not create buttons panel");
+		throw new RuntimeException("ChordsToolbar::create", System::getLocaleString(IDERR_CREATE_WINDOW));
 	}
 }
 
@@ -93,11 +93,11 @@ HWND ChordsTabControlPanel::addButton(const char* buttonLabel, int buttonId, DWO
 
 	if(hButton == NULL)
 	{
-		throw new RuntimeException("ChordsTabControlPanel::addButton", "Could not create chord button");
+		throw new RuntimeException("ChordsTabControlPanel::addButton", System::getLocaleString(IDERR_CREATE_WINDOW));
 	}
 
 
-	ApplyUsersDefaultFont(hButton);
+	System::applyGUIDefaultFont(hButton);
 
 	_xNextButtonPosition += getButtonWidth() + getButtonHorizontalPadding();
 

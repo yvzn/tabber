@@ -255,7 +255,7 @@ bool EditionToolkit::selectNextOccurence(LPFINDREPLACE findReplace)
 	if(findReplace->Flags & FR_MATCHCASE)
 		firstOccurence = strstr(content + __endOf(selection)*sizeof(char), findReplace->lpstrFindWhat);
 	else
-		firstOccurence = stristr(content + __endOf(selection)*sizeof(char), findReplace->lpstrFindWhat);
+		firstOccurence = String::stristr(content + __endOf(selection)*sizeof(char), findReplace->lpstrFindWhat);
 
 	if(firstOccurence != NULL)
 	{

@@ -28,9 +28,9 @@ void StaffToolbar::create(HWND hParentWindow)
 	}
 
 	//buttons
-	addButton("Add Staff",  ID_INSERT_STAFF,  BS_PUSHBUTTON);
-	addButton("Add Bar",    ID_INSERT_BAR,    BS_PUSHBUTTON);
-	addButton("Add Tuning", ID_INSERT_TUNING, BS_PUSHBUTTON);
+	addButton(System::getLocaleString(IDS_INSERT_STAFF ),  ID_INSERT_STAFF,   BS_PUSHBUTTON);
+	addButton(System::getLocaleString(IDS_INSERT_BAR   ),  ID_INSERT_BAR,     BS_PUSHBUTTON);
+	addButton(System::getLocaleString(IDS_INSERT_TUNING),  ID_INSERT_TUNING,  BS_PUSHBUTTON);
 
 	//subclassing (define my own window proc for this control)
 	_superClassWindowProc = (WNDPROC)SetWindowLong(_hWindow, GWL_WNDPROC, (long)ChordsTabControlPanel::forwardMessage);

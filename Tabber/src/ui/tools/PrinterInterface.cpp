@@ -106,9 +106,12 @@ void PrinterInterface::onPrint()
 		int charWidth = metrics.tmAveCharWidth;
 
 		int iHeaderHeight   = 2;
-		int iTotalLines     = _mainWindow->getEditArea()->getToolkit()->getLineCount();
 		int iLinesPerPage   = (iHeight - iHeaderHeight) / charHeight;
-		int iTotalPages     = (iTotalLines + iLinesPerPage - 1) / iLinesPerPage;
+
+		//pagination
+		PrinterPager* pager = new PrinterPager(_mainWindow->getEditArea(), iLinesPerPage);
+		int iTotalLines     = _mainWindow->getEditArea()->getToolkit()->getLineCount();
+		int iTotalPages     = pager->getPageCount();
 		int iLineNum        = 0;
 
 		//document information
@@ -153,9 +156,11 @@ void PrinterInterface::onPrint()
                         hOldFont = (HFONT)SelectObject(deviceContext, printFont);
 
                         //print the current file line by line
-                        for(int iLine = 0; iLine < iLinesPerPage; iLine++)
+						int iPageLines = pager->getPageLineCount(iPage);
+
+                        for(int iLine = 0; iLine < iPageLines; iLine++)
                         {
-                            iLineNum = iLinesPerPage * iPage + iLine;
+                            iLineNum = pager->getPageFirstLine(iPage) + iLine;
                             if(iLineNum > iTotalLines) break;
 
                             //get line (iLine) from the application, and store it into szBuffer
@@ -215,19 +220,21 @@ void PrinterInterface::onPrint()
 			{
 				NotifyMessage::publicError(
 					_mainWindow->getWindowHandle(),
-					"Printing cancelled by user" );
+					System::getLocaleString(IDERR_PRINT_CANCELLED) );
 			}
 			else
 			{
 				NotifyMessage::publicError(
 					_mainWindow->getWindowHandle(),
-					"Printing failed" );
+					System::getLocaleString(IDERR_PRINT_FAILED) );
 			}
 		}
 
 		PrintProgressDialog::hide();
 
 		delete [] outputBuffer;
+
+		delete pager;
 
         DeleteDC(deviceContext);
 	}

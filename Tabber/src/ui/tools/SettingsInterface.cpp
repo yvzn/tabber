@@ -185,7 +185,7 @@ void SettingsInterface::onChooseStaffWidth()
     
 	int action = PromptDialog::prompt(
  		_mainWindow->getWindowHandle(),
- 		"Staff width (number of notes per line):",
+		System::getLocaleString(IDS_STAFF_WIDTH_PROMPT),
  		settings->getStaffWidth() );
  		
 	if(action == IDOK)
@@ -201,7 +201,7 @@ void SettingsInterface::onChooseChordDepth()
 
 	int action = PromptDialog::prompt(
  		_mainWindow->getWindowHandle(),
-		"Staff Height (number of lines per staff):",
+		System::getLocaleString(IDS_STAFF_HEIGHT_PROMPT),
   		settings->getChordDepth() );
 
 	if(action == IDOK)

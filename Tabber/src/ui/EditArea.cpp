@@ -41,7 +41,7 @@ void EditArea::create(HWND hParentWindow)
 
 	if(_hWindow == NULL)
 	{
-		throw new RuntimeException("EditArea::create", "Could not create editing area");
+		throw new RuntimeException("EditArea::create", System::getLocaleString(IDERR_CREATE_WINDOW));
 	}
 	
 	//subclassing (define my own window proc for this control)
@@ -129,7 +129,7 @@ void EditArea::saveContentTo(const char* fileName)
 			if(!WriteFile(hFile, writeBuffer, (DWORD)textLength, &bytesWritten, NULL))
 			{
 				delete [] writeBuffer;
-				throw new RuntimeException("EditArea::saveContentTo", "Could not save document");
+				throw new RuntimeException("EditArea::saveContentTo", System::getLocaleString(IDERR_SAVE_DOCUMENT));
 			}
 			
 			delete [] writeBuffer;
@@ -137,7 +137,7 @@ void EditArea::saveContentTo(const char* fileName)
 	}
 	else
 	{
-		throw new RuntimeException("EditArea::saveContentTo", "Could not open document for saving");
+		throw new RuntimeException("EditArea::saveContentTo", System::getLocaleString(IDERR_SAVE_DOCUMENT));
 	}
 	
 	CloseHandle(hFile);
@@ -176,14 +176,14 @@ void EditArea::loadContentFrom(const char* fileName)
             else
 			{
 				delete [] readBuffer;
-				throw new RuntimeException("EditArea::loadContentFrom", "Could not load document");
+				throw new RuntimeException("EditArea::loadContentFrom", System::getLocaleString(IDERR_OPEN_DOCUMENT));
             }
 			delete [] readBuffer;
         }
 	}
 	else
 	{
-		throw new RuntimeException("EditArea::loadContentFrom", "Could not open document for loading");
+		throw new RuntimeException("EditArea::loadContentFrom", System::getLocaleString(IDERR_OPEN_DOCUMENT));
 	}
 
 	CloseHandle(hFile);
@@ -736,7 +736,7 @@ void EditArea::apply(StaffAction* action)
 
 void EditArea::onFindReplace(LPFINDREPLACE findReplace)
 {
-	assert(_hWindow != NULL)
+	assert(_hWindow != NULL);
 
 	if( findReplace->Flags & FR_REPLACE && _isSearchedTextSelected )
 	{
@@ -755,7 +755,7 @@ void EditArea::onFindReplace(LPFINDREPLACE findReplace)
 		else
 		{
 			_isSearchedTextSelected = false;
-			NotifyMessage::alert(_mainWindow->getWindowHandle(), "No more occurences found");
+			NotifyMessage::alert(_mainWindow->getWindowHandle(), System::getLocaleString(IDS_NO_MORE_OCCURENCES));
 		}
 	}
 
@@ -773,7 +773,7 @@ void EditArea::onFindReplace(LPFINDREPLACE findReplace)
 		onDocumentModified();
 
 		_isSearchedTextSelected = false;
-		NotifyMessage::alert(_mainWindow->getWindowHandle(), "%d occurences replaced", count);
+		NotifyMessage::alert(_mainWindow->getWindowHandle(), System::getLocaleString(IDS_X_OCCURENCES_REPLACED), count);
 	}
 
 	else

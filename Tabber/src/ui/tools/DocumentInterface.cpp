@@ -68,7 +68,7 @@ void DocumentInterface::setDocumentModified(bool newValue)
 
 void DocumentInterface::blankDocumentFlags()
 {
-	lstrcpy(_filePathAndName, "Untitled");
+	lstrcpy(_filePathAndName, System::getLocaleString(IDS_UNTITLED));
 	_fileName = _filePathAndName;
 	_isFileLoaded = false;
 	//_isDocumentModified = false; this flag must be handled separately using
@@ -105,17 +105,17 @@ bool DocumentInterface::continueIfDocumentModified()
 {
 	if(_isDocumentModified)
 	{
-		char message[20 + MAX_PATH];
-		lstrcpy(message, "Save changes to '");
-		lstrcat(message, _filePathAndName);
-		lstrcat(message, "' ?");
-
+		char* message = new char[20 + MAX_PATH];
+		wsprintf(message, System::getLocaleString(IDS_SAVE_CHANGES), _filePathAndName);
+		
     	int answer = MessageBox (
      		_mainWindow->getWindowHandle(),
        		message,
-         	"Confirmation",
+			System::getLocaleString(IDS_CONFIRMATION),
           	MB_ICONQUESTION | MB_YESNOCANCEL );
-          	
+
+		delete [] message;
+
       	if(answer == IDCANCEL)
       	{
       		return false;
@@ -158,7 +158,7 @@ bool DocumentInterface::onDocumentSave()
 		{
 			NotifyMessage::publicError(
 				_mainWindow->getWindowHandle(),
-				"Could not save file !\nMaybe file has \'read only\' attribute ?" );
+				System::getLocaleString(IDERR_SAVE_DOCUMENT) );
 
 			delete ex;
 			return false;
@@ -193,7 +193,7 @@ bool DocumentInterface::onDocumentSaveAs()
 		{
 			NotifyMessage::publicError (
 				_mainWindow->getWindowHandle(),
-				"Could not save file !\nMaybe it has \'read only\' attribute set ?" );
+				System::getLocaleString(IDERR_SAVE_DOCUMENT) );
 			delete ex;
 			return false;
 		}
@@ -248,7 +248,7 @@ void DocumentInterface::loadSpecifiedDocument()
 	{
 		NotifyMessage::publicError(
 			_mainWindow->getWindowHandle(),
-			"Could not open file !\nMaybe it is used by another application ?" );
+			System::getLocaleString(IDERR_OPEN_DOCUMENT) );
 
 		delete ex;
 	}
