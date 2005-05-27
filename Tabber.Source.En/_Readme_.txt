@@ -35,5 +35,5 @@ CONTACT
 =======
 
 (WWW)    http://tabber.free.fr/
-(e-mail) tabber@free.fr
+(e-mail) tabber (a) free.fr
 
