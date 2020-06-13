@@ -5,19 +5,20 @@
  * Additionnal Contributors:
  * <place your name here :)>
  *
- * This program is free software; you can redistribute it and/or modify
+ * This file is part of Tabber.
+ * 
+ * Tabber is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Tabber is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with Tabber.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "resource.h"
@@ -165,7 +166,7 @@ BEGIN
 	IDS_INSERT_TUNING, "Accordage"
 	IDS_CHANGES_ON_RESTART, "Les changements prendront effet au prochain redémarrage du programme"
 
-	IDS_LICENCE, "Ce programme est un logiciel gratuit; vous pouvez le redistribuer et/ou le modifier sous les termes de la GNU General Public Licence publiée par la Free Software Foundation; soit la version 2 de la licence, soit une version ultérieure.\r\n\r\nCe programme est distribué dans l'espoir d'être utile, mais SANS AUCUNE GARANTIE; sans même la garantie explicite ou implicite de COMMERCIALISABILITE ou de SERVIR A UNE QUELCONQUE UTILISATION. Reportez-vous à la GNU General Public License pour plus de détails.\r\n\r\nVous devriez avoir reçu une copie (en anglais) de la GNU General Public License avec ce programme; dans le cas contraire, écrivez à la\r\nFree Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA"
+	IDS_LICENCE, "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\r\n\r\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\r\n\r\nYou should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>."
 	IDS_WEBSITE, "http://tabber.free.fr/"
 END
 

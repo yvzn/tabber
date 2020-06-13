@@ -4,20 +4,18 @@ Copyright (C) 2004  Yvan Razafindramanana
 LICENCE
 =======
 
-Ce programme est un logiciel libre; vous pouvez le redistribuer et/ou le
-modifier sous les termes de la GNU General Public Licence publiée par la
-Free Software Foundation; soit la version 2 de la licence, soit une
-version ultérieure.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Ce programme est distribué dans l'espoir d'être utile, mais SANS AUCUNE
-GARANTIE; sans même la garantie explicite ou implicite de COMMERCIALISABILITE
-ou de SERVIR A UNE QUELCONQUE UTILISATION. Reportez-vous à la GNU General
-Public License pour plus de détails.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-Vous devriez avoir reçu une copie (en anglais) de la GNU General Public
-License avec ce programme; dans le cas contraire, écrivez à la
-Free Software Foundation, Inc.,
-59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 CETTE VERSION
