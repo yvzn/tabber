@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+
+<!--
+This page is the official documentation reference for Tabber. For
+efficiency reasons, it has been organized as a FAQ list.
+
+This is a HTML page and can be viewed with appropriated software.
+
+The most recent version of this page can be found on Tabber's website:
+http://tabber.free.fr/
+
+Revision: EN_0003 (Tabber 2.0)
+Date    : 2004/07/26
+
+Do not hesitate to publish and share your modifications - if
+you want them to be part of the official distribution, please contact
+the author (by mail: tabber@free.fr)
+
+Tabber comes with ABSOLUTELY NO WARRANTY. It is free software, and you are
+welcome to modify and redistribute it under the terms of the GNU General
+Public License as published by the Free Software Foundation; either
+version 2 of the License, or any later version.
+
+Refer to the Licence file for details.
+-->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	
+	<base href="../" />
+	<link href="resources/stylesheet/style.css" rel="stylesheet" type="text/css" title="Big Guitars" media="screen" />
+	<link href="resources/icons/favicon.png" rel="shortcut icon" type="image/png" />
+
+	<title>Tabber / Documentation</title>
+</head>
+<body lang="en">
+<div id="page">
+	<div id="header">
+		<h1><a href="" >Tabber</a> <small>: a Guitar Tablature editor</small> </h1>
+	</div>
+
+	<ul id="navigation"
+		><li
+			><a href="en/translations.html" accesskey="g">Lan<u>g</u></a
+			><ul
+				><li><a href="en/" accesskey="e"><u>E</u>nglish</a></li
+				><li><a href="fr/" accesskey="f"><u>F</u>rançais</a></li
+			></ul			
+		></li
+		><li><a href="en/features.html" accesskey="t">Fea<u>t</u>ures</a></li
+		><li><a href="en/screenshots.html" accesskey="s"><u>S</u>creenshots</a></li
+		><li id="current"><a href="en/documentation.html" accesskey="d"><u>D</u>ocumentation</a></li
+		><li><a href="en/download.html" accesskey="l">Down<u>l</u>oad</a></li
+		><li><a href="en/contact.html" accesskey="c"><u>C</u>ontact</a></li
+	></ul>
+	
+	<div id="content">
+		<div>
+			<h2>About this page</h2>
+			<p>This page is the official documentation reference for Tabber. For
+				efficiency reasons, it has been organized as a
+				<acronym title="Frequently Asqued Questions">FAQ</acronym> list.</p>
+		</div>
+		
+		<div>
+			<h2 id="summary">Question list</h2>
+			<ol>
+				<li>
+					<h3><a href="#AboutProgram">About the program</a></h3>
+					<ul>
+						<li><a href="#question000">What is Tabber?</a></li>
+						<li><a href="#question001">Is Tabber free? Is Tabber open-source?</a></li>
+						<li><a href="#question002">Where can I download Tabber?</a></li>
+						<li><a href="#question003">What are the system requirements?</a></li>
+						<li><a href="#question004">How do I install/uninstall Tabber?</a></li>
+						<li><a href="#question005">What are those <var>*.ini</var> files? Can I delete them? Can I customise them?</a></li>
+						<li><a href="#question006">What file extensions does Tabber use?</a></li>
+						<li><a href="#question007">Is Tabber available in my language?</a></li>
+						<li><a href="#question008">How do I report bugs? How can I make feature requests?</a></li>
+						<li><a href="#question009">How can I help?</a></li>
+						<li><a href="#question010">What if my question is not answered here?</a></li>
+					</ul>
+				</li>
+				<li>
+					<h3><a href="#UserInterface">User interface</a></h3>
+					<ul>
+						<li><a href="#question100">What are all those buttons and stuff?</a></li>
+						<li><a href="#question101">What are those tabs at the bottom of the window?</a></li>
+						<li><a href="#question102">What are the use of <q>Insert Something</q> buttons and menus?</a></li>
+						<li><a href="#question103">What is the use of those chord named buttons (E, Am, F#...)?</a></li>
+						<li><a href="#question104">Why does an error/exception message pop up? What is that <q>Debug Trace</q> window that just appeared?</a></li>
+						<li><a href="#question105">Cursor is inside a staff but Tabber still disables staff operations. Why is that?</a></li>
+						<li><a href="#question106">Undo/Redo sometimes does not seem to work.</a></li>
+					</ul>
+				</li>
+				<li>
+					<h3><a href="#Settings">Settings</a></h3>
+					<ul>
+						<li><a href="#question200">What do <q>Staff width/height</q> settings correspond to?</a></li>
+						<li><a href="#question201">What does <q>Guitar tuning</q> setting correspond to?</a></li>
+						<li><a href="#question202">What are the <q>Chord insertion options</q>?</a></li>
+						<li><a href="#question203">What does the <q>Font</q> setting correspond to?</a></li>
+						<li><a href="#question204">What does <q>Typing mode</q> setting correspond to?</a></li>
+						<li><a href="#question205">Why is typing behaving strangely? What is that <q>Special</q> typing mode?</a></li>
+						<li><a href="#question206">What are those files that can be edited in <q>Advanced settings</q>?</a></li>						
+					</ul>
+				</li>
+				<li>
+					<h3><a href="#Printing">Printing</a></h3>
+					<ul>
+						<li><a href="#question300">How does Tabber print pages?</a></li>
+					</ul>
+				</li>
+				<li>
+					<h3><a href="#Development">Development</a></h3>
+					<ul>
+						<li><a href="#question400">What language/software/IDE has Tabber been written/developed/compiled with?</a></li>
+						<li><a href="#question401">How do I compile the sources?</a></li>
+						<li><a href="#question402">How do I make suggestions / report potential bugs / post patches / publish modifications?</a></li>
+						<li><a href="#question403">How do I translate Tabber in my language?</a></li>
+					</ul>
+				</li>
+				<li>
+					<h3><a href="#Misc">Miscellaneous</a></h3>
+					<ul>
+						<li><a href="#question500">Who should I ask precisions? How do I contact the author?</a></li>
+					</ul>
+				</li>
+			</ol>
+		</div>
+		
+		<div>
+			<h2>Answers</h2>
+			<ol>
+				<li>
+					<h3 id="AboutProgram"><a href="#summary">About the program</a></h3>
+					<dl>
+						<dt id="question000"><a href="#summary">What is Tabber?</a></dt>
+						<dd>
+							<p>Tabber is a free guitar tablature editor for Windows.</p>
+							<p>It uses simple text files to store tablatures, similar to the ones you can find on the Online Guitar Archive (<a href="http://olga.net/" >http://olga.net/</a>)</p>
+							<p>The idea behind Tabber is that, in author's opinion, the most convenient tool to edit guitar tablatures is Windows' notepad. However, notepad lacks a few functionalities such as staff insertion, predefined chords and so on. Tabber's modest aim is to provide these few functionalities to a classic text editor.</p>
+
+						</dd>
+						<dt id="question001"><a href="#summary">Is Tabber free? Is Tabber open-source?</a></dt>
+						<dd>
+							<p>Tabber is completely free for download, usage and redistribution.</p>
+							<p>Free meaning, you do not have to pay to use it and also, you are free to share, redistribute and modify the program.</p>
+							<p>Tabber is also open-source, which means that anyone can have full access to application source code (see the <a href="http://tabber.free.fr/en/download.html" >download section</a> of the website)</p>
+							<p>Tabber is published under the <a href="http://www.gnu.org/copyleft/gpl.html" >GNU Public Licence</a>, a lot of complicated words just to say that, you can modify and redistribute your modified version, free of charge, as long as this version also remains free/under GPL.</p>
+
+						</dd>
+						<dt id="question002"><a href="#summary">Where can I download Tabber?</a></dt>
+						<dd>
+							<p>Try the official website: <a href="http://tabber.free.fr/" >http://tabber.free.fr/</a></p>
+
+						</dd>
+						<dt id="question003"><a href="#summary">What are the system requirements?</a></dt>
+						<dd>
+							<p>Minimal.</p>
+							<p>I cannot really stand on that point, but as far as I can tell, Tabber has been successfully compiled and run on a K6-333Mhz with 64Mb RAM and Windows 98 (a very small system, most modern systems are way faster)</p>
+
+						</dd>
+						<dt id="question004"><a href="#summary">How do I install/uninstall Tabber?</a></dt>
+						<dd>
+							<p>Tabber does not require any complex install/uninstall operations.</p>
+							<p>The program is usually shipped in a zip archive, containing the program itself (<var>Tabber.exe</var>) and a few configuration files. To <q>install</q> just decompress the archive in any directory you like.</p>
+							<p>To <q>uninstall</q>, just delete the program and the configuration files. Tabber performs no operations on Windows' registry base.</p>
+
+						</dd>
+						<dt id="question005"><a href="#summary">What are those <var>*.ini</var> files? Can I delete them? Can I customise them?</a></dt>
+						<dd>
+							<p>These are the configuration files used by Tabber.</p>
+							<p>In theory, the program is stand-alone, which means that the only file needed is <var>Tabber.exe</var>. However, a lot of useful predefined chords and tunings are provided in the <var>*.ini</var> files, so this is a good idea to keep them. If not present they will be created with (very few) default values.</p>
+							<p>You can edit those files by hand (using any editor, including Tabber, <a href="#question206" >refer to this question</a>), for instance if you want to change the order of chord buttons. The changes you make will be effective on program restart.</p>
+
+						</dd>
+						<dt id="question006"><a href="#summary">What file extensions does Tabber use?</a></dt>
+						<dd>
+							<p>Any one you like, as long as they refer to plain text files.</p>
+							<p><var>*.crd</var> and <var>*.tab</var> are commonly used, so I guess you may stick with those.</p>
+
+						</dd>
+						<dt id="question007"><a href="#summary">Is Tabber available in my language?</a></dt>
+						<dd>
+							<p>Tabber is ready to be localised in any language. For now it's available in French and English (see the <a href="http://tabber.free.fr/en/download.html" >download section</a> of the website)</p>
+							<p>You may volunteer to translate the program (and/or its documentation) in your language, refer to <a href="#question403">this question</a> in the <q><a href="#Development">Development</a></q> section of this document.</p>
+
+						</dd>
+						<dt id="question008"><a href="#summary">How do I report bugs? How can I make feature requests?</a></dt>
+						<dd>
+							<p>By mail (<a href="#question500">instructions here</a>)</p>
+							<p>Please try to be precise and specific when reporting your bug, and do not forget to mention the operating system used and the version involved (alpha, beta, release...)</p>
+							<p>All feature requests and suggested improvements will be studied.</p>
+
+						</dd>
+						<dt id="question009"><a href="#summary">How can I help?</a></dt>
+						<dd>
+							<p>By testing and reporting bugs, by translating the program and documentation in other languages (see the above remarks), by testing the source code and publishing your patches and modifications (see <q><a href="#Development">Development</a></q> section)</p>
+
+						</dd>
+						<dt id="question010"><a href="#summary">What if my question is not answered here?</a></dt>
+						<dd>
+							<p>Ask it by mail (<a href="#question500">instructions here</a>)</p>
+
+						</dd>
+					</dl>
+				</li>
+				
+				<li>
+					<h3 id="UserInterface"><a href="#summary">User interface</a></h3>
+					<dl>
+						<dt id="question100"><a href="#summary">What are all those buttons and stuff?</a></dt>
+						<dd>
+							<p>The buttons and menus at the top of the window correspond to most classic text editor functionalities, such as open/save, print, search and so on.</p>
+
+						</dd>
+						<dt id="question101"><a href="#summary">What are those tabs at the bottom of the window?</a></dt>
+						<dd>
+							<p>The buttons at the bottom of the window correspond to Tabber's specific functionalities. Because of their number, those buttons have been organized in tabs.</p>
+							<p>The very first tab's buttons are related to <a href="#question102" >staffs</a>. The other tabs are related to <a href="#question103" >chords</a>.</p>
+
+						</dd>
+						<dt id="question102"><a href="#summary">What are the use of <q>Insert Something</q> buttons and menus?</a></dt>
+						<dd>
+							<p><q>Insert staff</q> adds a new and empty staff at cursor position or, if cursor is already inside a staff, just below the current staff.</p>
+							<p><q>Insert bar</q> adds a vertical bar at cursor position. This is only available inside staffs.</p>
+							<p><q>Insert tuning</q> adds the currently selected guitar tuning at the beginning of current staff. This is only available inside staffs.</p>
+
+						</dd>
+						<dt id="question103"><a href="#summary">What is the use of those chord named buttons (E, Am, F#...)?</a></dt>
+						<dd>
+							<p>By clicking one of those buttons, the corresponding chord is added at cursor position inside current staff.</p>
+							<p>If the <q><a href="#question202" >Add chord name</a></q> setting is checked, chord name will also be added just above the staff.</p>
+							<p>Pressing <kbd>Shift</kbd> or <kbd>Control</kbd> while clicking a chord button will insert an ascending or descending arpeggio.</p>
+
+						</dd>
+						<dt id="question104"><a href="#summary">Why does an error/exception message pop up? What is that <q>Debug Trace</q> window that just appeared?</a></dt>
+						<dd>
+							<p>Congratulations, you have just discovered a bug :)</p>
+							<p>Please report this bug by sending an e-mail (<a href="#question500">instructions here</a>), explaining briefly what you were doing when the message appeared.</p>
+
+						</dd>
+						<dt id="question105"><a href="#summary">Cursor is inside a staff but Tabber still disables staff operations. Why is that?</a></dt>
+						<dd>
+							<p>Tabber uses specific algorithms to guess whether cursor is inside a staff or not. Sometimes those algorithms may simply go wrong :( Improvements on this point are in progress.</p>
+
+						</dd>
+						<dt id="question106"><a href="#summary">Undo/Redo sometimes does not seem to work.</a></dt>
+						<dd>
+							<p>This is a current limitation of predefined undo/redo function provided by Windows (you have the same limitation in notepad, for instance).</p>
+							<p>I am aware of the problem and I am working on a specific undo/redo function for Tabber.
+
+						</dd>
+					</dl>
+				</li>
+				
+				<li>
+					<h3 id="Settings"><a href="#summary">Settings</a></h3>
+					<dl>
+						<dt id="question200"><a href="#summary">What do <q>Staff width/height</q> settings correspond to?</a></dt>
+						<dd>
+							<p><q>Staff width</q> is the number of characters per line used in staffs.</p>
+							<p><q>Staff height</q> is the number of lines used in each staff. Typically 6 for guitars, 4 for bass guitars.</p>
+
+						</dd>
+						<dt id="question201"><a href="#summary">What does <q>Guitar tuning</q> setting correspond to?</a></dt>
+						<dd>
+							<p>This is the tuning added at the beginning of staffs.</p>
+							<p>In the submenu you may select one of the predefined tunings. If you do not want any tuning to be added, just select <q>None</q>.</p>
+
+						</dd>
+						<dt id="question202"><a href="#summary">What are the <q>Chord insertion options</q>?</a></dt>
+						<dd>
+							<p><q>Add extra space</q> adds an additional blank character after every chord that is inserted in a staff.</p>
+							<p><q>Add chord name</q> adds the chord name just above the staff, when inserting a chord.</p>
+
+						</dd>
+						<dt id="question203"><a href="#summary">What does the <q>Font</q> setting correspond to?</a></dt>
+						<dd>
+							<p>The font selected here is used for both display and printing.</p>
+							<p>You may only select fixed-width fonts (monospace fonts) such as <var>Courier</var> or <var>Lucida</var>, otherwise the tabs would not be readable.</p>
+
+						</dd>
+						<dt id="question204"><a href="#summary">What does <q>Typing mode</q> setting correspond to?</a></dt>
+						<dd>
+							<p>You may use <q>Insert/Overwrite</q> typing modes, which correspond to the same typing modes available in many other editors.</p>
+							<p>Another <q>Special</q> mode, specific to guitar tablatures, can also be selected. See description below.</p>
+
+						</dd>
+						<dt id="question205"><a href="#summary">Why is typing behaving strangely? What is that <q>Special</q> typing mode?</a></dt>
+						<dd>
+							<p>This typing mode has been designed specifically for guitar tabs.</p>
+							<p>When you are outside a staff, it behaves just like the Insert typing mode. Inside a staff, each typed note adds a blank character on the other lines of the staff. This also works for backspace.</p>
+
+						</dd>
+						<dt id="question206"><a href="#summary">What are those files that can be edited in <q>Advanced settings</q>?</a></dt>
+						<dd>
+							<p>Those files define the chords and guitar tunings used in Tabber.</p>
+							<p>You can modify those file directly using inside Tabber. The changes you make will be effective on program restart.</p>
+							<p>The syntax used is quite simple, use <code>[group name]</code> to define a new chord group, use <code>Name=xxxxxx</code> to define a new chord:</p>
+							<ul>
+								<li>The character <code>'x'</code> is <q>invisible</q>: it is replaced by a blank when the chord is interted.</li>
+								<li>If chord consists in single characters notes, just put the notes altogether in a row like this: <code>123456</code> or <code>EAGDBe</code></li>
+								<li>If chord consists in multiple characters notes, separate the notes with commas like this: <code>8,9,10,11,12,13</code> or <code>D#,A,G,D#,B,e</code></li>
+							</ul>
+
+						</dd>
+					</dl>
+				</li>
+				
+				<li>
+					<h3 id="Printing"><a href="#summary">Printing</a></h3>
+					<dl>
+						<dt id="question300"><a href="#summary">How does Tabber print pages?</a></dt>
+						<dd>
+							<p>Tabber tries to print tablatures in a smart way.</p>
+							<p>It checks if staffs are not located at the bottom of pages, in order to avoid page breaks inside staffs.</p>
+							<p>Tabber does not wrap lines at the end of a page, so be careful if your staffs are too large.</p>
+							<p>The printing font is the same font used for display.</p>
+
+						</dd>
+					</dl>
+				</li>
+				
+				<li>
+					<h3 id="Development"><a href="#summary">Development</a></h3>
+					<dl>
+						<dt id="question400"><a href="#summary">What language/software/IDE has Tabber been written/developed/compiled with?</a></dt>
+						<dd>
+							<p>Tabber has been written in C++, using the native Win32 functions.</p>
+							<p>It has been developed with Dev-C++ (<a href="http://www.bloodshed.net/" >http://www.bloodshed.net/</a>)</p>
+							<p>It has also been successively compiled with Microsoft's Visual C++ 6.0</p>
+
+						</dd>
+						<dt id="question401"><a href="#summary">How do I compile the sources?</a></dt>
+						<dd>
+							<p><a href="http://tabber.free.fr/en/download.html" >Download</a> the source package and then:</p>
+							<ul>
+								<li>with Dev-C++ open the <var>Tabber.dev</var> project file and press <kbd>F9</kbd></li>
+								<li>with Visual-C++ open the <var>Tabber.dsw</var> project file and press <kbd>F7</kbd></li>
+							</ul>
+							<p>See remarks in <var>utilities.h</var> to enable/disable debugging</p>
+
+						</dd>
+						<dt id="question402"><a href="#summary">How do I make suggestions / report potential bugs / post patches / publish modifications?</a></dt>
+						<dd>
+							<p>By mail (<a href="#question500">instructions here</a>)</p>
+							<p>I would be glad if you send me your modifications instead of publishing them on your own, so that all the users may benefit your changes.</p>
+
+						</dd>
+						<dt id="question403"><a href="#summary">How do I translate Tabber in my language?</a></dt>
+						<dd>
+							<p>Please contact me by mail (<a href="#question500">instructions here</a>) to get full instructions.</p>
+
+						</dd>
+					</dl>
+				</li>
+
+				<li>
+					<h3 id="Misc"><a href="#summary">Miscellaneous</a></h3>
+					<dl>
+						<dt id="question500"><a href="#summary">Who should I ask precisions? How do I contact the author?</a></dt>
+						<dd>
+							<p>Use e-mail, exclusively. Replace the (_a_) thing by an arobase in the following adress:</p>
+							<address>tabber(_a_)free.fr</address>
+							
+						</dd>
+					</dl>
+				</li>
+			</ol>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+
