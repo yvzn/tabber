@@ -33,6 +33,6 @@ Please refer to the documentation provided with the program.
 CONTACT
 =======
 
-(WWW)    http://tabber.free.fr/
+(WWW)    https://yvzn.github.io/tabber/
 (e-mail) mail_tabber at ludeo.net
 
