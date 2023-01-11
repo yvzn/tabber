@@ -1,40 +1,33 @@
-Tabber
-======
+# Tabber
 
 (Version en Français ci-après)
 
-English
--------
+## English
 
 Tabber is a free, open source Guitar Tablature editor 
 (Under GNU GPL v3 license)
 
-Please refer to the documentation provided
-<https://yvzn.github.io/tabber>
+Please refer to the [documentation](https://yvzn.github.io/tabber)
 
-Français
---------
+## Français
 
 Tabber est un Éditeur de Tablatures de Guitare, gratuit et open source
 (Sous license GNU GPL v3)
 
-Veuillez vous reportez à la documentation fournie
-<https://yvzn.github.io/tabber>
+Veuillez vous reportez à la [documentation](https://yvzn.github.io/tabber)
 
-BUILDING
-========
+## Building
 
 Tabber has been written in C++, using the native Win32 functions.
 
-It has been developed with Dev-C++ <http://www.bloodshed.net/> / MinGW
+It has been developed with [Dev-C++](http://www.bloodshed.net/) / MinGW
 but has also been successively compiled with Microsoft's Visual C++ 6.0
 
-Please refer to the documentation provided.
+Please refer to the documentation.
 
-LICENSE / COPYING
-=================
+## LICENSE / COPYING
 
-Copyright (C) 2004  Yvan Razafindramanana
+Copyright (C) 2004-2023 Yvan Razafindramanana
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -47,4 +40,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program.  If not, see https://www.gnu.org/licenses/.
