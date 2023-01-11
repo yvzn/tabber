@@ -1,24 +1,15 @@
 /* header ---------------------------------------------------------------*/
 #header
 {
-	position: absolute; top: 0em; left: 0em; z-index: 2;
-	padding: 0px; margin: 0px;
+	padding: 0; margin: 0;
+	background-color: #fbfefb;
 	color: #0a100d;
-}
-
-#header:before
-{
-	content: url('left.jpg'); 
-	width: 900px; height: 940px; 
 }
 
 #header h1
 {
-	width: 800px;
-	position: absolute; top: 25px; left: 103px;
-	padding: 5px 0px 5px 10px; margin: 0px;
-	border-top: solid 3px #0a100d; border-bottom: solid 3px #0a100d;
-	font-weight: normal; 
+	padding: 5px 0 5px 10px; margin: 0;
+	font-weight: normal;
 }
 
 #header h1:before
@@ -32,63 +23,79 @@
 
 
 /* navigation -----------------------------------------------------------*/
-#navigation 
+
+#navigation
 {
-	width: 795px;
-	position: absolute; top: 6em; left: 103px; z-index: 2;
-	padding: 0px 0px 0px 0px; margin: 0px;
-	border-top: solid 2px #0a100d; border-bottom: solid 2px #0a100d;
+	padding: 0 3rem; margin: 0;
+	background-color: #fbfefb;
+	color: #0a100d;
 }
 
 #navigation li
 {
-	display: inline;
-	padding: 0px 10px 0px 10px; margin: 0px;
-	border-right: solid 2px #0a100d;
+	display: inline-block;
+	padding: 0 10px 0 10px; margin: 0;
 	color: #0a100d;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.1em; line-height: 2rem;
 }
 
-#navigation li:first-child { margin-left: 20px; border-left: solid 2px #0a100d; }
 #navigation li:hover { background-color: #0a100d; color: #fbfefb; }
 
 #navigation li#current { font-weight: bolder; }
 
-#navigation a { color: inherit; text-decoration: none; border: none; }
-#navigation a:before { content: '\2022\00A0'; }
+#navigation a { color: inherit; text-decoration: underline double; border: none; }
 
-#navigation u { text-decoration: none; color: #800000; }
-#navigation li:hover u { color: #F3B61F; }
+#navigation u { color: #800000; text-decoration-color: #0a100d; }
+#navigation li:hover u { color: #F3B61F; text-decoration-color: #fbfefb; }
 
 #navigation li ul
 {
 	display: none;
-	width: 775px;
 	position: absolute;
-	padding: 0px 0px 0px 20px; margin: 0px;
-	border-bottom: solid 2px #0a100d;	
+	padding: 0 0 0 20px; margin: 0;
 }
 
-#navigation li:hover ul { display: block; }
-#navigation li:hover li { background-color: transparent; color: #0a100d; }
-
-#navigation li li
+@media screen and (min-width: 992px)
 {
-	display: inline; 
+	#navigation
+	{
+		padding: 0;
+		display: block;
+	}
+
+	#navigation li
+	{
+		display: inline;
+		border-right: solid 2px #0a100d;
+		line-height: normal;
+	}
+
+	#navigation li:first-child { margin-left: 20px; border-left: solid 2px #0a100d; }
+
+	#navigation a { text-decoration: none; }
+
+	#navigation u { text-decoration: none; }
+
+	#navigation li:hover ul { display: block; }
+	#navigation li:hover li { background-color: transparent; color: #0a100d; }
+
+	#navigation li li
+	{
+		display: inline;
+		border-bottom: solid 2px #0a100d;
+	}
+
+	#navigation li li:hover { background-color: #0a100d; color: #fbfefb; }
+
+	#navigation li:hover li u { color: #800000; }
+	#navigation li li:hover u { color: #F3B61F; }
 }
-
-#navigation li li:hover { background-color: #0a100d; color: #fbfefb; }
-
-#navigation li:hover li u { color: #800000; }
-#navigation li li:hover u { color: #F3B61F; }
-
 
 /* content --------------------------------------------------------------*/
 #content
 {
-	width: 745px; min-height: 940px;
-	position: absolute; top: 0px; left: 103px; z-index: 1;
-	padding: 10em 25px 10em 25px;
+	min-height: 940px;
+	padding: 3rem;
 	background-color: #fbfefb; /* background-image: url('content.jpg'); background-repeat: no-repeat; background-position: top left; */
 	color: #0a100d;
 }
@@ -122,8 +129,26 @@
 /* globals --------------------------------------------------------------*/
 #page
 {
-	width: 900px;
-	position: absolute; top: 0%; left: 50%; margin-left: -450px;
+	max-width: 60rem; margin: auto;
+	display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto auto;
+	gap: 2px; 
+	border: solid 2px #0a100d;
+}
+
+@media screen and (min-width: 992px)
+{
+	#page
+	{
+		grid-template-columns: auto 1fr;
+		border-style: solid none;
+	}
+
+	#page:before
+	{
+		content: url('left.jpg');
+		width: 100px; height: 940px;
+		grid-row: 1/4;
+	}
 }
 
 #footer { visibility: hidden; }
@@ -139,17 +164,18 @@ a
 
 body
 {
+	font-family: "Palatino Linotype", Palatino, Palladio, "URW Palladio L", "Book Antiqua", Baskerville, "Bookman Old Style", "Bitstream Charter", "Nimbus Roman No9 L", Garamond, "Apple Garamond", "ITC Garamond Narrow", "New Century Schoolbook", "Century Schoolbook", "Century Schoolbook L", Georgia, serif;
 	background-color: #0a100d;
-	font-family: Garamond, "Times New Roman", serif;
 	color: #fbfefb;
+	margin: 0;
 }
 
 [lang|="en"]
 {
-	quotes: "“" "”" "‘" "’";	
+	quotes: "“" "”" "‘" "’";
 }
 
 [lang|="fr"]
 {
-	quotes: "« " " »" "“ " " ”";	
+	quotes: "« " " »" "“ " " ”";
 }
