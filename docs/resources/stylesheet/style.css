@@ -44,9 +44,17 @@
 
 #navigation
 {
-	padding: 0 3rem; margin: 0;
+	padding: 0 1rem; margin: 0;
 	background-color: #fbfefb;
 	color: #0a100d;
+}
+
+@media screen and (min-width: 768px)
+{
+	#navigation
+	{
+		padding: 0 3rem;
+	}
 }
 
 #navigation li
@@ -113,9 +121,17 @@
 #content
 {
 	min-height: 940px;
-	padding: 3rem;
+	padding: 1rem;
 	background-color: #fbfefb; /* background-image: url('content.jpg'); background-repeat: no-repeat; background-position: top left; */
 	color: #0a100d;
+}
+
+@media screen and (min-width: 768px)
+{
+	#content
+	{
+		padding: 3rem;
+	}
 }
 
 #content h2
